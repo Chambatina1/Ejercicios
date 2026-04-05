@@ -1,1 +1,1004 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chmbari Academy | Adverbs of Frequency</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#07111f;
+      --bg-2:#0d1b2f;
+      --card:#10233c;
+      --card-2:#132b49;
+      --line:rgba(255,255,255,.12);
+      --text:#eef6ff;
+      --muted:#b8c7dd;
+      --brand:#7c5cff;
+      --brand-2:#12d6df;
+      --accent:#ffd76a;
+      --success:#33d17a;
+      --danger:#ff6b81;
+      --warning:#ffb84d;
+      --shadow:0 18px 45px rgba(0,0,0,.28);
+      --radius:24px;
+    }
 
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family:"Poppins",sans-serif;
+      background:
+        radial-gradient(circle at 10% 20%, rgba(124,92,255,.22), transparent 22%),
+        radial-gradient(circle at 90% 10%, rgba(18,214,223,.16), transparent 20%),
+        radial-gradient(circle at 50% 100%, rgba(255,215,106,.10), transparent 24%),
+        linear-gradient(160deg, var(--bg), var(--bg-2));
+      color:var(--text);
+      min-height:100vh;
+    }
+
+    .page{
+      width:min(1180px, 92%);
+      margin:auto;
+      padding:28px 0 60px;
+    }
+
+    .topbar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:20px;
+      margin-bottom:24px;
+      flex-wrap:wrap;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:14px;
+    }
+
+    .brand-badge{
+      width:54px;
+      height:54px;
+      border-radius:18px;
+      background:linear-gradient(135deg,var(--brand),var(--brand-2));
+      display:grid;
+      place-items:center;
+      box-shadow:var(--shadow);
+      font-size:24px;
+      font-weight:800;
+      color:white;
+    }
+
+    .brand h1{
+      margin:0;
+      font-size:1.15rem;
+      line-height:1.1;
+    }
+
+    .brand p{
+      margin:4px 0 0;
+      color:var(--muted);
+      font-size:.92rem;
+    }
+
+    .hero{
+      position:relative;
+      overflow:hidden;
+      border:1px solid var(--line);
+      border-radius:32px;
+      box-shadow:var(--shadow);
+      background:
+        linear-gradient(135deg, rgba(124,92,255,.22), rgba(18,214,223,.10)),
+        linear-gradient(145deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      display:grid;
+      grid-template-columns:1.15fr .85fr;
+      gap:24px;
+      padding:30px;
+      margin-bottom:26px;
+    }
+
+    .hero::before,
+    .hero::after{
+      content:"";
+      position:absolute;
+      border-radius:50%;
+      filter:blur(10px);
+      opacity:.35;
+      pointer-events:none;
+    }
+
+    .hero::before{
+      width:280px;
+      height:280px;
+      background:var(--brand);
+      top:-100px;
+      right:-80px;
+    }
+
+    .hero::after{
+      width:220px;
+      height:220px;
+      background:var(--brand-2);
+      bottom:-90px;
+      left:-70px;
+    }
+
+    .hero-text{
+      position:relative;
+      z-index:1;
+      align-self:center;
+    }
+
+    .chip{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      background:rgba(255,255,255,.08);
+      border:1px solid var(--line);
+      color:#fff;
+      padding:8px 14px;
+      border-radius:999px;
+      font-size:.9rem;
+      margin-bottom:16px;
+    }
+
+    .hero h2{
+      margin:0 0 12px;
+      font-size:clamp(2rem, 4vw, 3.5rem);
+      line-height:1;
+    }
+
+    .hero h2 span{
+      background:linear-gradient(90deg, #fff, #ccecff, #ffd76a);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      background-clip:text;
+    }
+
+    .hero p{
+      color:var(--muted);
+      font-size:1.02rem;
+      line-height:1.75;
+      max-width:680px;
+      margin:0 0 22px;
+    }
+
+    .hero-buttons{
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+    }
+
+    .btn{
+      border:none;
+      border-radius:16px;
+      padding:14px 18px;
+      font-family:inherit;
+      font-weight:700;
+      cursor:pointer;
+      transition:.25s ease;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+    }
+
+    .btn-primary{
+      background:linear-gradient(135deg, var(--brand), var(--brand-2));
+      color:#fff;
+      box-shadow:0 10px 24px rgba(124,92,255,.25);
+    }
+
+    .btn-secondary{
+      background:rgba(255,255,255,.08);
+      color:#fff;
+      border:1px solid var(--line);
+    }
+
+    .btn:hover{
+      transform:translateY(-2px);
+    }
+
+    .hero-visual{
+      position:relative;
+      z-index:1;
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:14px;
+      align-content:center;
+    }
+
+    .img-card{
+      border-radius:24px;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.14);
+      box-shadow:var(--shadow);
+      min-height:160px;
+      background:#0f223a;
+      position:relative;
+    }
+
+    .img-card img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+
+    .img-card.tall{
+      grid-row:span 2;
+      min-height:338px;
+    }
+
+    .img-tag{
+      position:absolute;
+      left:12px;
+      bottom:12px;
+      background:rgba(7,17,31,.75);
+      color:#fff;
+      border:1px solid rgba(255,255,255,.18);
+      border-radius:999px;
+      padding:8px 12px;
+      font-size:.82rem;
+      backdrop-filter:blur(8px);
+    }
+
+    .stats{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:16px;
+      margin-bottom:26px;
+    }
+
+    .stat{
+      background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.03));
+      border:1px solid var(--line);
+      border-radius:22px;
+      padding:18px;
+      box-shadow:var(--shadow);
+    }
+
+    .stat strong{
+      font-size:1.55rem;
+      display:block;
+      margin-bottom:6px;
+    }
+
+    .stat span{
+      color:var(--muted);
+      font-size:.93rem;
+    }
+
+    .section-title{
+      display:flex;
+      justify-content:space-between;
+      align-items:end;
+      gap:14px;
+      margin:16px 0 18px;
+      flex-wrap:wrap;
+    }
+
+    .section-title h3{
+      margin:0;
+      font-size:1.45rem;
+    }
+
+    .section-title p{
+      margin:0;
+      color:var(--muted);
+      font-size:.95rem;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:18px;
+    }
+
+    .exercise{
+      background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.03));
+      border:1px solid var(--line);
+      border-radius:28px;
+      padding:22px;
+      box-shadow:var(--shadow);
+      position:relative;
+      overflow:hidden;
+    }
+
+    .exercise::after{
+      content:"";
+      position:absolute;
+      top:-40px;
+      right:-40px;
+      width:120px;
+      height:120px;
+      background:radial-gradient(circle, rgba(255,255,255,.14), transparent 65%);
+      pointer-events:none;
+    }
+
+    .exercise-header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      margin-bottom:16px;
+    }
+
+    .exercise-title{
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+
+    .icon{
+      width:46px;
+      height:46px;
+      border-radius:16px;
+      display:grid;
+      place-items:center;
+      background:linear-gradient(135deg, rgba(124,92,255,.25), rgba(18,214,223,.25));
+      border:1px solid rgba(255,255,255,.12);
+      font-size:1.15rem;
+    }
+
+    .exercise h4{
+      margin:0;
+      font-size:1.06rem;
+    }
+
+    .exercise small{
+      color:var(--muted);
+    }
+
+    .question{
+      background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:18px;
+      padding:14px;
+      margin-top:12px;
+    }
+
+    .question p{
+      margin:0 0 10px;
+      line-height:1.6;
+    }
+
+    .options{
+      display:grid;
+      gap:10px;
+      margin-top:10px;
+    }
+
+    .option{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      background:rgba(255,255,255,.03);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:14px;
+      padding:11px 12px;
+      transition:.2s ease;
+      cursor:pointer;
+    }
+
+    .option:hover{
+      transform:translateX(2px);
+      border-color:rgba(255,255,255,.18);
+      background:rgba(255,255,255,.06);
+    }
+
+    .option input{
+      accent-color:var(--brand-2);
+      transform:scale(1.1);
+    }
+
+    select, input[type="text"]{
+      width:100%;
+      border:none;
+      outline:none;
+      background:rgba(255,255,255,.08);
+      color:white;
+      padding:13px 14px;
+      border-radius:14px;
+      font-family:inherit;
+      border:1px solid rgba(255,255,255,.1);
+      font-size:.97rem;
+      margin-top:8px;
+    }
+
+    select option{
+      color:#111;
+    }
+
+    .meter-wrap{
+      margin-top:14px;
+      display:grid;
+      gap:14px;
+    }
+
+    .meter-item{
+      background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.08);
+      padding:12px;
+      border-radius:16px;
+    }
+
+    .meter-item label{
+      display:block;
+      margin-bottom:8px;
+      color:#fff;
+      font-weight:600;
+    }
+
+    input[type="range"]{
+      width:100%;
+      accent-color:var(--brand-2);
+      cursor:pointer;
+    }
+
+    .range-label{
+      font-size:.92rem;
+      color:var(--accent);
+      margin-top:6px;
+      display:block;
+    }
+
+    .mini-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+      margin-top:12px;
+    }
+
+    .footer-actions{
+      margin-top:24px;
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+
+    .feedback{
+      margin-top:12px;
+      font-size:.95rem;
+      line-height:1.55;
+      border-radius:14px;
+      padding:12px 14px;
+      display:none;
+    }
+
+    .feedback.ok{
+      display:block;
+      background:rgba(51,209,122,.12);
+      border:1px solid rgba(51,209,122,.35);
+      color:#d8ffe9;
+    }
+
+    .feedback.bad{
+      display:block;
+      background:rgba(255,107,129,.12);
+      border:1px solid rgba(255,107,129,.35);
+      color:#ffe0e6;
+    }
+
+    .score-board{
+      margin-top:28px;
+      background:
+        linear-gradient(135deg, rgba(124,92,255,.18), rgba(18,214,223,.10)),
+        rgba(255,255,255,.04);
+      border:1px solid var(--line);
+      border-radius:28px;
+      padding:26px;
+      box-shadow:var(--shadow);
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:18px;
+      align-items:center;
+    }
+
+    .score-board h3{
+      margin:0 0 6px;
+      font-size:1.4rem;
+    }
+
+    .score-board p{
+      margin:0;
+      color:var(--muted);
+      line-height:1.65;
+    }
+
+    .score-pill{
+      min-width:150px;
+      text-align:center;
+      padding:18px 16px;
+      border-radius:24px;
+      background:rgba(255,255,255,.09);
+      border:1px solid rgba(255,255,255,.14);
+    }
+
+    .score-pill strong{
+      display:block;
+      font-size:2rem;
+      line-height:1;
+      margin-bottom:6px;
+    }
+
+    .brand-footer{
+      text-align:center;
+      color:var(--muted);
+      margin-top:28px;
+      font-size:.95rem;
+    }
+
+    .highlight{
+      color:var(--accent);
+      font-weight:700;
+    }
+
+    @media (max-width: 980px){
+      .hero{
+        grid-template-columns:1fr;
+      }
+      .stats{
+        grid-template-columns:repeat(2,1fr);
+      }
+      .grid{
+        grid-template-columns:1fr;
+      }
+      .score-board{
+        grid-template-columns:1fr;
+      }
+    }
+
+    @media (max-width: 640px){
+      .page{
+        width:min(94%, 100%);
+      }
+      .hero{
+        padding:22px;
+        border-radius:26px;
+      }
+      .stats{
+        grid-template-columns:1fr;
+      }
+      .hero-visual{
+        grid-template-columns:1fr;
+      }
+      .img-card.tall{
+        min-height:220px;
+      }
+      .mini-grid{
+        grid-template-columns:1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-badge">C</div>
+        <div>
+          <h1>Chmbari Academy</h1>
+          <p>English that feels alive, playful and memorable ✨</p>
+        </div>
+      </div>
+
+      <a href="#exercises" class="btn btn-secondary">Ir a ejercicios</a>
+    </header>
+
+    <section class="hero">
+      <div class="hero-text">
+        <div class="chip">🎓 Chmbari Academy • Adverbs of Frequency</div>
+        <h2>Aprende <span>always, usually, often, sometimes, never</span> jugando</h2>
+        <p>
+          Una página hermosa, moderna y divertida para practicar adverbios de frecuencia.
+          Todo con el estilo de <strong>Chmbari Academy</strong>: visual, claro, amigable y con ejercicios variados.
+        </p>
+        <div class="hero-buttons">
+          <a href="#exercises" class="btn btn-primary">Comenzar ahora</a>
+          <button class="btn btn-secondary" onclick="resetAll()">Reiniciar</button>
+        </div>
+      </div>
+
+      <div class="hero-visual">
+        <div class="img-card tall">
+          <img src="https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=900&q=80" alt="Estudiante feliz aprendiendo inglés">
+          <div class="img-tag">Chmbari Academy • Learn with joy</div>
+        </div>
+        <div class="img-card">
+          <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=900&q=80" alt="Clase creativa">
+          <div class="img-tag">Creative practice</div>
+        </div>
+        <div class="img-card">
+          <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=900&q=80" alt="Aprendizaje colaborativo">
+          <div class="img-tag">Fun English moments</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="stats">
+      <div class="stat">
+        <strong>5</strong>
+        <span>tipos de ejercicios variados</span>
+      </div>
+      <div class="stat">
+        <strong>100%</strong>
+        <span>estilo Chmbari Academy</span>
+      </div>
+      <div class="stat">
+        <strong>✨</strong>
+        <span>diseño moderno y visual</span>
+      </div>
+      <div class="stat">
+        <strong>🎯</strong>
+        <span>feedback inmediato</span>
+      </div>
+    </section>
+
+    <section id="exercises">
+      <div class="section-title">
+        <div>
+          <h3>Zona de práctica divertida</h3>
+          <p>Resuelve, juega y descubre cuánto sabes sobre adverbios de frecuencia.</p>
+        </div>
+      </div>
+
+      <div class="grid">
+        <!-- Exercise 1 -->
+        <article class="exercise">
+          <div class="exercise-header">
+            <div class="exercise-title">
+              <div class="icon">🎈</div>
+              <div>
+                <h4>1. Elige la mejor opción</h4>
+                <small>Multiple choice • Chmbari Academy</small>
+              </div>
+            </div>
+          </div>
+
+          <div class="question">
+            <p><strong>Emma ______ drinks coffee in the morning. She does it every day.</strong></p>
+            <div class="options">
+              <label class="option"><input type="radio" name="q1" value="always"> always</label>
+              <label class="option"><input type="radio" name="q1" value="sometimes"> sometimes</label>
+              <label class="option"><input type="radio" name="q1" value="never"> never</label>
+            </div>
+            <div id="f1" class="feedback"></div>
+          </div>
+
+          <div class="question">
+            <p><strong>I ______ go to the beach in December. It happens once in a while.</strong></p>
+            <div class="options">
+              <label class="option"><input type="radio" name="q2" value="sometimes"> sometimes</label>
+              <label class="option"><input type="radio" name="q2" value="always"> always</label>
+              <label class="option"><input type="radio" name="q2" value="never"> never</label>
+            </div>
+            <div id="f2" class="feedback"></div>
+          </div>
+        </article>
+
+        <!-- Exercise 2 -->
+        <article class="exercise">
+          <div class="exercise-header">
+            <div class="exercise-title">
+              <div class="icon">🎡</div>
+              <div>
+                <h4>2. Completa la frase</h4>
+                <small>Select • Chmbari Academy</small>
+              </div>
+            </div>
+          </div>
+
+          <div class="question">
+            <p><strong>My brother is a gamer. He ______ plays video games after dinner.</strong></p>
+            <select id="q3">
+              <option value="">Selecciona una opción</option>
+              <option value="usually">usually</option>
+              <option value="never">never</option>
+              <option value="rarely">rarely</option>
+            </select>
+            <div id="f3" class="feedback"></div>
+          </div>
+
+          <div class="question">
+            <p><strong>My grandma is very healthy. She ______ eats fast food.</strong></p>
+            <select id="q4">
+              <option value="">Selecciona una opción</option>
+              <option value="always">always</option>
+              <option value="never">never</option>
+              <option value="often">often</option>
+            </select>
+            <div id="f4" class="feedback"></div>
+          </div>
+        </article>
+
+        <!-- Exercise 3 -->
+        <article class="exercise">
+          <div class="exercise-header">
+            <div class="exercise-title">
+              <div class="icon">🎮</div>
+              <div>
+                <h4>3. Frecuencia secreta</h4>
+                <small>Range game • Chmbari Academy</small>
+              </div>
+            </div>
+          </div>
+
+          <div class="question">
+            <p><strong>Mueve la barra hasta el adverbio que mejor representa la frecuencia.</strong></p>
+
+            <div class="meter-wrap">
+              <div class="meter-item">
+                <label>How often do you brush your teeth?</label>
+                <input type="range" id="q5" min="0" max="4" value="2" oninput="updateRangeLabel('q5','l5')">
+                <span id="l5" class="range-label">often</span>
+              </div>
+
+              <div class="meter-item">
+                <label>How often do penguins drive cars? 😄</label>
+                <input type="range" id="q6" min="0" max="4" value="2" oninput="updateRangeLabel('q6','l6')">
+                <span id="l6" class="range-label">often</span>
+              </div>
+            </div>
+
+            <div id="f5" class="feedback"></div>
+            <div id="f6" class="feedback"></div>
+          </div>
+        </article>
+
+        <!-- Exercise 4 -->
+        <article class="exercise">
+          <div class="exercise-header">
+            <div class="exercise-title">
+              <div class="icon">🎤</div>
+              <div>
+                <h4>4. Ordena la oración en tu mente</h4>
+                <small>Write the full sentence • Chmbari Academy</small>
+              </div>
+            </div>
+          </div>
+
+          <div class="question">
+            <p><strong>Ordena correctamente:</strong> <span class="highlight">she / is / late / never</span></p>
+            <input type="text" id="q7" placeholder="Escribe la oración completa aquí">
+            <div id="f7" class="feedback"></div>
+          </div>
+
+          <div class="question">
+            <p><strong>Ordena correctamente:</strong> <span class="highlight">they / usually / eat / pizza / on Fridays</span></p>
+            <input type="text" id="q8" placeholder="Escribe la oración completa aquí">
+            <div id="f8" class="feedback"></div>
+          </div>
+        </article>
+
+        <!-- Exercise 5 -->
+        <article class="exercise" style="grid-column:1 / -1;">
+          <div class="exercise-header">
+            <div class="exercise-title">
+              <div class="icon">🌟</div>
+              <div>
+                <h4>5. Chmbari Challenge</h4>
+                <small>Mini quiz divertido • Chmbari Academy</small>
+              </div>
+            </div>
+          </div>
+
+          <div class="mini-grid">
+            <div class="question">
+              <p><strong>Which adverb means 0% frequency?</strong></p>
+              <div class="options">
+                <label class="option"><input type="radio" name="q9" value="never"> never</label>
+                <label class="option"><input type="radio" name="q9" value="often"> often</label>
+                <label class="option"><input type="radio" name="q9" value="usually"> usually</label>
+              </div>
+              <div id="f9" class="feedback"></div>
+            </div>
+
+            <div class="question">
+              <p><strong>Which sentence is correct?</strong></p>
+              <div class="options">
+                <label class="option"><input type="radio" name="q10" value="a"> He always is happy.</label>
+                <label class="option"><input type="radio" name="q10" value="b"> He is always happy.</label>
+                <label class="option"><input type="radio" name="q10" value="c"> He happy always is.</label>
+              </div>
+              <div id="f10" class="feedback"></div>
+            </div>
+          </div>
+
+          <div class="footer-actions">
+            <button class="btn btn-primary" onclick="checkAnswers()">Revisar todo</button>
+            <button class="btn btn-secondary" onclick="resetAll()">Intentar de nuevo</button>
+          </div>
+        </article>
+      </div>
+
+      <div class="score-board">
+        <div>
+          <h3>Resultado Chmbari Academy</h3>
+          <p id="scoreMessage">
+            Completa los ejercicios y presiona <strong>“Revisar todo”</strong> para ver tu puntuación.
+          </p>
+        </div>
+        <div class="score-pill">
+          <strong id="scoreValue">0/10</strong>
+          <span id="scoreLabel">Let’s begin!</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="brand-footer">
+      Hecho con estilo visual para <strong>Chmbari Academy</strong> • Adverbs of Frequency Practice
+    </div>
+  </div>
+
+  <script>
+    const rangeWords = ["never", "sometimes", "often", "usually", "always"];
+
+    function updateRangeLabel(rangeId, labelId) {
+      const value = Number(document.getElementById(rangeId).value);
+      document.getElementById(labelId).textContent = rangeWords[value];
+    }
+
+    function showFeedback(id, ok, message) {
+      const box = document.getElementById(id);
+      box.className = "feedback " + (ok ? "ok" : "bad");
+      box.style.display = "block";
+      box.innerHTML = message;
+    }
+
+    function normalize(text) {
+      return text
+        .toLowerCase()
+        .trim()
+        .replace(/[.?!]/g, "")
+        .replace(/\s+/g, " ");
+    }
+
+    function checkAnswers() {
+      let score = 0;
+
+      // q1
+      const q1 = document.querySelector('input[name="q1"]:checked');
+      if (q1 && q1.value === "always") {
+        score++;
+        showFeedback("f1", true, "✅ Correcto. <strong>Always</strong> = todos los días.");
+      } else {
+        showFeedback("f1", false, "❌ La respuesta correcta es <strong>always</strong>.");
+      }
+
+      // q2
+      const q2 = document.querySelector('input[name="q2"]:checked');
+      if (q2 && q2.value === "sometimes") {
+        score++;
+        showFeedback("f2", true, "✅ Muy bien. <strong>Sometimes</strong> = a veces.");
+      } else {
+        showFeedback("f2", false, "❌ La respuesta correcta es <strong>sometimes</strong>.");
+      }
+
+      // q3
+      const q3 = document.getElementById("q3").value;
+      if (q3 === "usually") {
+        score++;
+        showFeedback("f3", true, "✅ Correcto. <strong>Usually</strong> encaja muy bien aquí.");
+      } else {
+        showFeedback("f3", false, "❌ La correcta es <strong>usually</strong>.");
+      }
+
+      // q4
+      const q4 = document.getElementById("q4").value;
+      if (q4 === "never") {
+        score++;
+        showFeedback("f4", true, "✅ Exacto. <strong>Never</strong> = nunca.");
+      } else {
+        showFeedback("f4", false, "❌ La correcta es <strong>never</strong>.");
+      }
+
+      // q5
+      const q5 = Number(document.getElementById("q5").value);
+      if (rangeWords[q5] === "always") {
+        score++;
+        showFeedback("f5", true, "✅ Excelente. Cepillarse los dientes corresponde a <strong>always</strong>.");
+      } else {
+        showFeedback("f5", false, "❌ La mejor respuesta es <strong>always</strong>.");
+      }
+
+      // q6
+      const q6 = Number(document.getElementById("q6").value);
+      if (rangeWords[q6] === "never") {
+        score++;
+        showFeedback("f6", true, "✅ Jajaja sí. Los pingüinos <strong>never</strong> drive cars.");
+      } else {
+        showFeedback("f6", false, "❌ La respuesta divertida y correcta es <strong>never</strong>.");
+      }
+
+      // q7
+      const q7 = normalize(document.getElementById("q7").value);
+      if (q7 === "she is never late") {
+        score++;
+        showFeedback("f7", true, "✅ Perfecto: <strong>She is never late.</strong>");
+      } else {
+        showFeedback("f7", false, "❌ Orden correcto: <strong>She is never late.</strong>");
+      }
+
+      // q8
+      const q8 = normalize(document.getElementById("q8").value);
+      if (q8 === "they usually eat pizza on fridays") {
+        score++;
+        showFeedback("f8", true, "✅ Muy bien: <strong>They usually eat pizza on Fridays.</strong>");
+      } else {
+        showFeedback("f8", false, "❌ Orden correcto: <strong>They usually eat pizza on Fridays.</strong>");
+      }
+
+      // q9
+      const q9 = document.querySelector('input[name="q9"]:checked');
+      if (q9 && q9.value === "never") {
+        score++;
+        showFeedback("f9", true, "✅ Correcto. <strong>Never</strong> significa 0%.");
+      } else {
+        showFeedback("f9", false, "❌ La correcta es <strong>never</strong>.");
+      }
+
+      // q10
+      const q10 = document.querySelector('input[name="q10"]:checked');
+      if (q10 && q10.value === "b") {
+        score++;
+        showFeedback("f10", true, "✅ Excelente. La oración correcta es <strong>He is always happy.</strong>");
+      } else {
+        showFeedback("f10", false, "❌ La correcta es <strong>He is always happy.</strong>");
+      }
+
+      const scoreValue = document.getElementById("scoreValue");
+      const scoreLabel = document.getElementById("scoreLabel");
+      const scoreMessage = document.getElementById("scoreMessage");
+
+      scoreValue.textContent = `${score}/10`;
+
+      if (score === 10) {
+        scoreLabel.textContent = "Perfect!";
+        scoreMessage.innerHTML = "🌟 ¡Increíble! Lograste una puntuación perfecta en <strong>Chmbari Academy</strong>. Tu manejo de los adverbios de frecuencia está excelente.";
+      } else if (score >= 8) {
+        scoreLabel.textContent = "Great job!";
+        scoreMessage.innerHTML = "🎉 Muy buen trabajo. Tienes una comprensión muy sólida de los adverbios de frecuencia.";
+      } else if (score >= 5) {
+        scoreLabel.textContent = "Keep going!";
+        scoreMessage.innerHTML = "💪 Vas bien. Ya dominas varias ideas, pero todavía puedes mejorar con más práctica.";
+      } else {
+        scoreLabel.textContent = "Try again!";
+        scoreMessage.innerHTML = "🚀 Buen intento. Revisa el feedback y vuelve a intentarlo con la energía de <strong>Chmbari Academy</strong>.";
+      }
+
+      document.querySelector(".score-board").scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+
+    function resetAll() {
+      document.querySelectorAll('input[type="radio"]').forEach(input => input.checked = false);
+      document.querySelectorAll('select').forEach(select => select.selectedIndex = 0);
+      document.querySelectorAll('input[type="text"]').forEach(input => input.value = "");
+      document.getElementById("q5").value = 2;
+      document.getElementById("q6").value = 2;
+      updateRangeLabel("q5", "l5");
+      updateRangeLabel("q6", "l6");
+
+      document.querySelectorAll(".feedback").forEach(box => {
+        box.style.display = "none";
+        box.className = "feedback";
+        box.innerHTML = "";
+      });
+
+      document.getElementById("scoreValue").textContent = "0/10";
+      document.getElementById("scoreLabel").textContent = "Let’s begin!";
+      document.getElementById("scoreMessage").innerHTML =
+        'Completa los ejercicios y presiona <strong>“Revisar todo”</strong> para ver tu puntuación.';
+    }
+
+    updateRangeLabel("q5", "l5");
+    updateRangeLabel("q6", "l6");
+  </script>
+</body>
+</html>
