@@ -1,1 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ejercicios: Adverbios de Frecuencia</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f7fb;
+      margin: 0;
+      padding: 20px;
+    }
 
+    .container {
+      max-width: 700px;
+      margin: auto;
+      background: white;
+      padding: 25px;
+      border-radius: 16px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+
+    .question {
+      margin: 20px 0;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      background: #fafafa;
+    }
+
+    label {
+      display: block;
+      margin: 8px 0;
+      cursor: pointer;
+    }
+
+    button {
+      display: block;
+      margin: 20px auto 10px;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 10px;
+      background: #2563eb;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #1d4ed8;
+    }
+
+    .result {
+      text-align: center;
+      font-size: 20px;
+      font-weight: bold;
+      margin-top: 20px;
+      color: #222;
+    }
+
+    .correct {
+      color: green;
+      font-weight: bold;
+    }
+
+    .incorrect {
+      color: red;
+      font-weight: bold;
+    }
+
+    .feedback {
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Ejercicios: Adverbios de Frecuencia</h1>
+    <p>Selecciona el adverbio correcto en cada oración.</p>
+
+    <form id="quizForm">
+      <div class="question">
+        <p>1. I ______ wake up at 6:00 a.m. because I am very punctual.</p>
+        <label><input type="radio" name="q1" value="always"> always</label>
+        <label><input type="radio" name="q1" value="sometimes"> sometimes</label>
+        <label><input type="radio" name="q1" value="never"> never</label>
+        <div id="feedback-q1" class="feedback"></div>
+      </div>
+
+      <div class="question">
+        <p>2. She ______ goes to the gym, maybe once or twice a month.</p>
+        <label><input type="radio" name="q2" value="often"> often</label>
+        <label><input type="radio" name="q2" value="rarely"> rarely</label>
+        <label><input type="radio" name="q2" value="always"> always</label>
+        <div id="feedback-q2" class="feedback"></div>
+      </div>
+
+      <div class="question">
+        <p>3. They ______ eat pizza on Fridays. It is a family tradition.</p>
+        <label><input type="radio" name="q3" value="usually"> usually</label>
+        <label><input type="radio" name="q3" value="never"> never</label>
+        <label><input type="radio" name="q3" value="sometimes"> sometimes</label>
+        <div id="feedback-q3" class="feedback"></div>
+      </div>
+
+      <div class="question">
+        <p>4. He is very healthy. He ______ drinks soda.</p>
+        <label><input type="radio" name="q4" value="always"> always</label>
+        <label><input type="radio" name="q4" value="never"> never</label>
+        <label><input type="radio" name="q4" value="often"> often</label>
+        <div id="feedback-q4" class="feedback"></div>
+      </div>
+
+      <div class="question">
+        <p>5. We ______ watch movies on weekends, but not every weekend.</p>
+        <label><input type="radio" name="q5" value="sometimes"> sometimes</label>
+        <label><input type="radio" name="q5" value="always"> always</label>
+        <label><input type="radio" name="q5" value="never"> never</label>
+        <div id="feedback-q5" class="feedback"></div>
+      </div>
+
+      <button type="button" onclick="checkAnswers()">Revisar respuestas</button>
+    </form>
+
+    <div class="result" id="result"></div>
+  </div>
+
+  <script>
+    function checkAnswers() {
+      const answers = {
+        q1: "always",
+        q2: "rarely",
+        q3: "usually",
+        q4: "never",
+        q5: "sometimes"
+      };
+
+      let score = 0;
+
+      for (let key in answers) {
+        const selected = document.querySelector(`input[name="${key}"]:checked`);
+        const feedback = document.getElementById(`feedback-${key}`);
+
+        if (selected) {
+          if (selected.value === answers[key]) {
+            score++;
+            feedback.innerHTML = '<span class="correct">Correcto</span>';
+          } else {
+            feedback.innerHTML = `<span class="incorrect">Incorrecto</span> - Respuesta correcta: <strong>${answers[key]}</strong>`;
+          }
+        } else {
+          feedback.innerHTML = `<span class="incorrect">No respondida</span> - Respuesta correcta: <strong>${answers[key]}</strong>`;
+        }
+      }
+
+      document.getElementById("result").textContent =
+        `Tu puntuación es ${score} de 5`;
+    }
+  </script>
+</body>
+</html>
