@@ -789,6 +789,7 @@
     let activeRunId = 0;
     let audioCtx = null;
     const synth = window.speechSynthesis;
+    let selectedVoice = null;
 
     function buildReadingContent() {
       readingCopy.innerHTML = "";
@@ -880,6 +881,43 @@
       });
     }
 
+    function loadVoices() {
+      const voices = synth ? synth.getVoices() : [];
+      if (!voices.length) return;
+
+      const preferred = [
+        "Samantha",
+        "Allison",
+        "Ava",
+        "Jenny",
+        "Aria",
+        "Olivia",
+        "Emma",
+        "Google US English",
+        "Microsoft Aria Online (Natural)",
+        "Microsoft Jenny Online (Natural)",
+        "Microsoft Ava Online (Natural)",
+        "Karen",
+        "Moira"
+      ];
+
+      const enUSVoices = voices.filter(v => /^en-US/i.test(v.lang) || /US English|English \(United States\)|American/i.test(v.name + " " + v.lang));
+
+      selectedVoice = preferred
+        .map(name => enUSVoices.find(v => v.name.toLowerCase().includes(name.toLowerCase())))
+        .find(Boolean)
+        || enUSVoices.find(v => /female|woman|zira|aria|jenny|ava|allison|samantha|olivia|emma/i.test(v.name))
+        || enUSVoices[0]
+        || voices.find(v => /^en/i.test(v.lang))
+        || voices[0]
+        || null;
+    }
+
+    function describeVoice() {
+      if (!selectedVoice) return "Default";
+      return `${selectedVoice.name} (${selectedVoice.lang})`;
+    }
+
     async function speakCurrentBlock(blockIndex, runId) {
       if (!voiceEnabled || !synth || runId !== activeRunId) return;
       stopVoice();
@@ -888,9 +926,10 @@
 
       currentUtterance = new SpeechSynthesisUtterance(block.text);
       currentUtterance.lang = "en-US";
-      currentUtterance.rate = 0.82;
-      currentUtterance.pitch = 1;
+      currentUtterance.rate = 0.78;
+      currentUtterance.pitch = 1.02;
       currentUtterance.volume = 1;
+      if (selectedVoice) currentUtterance.voice = selectedVoice;
 
       synth.speak(currentUtterance);
       await waitForSpeechEnd(currentUtterance);
@@ -951,157 +990,28 @@
       currentBlockIndex = 0;
       revealedChars = 0;
       buildReadingContent();
-      updateProgress();
-      statusText.textContent = "Idle";
-      currentLine.textContent = "Waiting to begin...";
-      activeIdea.textContent = "The active meaning will appear here when the reading starts.";
-    }
-
-    function startExperience() {
-      unlockAudio();
-      resetExperience();
-      playSequence();
-    }
-
-    function bindCursorInteraction() {
-      document.addEventListener("mousemove", (event) => {
-        cursorGlow.style.left = event.clientX + "px";
-        cursorGlow.style.top = event.clientY + "px";
-
-        renderedChars.forEach((char) => {
-          if (!char.classList.contains("visible")) return;
-          const rect = char.getBoundingClientRect();
-          const cx = rect.left + rect.width / 2;
-          const cy = rect.top + rect.height / 2;
-          const dx = event.clientX - cx;
-          const dy = event.clientY - cy;
-          const distance = Math.sqrt(dx * dx + dy * dy);
-          char.classList.toggle("cursor-hit", distance < 34);
-        });
-      });
-
-      readingCopy.addEventListener("mouseover", (event) => {
-        const target = event.target;
-        if (!(target instanceof HTMLElement)) return;
-        if (!target.classList.contains("char")) return;
-        if (!target.textContent.trim()) return;
-        if (!target.classList.contains("visible")) return;
-        beep(600, 0.012, 0.012);
-      });
-    }
-
-    function setupVoiceToggle() {
-      toggleAudioBtn.addEventListener("click", () => {
-        unlockAudio();
-        voiceEnabled = !voiceEnabled;
-        toggleAudioBtn.textContent = voiceEnabled ? "Voice on" : "Voice off";
-        voiceMode.textContent = voiceEnabled ? "On" : "Off";
-        voiceWarning.style.display = voiceEnabled ? "block" : "none";
-        if (!voiceEnabled) stopVoice();
-      });
-    }
-
-    function setupButtons() {
-      startBtn.addEventListener("click", startExperience);
-      heroStartBtn.addEventListener("click", startExperience);
-      replayBtn.addEventListener("click", startExperience);
-    }
-
-    function initNeuralCanvas() {
-      const canvas = document.getElementById("neurons");
-      const ctx = canvas.getContext("2d");
-      let nodes = [];
-      const mouse = { x: 0, y: 0, active: false };
-
-      function resize() {
-        canvas.width = window.innerWidth * window.devicePixelRatio;
-        canvas.height = window.innerHeight * window.devicePixelRatio;
-        canvas.style.width = window.innerWidth + "px";
-        canvas.style.height = window.innerHeight + "px";
-        ctx.setTransform(window.devicePixelRatio, 0, 0, window.devicePixelRatio, 0, 0);
-        const count = Math.min(90, Math.max(44, Math.floor(window.innerWidth / 18)));
-        nodes = Array.from({ length: count }, () => ({
-          x: Math.random() * window.innerWidth,
-          y: Math.random() * window.innerHeight,
-          vx: (Math.random() - 0.5) * 0.35,
-          vy: (Math.random() - 0.5) * 0.35,
-          r: Math.random() * 2 + 1.2
-        }));
-      }
-
-      function step() {
-        ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
-
-        nodes.forEach((node) => {
-          node.x += node.vx;
-          node.y += node.vy;
-          if (node.x < 0 || node.x > window.innerWidth) node.vx *= -1;
-          if (node.y < 0 || node.y > window.innerHeight) node.vy *= -1;
-        });
-
-        for (let i = 0; i < nodes.length; i += 1) {
-          const a = nodes[i];
-          for (let j = i + 1; j < nodes.length; j += 1) {
-            const b = nodes[j];
-            const dx = a.x - b.x;
-            const dy = a.y - b.y;
-            const d = Math.sqrt(dx * dx + dy * dy);
-            if (d < 130) {
-              const alpha = (1 - d / 130) * 0.22;
-              ctx.strokeStyle = `rgba(170, 150, 255, ${alpha})`;
-              ctx.lineWidth = 1;
-              ctx.beginPath();
-              ctx.moveTo(a.x, a.y);
-              ctx.lineTo(b.x, b.y);
-              ctx.stroke();
-            }
-          }
-
-          if (mouse.active) {
-            const dx = a.x - mouse.x;
-            const dy = a.y - mouse.y;
-            const d = Math.sqrt(dx * dx + dy * dy);
-            if (d < 180) {
-              const alpha = (1 - d / 180) * 0.35;
-              ctx.strokeStyle = `rgba(114, 231, 209, ${alpha})`;
-              ctx.beginPath();
-              ctx.moveTo(a.x, a.y);
-              ctx.lineTo(mouse.x, mouse.y);
-              ctx.stroke();
-            }
-          }
-
-          ctx.fillStyle = "rgba(210, 198, 255, 0.8)";
-          ctx.beginPath();
-          ctx.arc(a.x, a.y, a.r, 0, Math.PI * 2);
-          ctx.fill();
-        }
-
-        requestAnimationFrame(step);
-      }
-
-      window.addEventListener("mousemove", (event) => {
-        mouse.x = event.clientX;
-        mouse.y = event.clientY;
-        mouse.active = true;
-      });
-
-      window.addEventListener("mouseleave", () => {
-        mouse.active = false;
-      });
-
-      window.addEventListener("resize", resize);
-      resize();
-      step();
-    }
-
-    buildReadingContent();
     updateProgress();
     bindCursorInteraction();
     setupVoiceToggle();
     setupButtons();
     initNeuralCanvas();
-    document.addEventListener("click", unlockAudio, { once: true });
+
+    if (synth) {
+      loadVoices();
+      if (typeof synth.onvoiceschanged !== "undefined") {
+        synth.onvoiceschanged = () => {
+          loadVoices();
+          if (voiceEnabled) voiceMode.textContent = describeVoice();
+        };
+      }
+    }
+
+    voiceWarning.innerHTML = "Best result: use Safari on iPhone or Mac, or Edge on Windows. The browser decides the actual voice quality. This code now prefers a soft American female voice when one is available.";
+
+    document.addEventListener("click", () => {
+      unlockAudio();
+      loadVoices();
+    }, { once: true });
   </script>
 </body>
 </html>
