@@ -1,1 +1,1350 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sinapsis | Experiencia interactiva</title>
+  <style>
+    :root {
+      --bg-1: #0c0814;
+      --bg-2: #17102a;
+      --bg-3: #24193b;
+      --text: #f4efff;
+      --muted: #b6a9cf;
+      --soft: rgba(255,255,255,0.08);
+      --soft-2: rgba(255,255,255,0.14);
+      --primary: #9f7aea;
+      --primary-2: #c4a7ff;
+      --accent: #72e7d1;
+      --accent-2: #ffd37d;
+      --danger: #ff7f9f;
+      --glow: 0 0 24px rgba(159, 122, 234, 0.45);
+      --radius: 22px;
+    }
 
+    * { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 20% 20%, rgba(114, 231, 209, 0.08), transparent 26%),
+        radial-gradient(circle at 80% 10%, rgba(196, 167, 255, 0.14), transparent 32%),
+        radial-gradient(circle at 50% 80%, rgba(255, 211, 125, 0.06), transparent 28%),
+        linear-gradient(180deg, var(--bg-1), var(--bg-2) 42%, var(--bg-3) 100%);
+      overflow-x: hidden;
+      min-height: 100vh;
+      cursor: default;
+    }
+
+    canvas#neurons {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.95;
+    }
+
+    .noise {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0.045;
+      background-image:
+        radial-gradient(circle at 20% 30%, #fff 0.5px, transparent 0.7px),
+        radial-gradient(circle at 80% 40%, #fff 0.5px, transparent 0.7px),
+        radial-gradient(circle at 40% 70%, #fff 0.5px, transparent 0.7px),
+        radial-gradient(circle at 70% 90%, #fff 0.5px, transparent 0.7px);
+      background-size: 170px 170px;
+      mix-blend-mode: screen;
+    }
+
+    .cursor-glow {
+      position: fixed;
+      width: 280px;
+      height: 280px;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 2;
+      background: radial-gradient(circle, rgba(159, 122, 234, 0.18) 0%, rgba(114, 231, 209, 0.08) 28%, transparent 72%);
+      transform: translate(-50%, -50%);
+      filter: blur(10px);
+      transition: transform 0.05s linear;
+    }
+
+    .topbar {
+      position: fixed;
+      top: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(1100px, calc(100% - 24px));
+      z-index: 10;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      padding: 12px 14px;
+      border: 1px solid var(--soft-2);
+      border-radius: 999px;
+      background: rgba(12, 8, 20, 0.52);
+      backdrop-filter: blur(18px);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.28);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .brand-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--primary));
+      box-shadow: var(--glow);
+      animation: pulseDot 2.2s infinite ease-in-out;
+    }
+
+    @keyframes pulseDot {
+      0%, 100% { transform: scale(1); opacity: 0.85; }
+      50% { transform: scale(1.35); opacity: 1; }
+    }
+
+    .brand-text {
+      font-size: 14px;
+      color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    button,
+    .ghost-link {
+      border: 0;
+      border-radius: 999px;
+      padding: 10px 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.22s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 13px;
+    }
+
+    button.primary {
+      background: linear-gradient(135deg, var(--primary), #7f5df5);
+      color: white;
+      box-shadow: var(--glow);
+    }
+
+    button.primary:hover {
+      transform: translateY(-1px) scale(1.01);
+    }
+
+    button.soft,
+    .ghost-link {
+      background: rgba(255,255,255,0.08);
+      color: var(--text);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    button.soft:hover,
+    .ghost-link:hover {
+      background: rgba(255,255,255,0.12);
+    }
+
+    .page {
+      position: relative;
+      z-index: 3;
+      width: min(1100px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 110px 0 80px;
+    }
+
+    .hero {
+      min-height: 100vh;
+      display: grid;
+      align-items: center;
+      padding: 40px 0 20px;
+    }
+
+    .hero-card {
+      position: relative;
+      border-radius: 32px;
+      padding: clamp(28px, 5vw, 54px);
+      border: 1px solid rgba(255,255,255,0.12);
+      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+      backdrop-filter: blur(18px);
+      overflow: hidden;
+      box-shadow: 0 26px 80px rgba(0, 0, 0, 0.32);
+    }
+
+    .hero-card::before {
+      content: "";
+      position: absolute;
+      inset: -20% auto auto -10%;
+      width: 320px;
+      height: 320px;
+      background: radial-gradient(circle, rgba(114, 231, 209, 0.14), transparent 70%);
+      pointer-events: none;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      font-size: 12px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 18px;
+      font-weight: 700;
+    }
+
+    .hero h1 {
+      font-size: clamp(42px, 7vw, 104px);
+      line-height: 0.95;
+      margin: 0 0 18px;
+      max-width: 850px;
+      letter-spacing: -0.05em;
+    }
+
+    .hero p {
+      font-size: clamp(18px, 2.3vw, 24px);
+      color: var(--muted);
+      line-height: 1.6;
+      max-width: 780px;
+      margin: 0 0 28px;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 28px;
+    }
+
+    .hero-meta {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 12px;
+    }
+
+    .meta-box {
+      border: 1px solid rgba(255,255,255,0.09);
+      background: rgba(255,255,255,0.04);
+      border-radius: 20px;
+      padding: 16px;
+    }
+
+    .meta-box strong {
+      display: block;
+      font-size: 22px;
+      margin-bottom: 6px;
+      color: var(--primary-2);
+    }
+
+    .meta-box span {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .section {
+      padding: 80px 0 10px;
+    }
+
+    .section-head {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 24px;
+      align-items: end;
+      margin-bottom: 26px;
+    }
+
+    .section h2 {
+      font-size: clamp(32px, 4.2vw, 58px);
+      line-height: 1.02;
+      margin: 0;
+      letter-spacing: -0.04em;
+    }
+
+    .section .lead {
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.7;
+      margin: 0;
+    }
+
+    .reading-stage {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .panel,
+    .sidebar-card,
+    .phase-card,
+    .manifest-card,
+    .timeline-card {
+      background: rgba(255,255,255,0.045);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 28px;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 16px 60px rgba(0,0,0,0.22);
+    }
+
+    .panel {
+      padding: clamp(18px, 3vw, 34px);
+      min-height: 420px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .reading-copy {
+      font-size: clamp(24px, 3vw, 42px);
+      line-height: 1.6;
+      letter-spacing: -0.02em;
+      min-height: 280px;
+      user-select: none;
+    }
+
+    .reading-copy .word {
+      white-space: nowrap;
+      display: inline-block;
+      margin-right: 0.34em;
+      margin-bottom: 0.12em;
+    }
+
+    .reading-copy .char {
+      position: relative;
+      display: inline-block;
+      opacity: 0.2;
+      transform: translateY(16px) scale(0.96);
+      filter: blur(5px);
+      transition:
+        opacity 0.22s ease,
+        transform 0.22s ease,
+        filter 0.22s ease,
+        color 0.22s ease,
+        text-shadow 0.22s ease;
+      will-change: transform, opacity;
+    }
+
+    .reading-copy .char.visible {
+      opacity: 0.68;
+      transform: translateY(0) scale(1);
+      filter: blur(0);
+    }
+
+    .reading-copy .char.active {
+      opacity: 1;
+      color: #fff;
+      text-shadow: 0 0 14px rgba(196,167,255,0.8), 0 0 26px rgba(114,231,209,0.35);
+      transform: translateY(-2px) scale(1.06);
+    }
+
+    .reading-copy .char.spoken {
+      color: var(--primary-2);
+    }
+
+    .reading-copy .char.cursor-hit {
+      color: var(--accent);
+      text-shadow: 0 0 16px rgba(114, 231, 209, 0.68);
+    }
+
+    .reading-copy .char::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: -10px;
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(114,231,209,0.9);
+      transform: translateX(-50%) scale(0);
+      transition: transform 0.18s ease;
+      box-shadow: 0 0 12px rgba(114,231,209,0.7);
+      pointer-events: none;
+    }
+
+    .reading-copy .char.cursor-hit::after,
+    .reading-copy .char.active::after {
+      transform: translateX(-50%) scale(1);
+    }
+
+    .reading-footer {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 22px;
+      padding-top: 18px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .hint,
+    .small-text {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .sidebar-stack {
+      display: grid;
+      gap: 16px;
+      position: sticky;
+      top: 92px;
+    }
+
+    .sidebar-card {
+      padding: 18px;
+    }
+
+    .sidebar-card h3,
+    .timeline-card h3,
+    .manifest-card h3 {
+      margin: 0 0 12px;
+      font-size: 16px;
+      letter-spacing: -0.01em;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.06);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .status-pulse {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 10px rgba(114,231,209,0.8);
+      animation: pulseDot 1.8s infinite ease-in-out;
+    }
+
+    .progress-wrap {
+      margin-top: 12px;
+    }
+
+    .progress-bar {
+      height: 10px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 8px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent), var(--primary));
+      box-shadow: var(--glow);
+      transition: width 0.22s ease;
+      border-radius: inherit;
+    }
+
+    .stats-grid {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .stats-mini {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .stats-mini strong {
+      color: var(--text);
+      font-size: 15px;
+    }
+
+    .phases {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+      margin-top: 12px;
+    }
+
+    .phase-card {
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .phase-card::before {
+      content: attr(data-step);
+      position: absolute;
+      right: 18px;
+      top: 10px;
+      font-size: 52px;
+      font-weight: 900;
+      color: rgba(255,255,255,0.06);
+      letter-spacing: -0.05em;
+    }
+
+    .phase-card .tag {
+      display: inline-flex;
+      padding: 7px 10px;
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border-radius: 999px;
+      background: rgba(114,231,209,0.09);
+      color: var(--accent);
+      margin-bottom: 12px;
+      border: 1px solid rgba(114,231,209,0.16);
+      font-weight: 800;
+    }
+
+    .phase-card h3 {
+      margin: 0 0 10px;
+      font-size: 28px;
+      letter-spacing: -0.03em;
+    }
+
+    .phase-card p {
+      margin: 0 0 16px;
+      color: var(--muted);
+      line-height: 1.75;
+    }
+
+    .phase-card ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 10px;
+    }
+
+    .phase-card li {
+      position: relative;
+      padding-left: 20px;
+      color: #ddd3f4;
+      line-height: 1.6;
+    }
+
+    .phase-card li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0.72em;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--primary));
+      box-shadow: 0 0 12px rgba(114,231,209,0.5);
+    }
+
+    .timeline-card,
+    .manifest-card {
+      padding: 24px;
+      margin-top: 18px;
+    }
+
+    .timeline {
+      display: grid;
+      gap: 14px;
+      margin-top: 12px;
+    }
+
+    .timeline-item {
+      display: grid;
+      grid-template-columns: 130px 1fr;
+      gap: 16px;
+      align-items: start;
+      padding: 14px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .timeline-item strong {
+      color: var(--accent-2);
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .timeline-item p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    .manifest-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 16px;
+    }
+
+    .manifest-box {
+      padding: 18px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .manifest-box strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 18px;
+      color: var(--primary-2);
+    }
+
+    .manifest-box p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.65;
+      font-size: 14px;
+    }
+
+    .footer {
+      padding: 70px 0 30px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .footer strong {
+      color: var(--text);
+    }
+
+    .voice-warning {
+      display: none;
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-radius: 16px;
+      color: #fbeec9;
+      background: rgba(255,211,125,0.12);
+      border: 1px solid rgba(255,211,125,0.2);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 980px) {
+      .hero-meta,
+      .phases,
+      .manifest-grid,
+      .section-head,
+      .reading-stage {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar-stack {
+        position: relative;
+        top: 0;
+      }
+
+      .timeline-item {
+        grid-template-columns: 1fr;
+      }
+
+      .topbar {
+        border-radius: 24px;
+        align-items: flex-start;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .topbar {
+        padding: 12px;
+      }
+
+      .controls {
+        width: 100%;
+        justify-content: stretch;
+      }
+
+      .controls > * {
+        flex: 1;
+      }
+
+      .hero-card,
+      .panel,
+      .phase-card,
+      .timeline-card,
+      .manifest-card,
+      .sidebar-card {
+        border-radius: 24px;
+      }
+
+      .hero h1 {
+        font-size: 46px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="neurons"></canvas>
+  <div class="noise"></div>
+  <div class="cursor-glow" id="cursorGlow"></div>
+
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-dot"></div>
+      <div class="brand-text">Sinapsis · experiencia interactiva para explicar el concepto, la lógica y el desarrollo</div>
+    </div>
+    <div class="controls">
+      <button class="soft" id="toggleAudioBtn">Activar voz</button>
+      <button class="soft" id="replayBtn">Reiniciar lectura</button>
+      <a class="ghost-link" href="#desarrollo">Ver desarrollo</a>
+      <button class="primary" id="startBtn">Entrar en la sinapsis</button>
+    </div>
+  </div>
+
+  <main class="page">
+    <section class="hero" id="inicio">
+      <div class="hero-card">
+        <div class="eyebrow">Conectar · activar · practicar · usar · reforzar</div>
+        <h1>La sinapsis no es memorizar.<br>Es crear conexión viva.</h1>
+        <p>
+          Esta experiencia explica la sinapsis de forma clara, visual y hablada. El texto cobra vida letra por letra, responde al cursor y activa una voz en off mientras el lector avanza por cada idea.
+        </p>
+        <div class="hero-actions">
+          <button class="primary" id="heroStartBtn">Comenzar experiencia</button>
+          <a class="ghost-link" href="#lectura">Ir al documento</a>
+        </div>
+        <div class="hero-meta">
+          <div class="meta-box">
+            <strong>01</strong>
+            <span>Explica qué es la sinapsis con lenguaje simple y sin tecnicismos innecesarios.</span>
+          </div>
+          <div class="meta-box">
+            <strong>02</strong>
+            <span>Muestra cómo se desarrolla paso a paso hasta convertirse en aprendizaje útil.</span>
+          </div>
+          <div class="meta-box">
+            <strong>03</strong>
+            <span>Convierte la lectura en una experiencia sensorial con cursor, luz, ritmo y voz.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="lectura">
+      <div class="section-head">
+        <h2>Documento inmersivo</h2>
+        <p class="lead">
+          Pasa el cursor por el texto, deja que las letras se activen y escucha cómo cada bloque explica una parte del concepto. La voz en off se sincroniza por fragmentos y el progreso se actualiza en tiempo real.
+        </p>
+      </div>
+
+      <div class="reading-stage">
+        <div class="panel">
+          <div class="reading-copy" id="readingCopy" aria-live="polite"></div>
+          <div class="voice-warning" id="voiceWarning">
+            La reproducción por voz usa el sistema nativo del navegador. En algunos dispositivos requiere una interacción previa del usuario o puede cambiar la voz disponible.
+          </div>
+          <div class="reading-footer">
+            <div class="hint">Consejo: mueve el cursor lentamente sobre las letras para intensificar el brillo y la sensación de activación.</div>
+            <div class="small-text" id="currentLine">Esperando inicio...</div>
+          </div>
+        </div>
+
+        <div class="sidebar-stack">
+          <div class="sidebar-card">
+            <h3>Estado de lectura</h3>
+            <div class="status-pill"><span class="status-pulse"></span><span id="statusText">En reposo</span></div>
+            <div class="progress-wrap">
+              <div class="small-text" id="progressLabel">0% recorrido</div>
+              <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+            </div>
+            <div class="stats-grid">
+              <div class="stats-mini"><span>Bloque actual</span><strong id="blockIndex">0 / 0</strong></div>
+              <div class="stats-mini"><span>Letras activadas</span><strong id="lettersActivated">0</strong></div>
+              <div class="stats-mini"><span>Modo de voz</span><strong id="voiceMode">Apagado</strong></div>
+            </div>
+          </div>
+
+          <div class="sidebar-card">
+            <h3>Idea activa</h3>
+            <div class="small-text" id="activeIdea">
+              Cuando comience la experiencia, aquí se mostrará el sentido del bloque que se está leyendo.
+            </div>
+          </div>
+
+          <div class="sidebar-card">
+            <h3>Principio clave</h3>
+            <div class="small-text">
+              Aprender no es llenar la mente. Es enlazar lo nuevo con algo que ya tiene significado para la persona.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="desarrollo">
+      <div class="section-head">
+        <h2>Cómo se desarrolla la sinapsis</h2>
+        <p class="lead">
+          La sinapsis, aplicada al aprendizaje, no aparece por accidente. Se diseña. Se provoca. Se refuerza. Estas fases convierten una explicación en comprensión y una comprensión en uso real.
+        </p>
+      </div>
+
+      <div class="phases">
+        <article class="phase-card" data-step="01">
+          <div class="tag">Activación previa</div>
+          <h3>Lo que ya sabes</h3>
+          <p>
+            Toda conexión nueva necesita un punto de entrada. Primero se despierta una memoria, una imagen, una experiencia o una idea conocida.
+          </p>
+          <ul>
+            <li>Iniciar con preguntas simples que despierten memoria.</li>
+            <li>Traer ejemplos cercanos a la vida real del estudiante.</li>
+            <li>Nombrar lo familiar antes de introducir lo nuevo.</li>
+          </ul>
+        </article>
+
+        <article class="phase-card" data-step="02">
+          <div class="tag">Comprensión</div>
+          <h3>Entiende la idea</h3>
+          <p>
+            Después de activar memoria, la explicación debe ser clara, breve y con una estructura que no abrume. La claridad abre el espacio para que la conexión ocurra.
+          </p>
+          <ul>
+            <li>Usar lenguaje humano antes que definiciones complejas.</li>
+            <li>Mostrar una sola idea importante por bloque.</li>
+            <li>Combinar texto, imagen y ritmo para fijar atención.</li>
+          </ul>
+        </article>
+
+        <article class="phase-card" data-step="03">
+          <div class="tag">Práctica</div>
+          <h3>Practica ahora</h3>
+          <p>
+            La conexión se fortalece cuando el estudiante toca la idea con sus propias acciones. La práctica convierte el contenido en experiencia directa.
+          </p>
+          <ul>
+            <li>Crear ejercicios cortos y claros inmediatamente después de explicar.</li>
+            <li>Dar retroalimentación rápida para evitar confusión acumulada.</li>
+            <li>Repetir con pequeñas variaciones, no con copias idénticas.</li>
+          </ul>
+        </article>
+
+        <article class="phase-card" data-step="04">
+          <div class="tag">Uso real</div>
+          <h3>Habla en situación</h3>
+          <p>
+            Una sinapsis útil no se queda dentro del ejercicio. Se prueba en contexto, se mueve, se adapta, se vuelve funcional en una situación concreta.
+          </p>
+          <ul>
+            <li>Llevar la idea a diálogos, decisiones o problemas reales.</li>
+            <li>Medir si el estudiante puede usarla sin ayuda directa.</li>
+            <li>Transformar teoría en acción observable.</li>
+          </ul>
+        </article>
+
+        <article class="phase-card" data-step="05">
+          <div class="tag">Refuerzo</div>
+          <h3>Refuerza</h3>
+          <p>
+            Lo importante vuelve. No para repetir igual, sino para consolidar. El refuerzo reabre la conexión y la hace más estable con el tiempo.
+          </p>
+          <ul>
+            <li>Volver a la idea en otro formato y otro momento.</li>
+            <li>Usar recordatorios breves, retos y recuperación activa.</li>
+            <li>Convertir la repetición en profundidad, no en cansancio.</li>
+          </ul>
+        </article>
+
+        <article class="phase-card" data-step="06">
+          <div class="tag">Diseño pedagógico</div>
+          <h3>Diseña para conectar</h3>
+          <p>
+            El objetivo final no es mostrar contenido bonito. Es construir una ruta donde cada pieza empuje a la siguiente y el estudiante sienta que entiende, aplica y recuerda.
+          </p>
+          <ul>
+            <li>Ordenar la secuencia con intención.</li>
+            <li>Reducir fricción y exceso visual.</li>
+            <li>Hacer visible el progreso y el sentido de cada paso.</li>
+          </ul>
+        </article>
+      </div>
+
+      <div class="timeline-card">
+        <h3>Ruta completa de una conexión</h3>
+        <div class="timeline">
+          <div class="timeline-item">
+            <strong>Primero</strong>
+            <p>Se activa una memoria o conocimiento previo para que la nueva idea no entre en vacío.</p>
+          </div>
+          <div class="timeline-item">
+            <strong>Después</strong>
+            <p>La explicación simplifica la idea y la vuelve visible, comprensible y emocionalmente cercana.</p>
+          </div>
+          <div class="timeline-item">
+            <strong>Luego</strong>
+            <p>La práctica corta comprueba si la conexión ocurrió o si hace falta otra forma de presentar el contenido.</p>
+          </div>
+          <div class="timeline-item">
+            <strong>Más tarde</strong>
+            <p>El uso en contexto convierte la comprensión en habilidad real, transferible y observable.</p>
+          </div>
+          <div class="timeline-item">
+            <strong>Finalmente</strong>
+            <p>El refuerzo vuelve a abrir la ruta para que la conexión se estabilice y permanezca disponible en el tiempo.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="manifest-card">
+        <h3>Qué debe transmitir esta web</h3>
+        <div class="manifest-grid">
+          <div class="manifest-box">
+            <strong>Claridad</strong>
+            <p>El concepto de sinapsis debe sentirse entendible desde la primera lectura, sin ruido ni lenguaje innecesario.</p>
+          </div>
+          <div class="manifest-box">
+            <strong>Movimiento</strong>
+            <p>El contenido debe parecer vivo. Las letras, la luz y la voz deben reforzar la idea de conexión activa.</p>
+          </div>
+          <div class="manifest-box">
+            <strong>Aplicación</strong>
+            <p>No solo explicar qué es, sino mostrar cómo diseñarla dentro de una experiencia de aprendizaje real.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <p><strong>Sinapsis</strong> · una experiencia para explicar cómo una idea se conecta, se activa y se vuelve útil.</p>
+    </footer>
+  </main>
+
+  <script>
+    const readingBlocks = [
+      {
+        idea: "La sinapsis es una conexión viva entre lo nuevo y lo que ya tiene sentido.",
+        text: "La sinapsis, llevada al aprendizaje, es el momento en que una idea nueva encuentra un puente hacia algo que la persona ya reconoce, recuerda o siente como cercano."
+      },
+      {
+        idea: "Aprender no empieza cuando se explica. Empieza cuando algo interno se despierta.",
+        text: "Por eso la enseñanza no debe lanzar información al vacío. Primero debe activar una memoria, una experiencia o una referencia capaz de recibir lo nuevo sin rechazo y sin confusión."
+      },
+      {
+        idea: "La claridad facilita la conexión.",
+        text: "Cuando el contenido se presenta con orden, ritmo y sentido, la mente no se defiende. En lugar de saturarse, encuentra una forma limpia de entender la relación entre una parte y la siguiente."
+      },
+      {
+        idea: "La práctica confirma si la conexión existe de verdad.",
+        text: "Una sinapsis no se demuestra repitiendo una frase. Se demuestra usando la idea, moviéndola, comparándola, resolviendo algo con ella y sintiendo que ahora tiene función."
+      },
+      {
+        idea: "El uso en contexto convierte comprensión en habilidad.",
+        text: "Cuando el estudiante lleva esa idea a una situación real, la conexión deja de ser teoría y se transforma en recurso disponible, flexible y útil dentro de la experiencia."
+      },
+      {
+        idea: "El refuerzo no repite: consolida.",
+        text: "Volver a la conexión en otro momento, con otra forma y otro reto, hace que el camino se fortalezca. Entonces la idea no solo se entiende. Permanece."
+      }
+    ];
+
+    const readingCopy = document.getElementById("readingCopy");
+    const progressFill = document.getElementById("progressFill");
+    const progressLabel = document.getElementById("progressLabel");
+    const statusText = document.getElementById("statusText");
+    const activeIdea = document.getElementById("activeIdea");
+    const blockIndexEl = document.getElementById("blockIndex");
+    const lettersActivatedEl = document.getElementById("lettersActivated");
+    const currentLine = document.getElementById("currentLine");
+    const toggleAudioBtn = document.getElementById("toggleAudioBtn");
+    const replayBtn = document.getElementById("replayBtn");
+    const startBtn = document.getElementById("startBtn");
+    const heroStartBtn = document.getElementById("heroStartBtn");
+    const voiceMode = document.getElementById("voiceMode");
+    const voiceWarning = document.getElementById("voiceWarning");
+    const cursorGlow = document.getElementById("cursorGlow");
+
+    let voiceEnabled = false;
+    let currentBlockIndex = 0;
+    let currentCharIndex = 0;
+    let revealedChars = 0;
+    let totalChars = 0;
+    let renderedChars = [];
+    let currentUtterance = null;
+    let started = false;
+    let audioUnlocked = false;
+    let synth = window.speechSynthesis;
+    let audioCtx = null;
+
+    function buildReadingContent() {
+      readingCopy.innerHTML = "";
+      renderedChars = [];
+      totalChars = 0;
+
+      readingBlocks.forEach((block, blockIndex) => {
+        const wrapper = document.createElement("div");
+        wrapper.className = "block";
+        wrapper.dataset.block = String(blockIndex);
+        wrapper.style.marginBottom = "1.25em";
+
+        const words = block.text.split(" ");
+        words.forEach((wordText, wordIndex) => {
+          const word = document.createElement("span");
+          word.className = "word";
+          [...wordText].forEach((charText, charIndex) => {
+            const char = document.createElement("span");
+            char.className = "char";
+            char.textContent = charText;
+            char.dataset.block = String(blockIndex);
+            char.dataset.word = String(wordIndex);
+            char.dataset.char = String(charIndex);
+            char.dataset.global = String(totalChars);
+            word.appendChild(char);
+            renderedChars.push(char);
+            totalChars += 1;
+          });
+
+          const space = document.createElement("span");
+          space.className = "char visible";
+          space.textContent = "\u00A0";
+          space.style.opacity = "0.35";
+          space.style.filter = "none";
+          space.style.transform = "none";
+          word.appendChild(space);
+          wrapper.appendChild(word);
+        });
+
+        readingCopy.appendChild(wrapper);
+      });
+
+      blockIndexEl.textContent = `0 / ${readingBlocks.length}`;
+    }
+
+    function updateProgress() {
+      const pct = totalChars ? Math.min(100, Math.round((revealedChars / totalChars) * 100)) : 0;
+      progressFill.style.width = pct + "%";
+      progressLabel.textContent = pct + "% recorrido";
+      lettersActivatedEl.textContent = String(revealedChars);
+      blockIndexEl.textContent = `${Math.min(currentBlockIndex + 1, readingBlocks.length)} / ${readingBlocks.length}`;
+    }
+
+    function setActiveBlock(blockIndex) {
+      currentBlockIndex = blockIndex;
+      const block = readingBlocks[blockIndex];
+      if (!block) return;
+      activeIdea.textContent = block.idea;
+      currentLine.textContent = block.text;
+      statusText.textContent = started ? "Leyendo" : "En reposo";
+    }
+
+    function stopVoice() {
+      if (synth && synth.speaking) synth.cancel();
+      currentUtterance = null;
+    }
+
+    function speakBlock(blockIndex) {
+      if (!voiceEnabled || !synth) return;
+      stopVoice();
+      const text = readingBlocks[blockIndex]?.text;
+      if (!text) return;
+
+      currentUtterance = new SpeechSynthesisUtterance(text);
+      currentUtterance.lang = "es-ES";
+      currentUtterance.rate = 0.92;
+      currentUtterance.pitch = 1.02;
+      currentUtterance.volume = 1;
+      currentUtterance.onboundary = (event) => {
+        const spokenCount = Math.max(0, event.charIndex || 0);
+        const blockChars = renderedChars.filter(c => Number(c.dataset.block) === blockIndex);
+        blockChars.forEach((char, idx) => {
+          char.classList.toggle("spoken", idx <= spokenCount);
+        });
+      };
+      synth.speak(currentUtterance);
+    }
+
+    function beep(frequency = 420, duration = 0.018, gainValue = 0.022) {
+      if (!audioUnlocked || !audioCtx) return;
+      const oscillator = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      oscillator.type = "sine";
+      oscillator.frequency.value = frequency;
+      gain.gain.value = gainValue;
+      oscillator.connect(gain);
+      gain.connect(audioCtx.destination);
+      oscillator.start();
+      oscillator.stop(audioCtx.currentTime + duration);
+    }
+
+    function unlockAudio() {
+      if (audioUnlocked) return;
+      try {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === "suspended") {
+          audioCtx.resume();
+        }
+        audioUnlocked = true;
+      } catch (error) {
+        console.warn("AudioContext no disponible", error);
+      }
+    }
+
+    function revealBlock(blockIndex) {
+      const chars = renderedChars.filter(c => Number(c.dataset.block) === blockIndex);
+      let i = 0;
+
+      setActiveBlock(blockIndex);
+      if (voiceEnabled) speakBlock(blockIndex);
+
+      const tick = () => {
+        if (i >= chars.length) {
+          chars.forEach(c => c.classList.remove("active"));
+          revealedChars = Math.max(revealedChars, renderedChars.filter(c => c.classList.contains("visible")).length);
+          updateProgress();
+
+          if (blockIndex < readingBlocks.length - 1) {
+            setTimeout(() => revealBlock(blockIndex + 1), 480);
+          } else {
+            statusText.textContent = "Experiencia completa";
+            currentLine.textContent = "Todas las ideas fueron activadas.";
+          }
+          return;
+        }
+
+        const char = chars[i];
+        if (char.textContent.trim()) {
+          char.classList.add("visible", "active");
+          currentCharIndex = Number(char.dataset.global);
+          revealedChars = Math.max(revealedChars, currentCharIndex + 1);
+          updateProgress();
+          if (i % 2 === 0) {
+            beep(360 + (i % 10) * 18);
+          }
+        }
+
+        if (i > 0 && chars[i - 1]) {
+          chars[i - 1].classList.remove("active");
+        }
+
+        i += 1;
+        requestAnimationFrame(() => setTimeout(tick, 16));
+      };
+
+      tick();
+    }
+
+    function resetExperience() {
+      stopVoice();
+      buildReadingContent();
+      currentBlockIndex = 0;
+      currentCharIndex = 0;
+      revealedChars = 0;
+      started = false;
+      updateProgress();
+      statusText.textContent = "En reposo";
+      currentLine.textContent = "Esperando inicio...";
+      activeIdea.textContent = "Cuando comience la experiencia, aquí se mostrará el sentido del bloque que se está leyendo.";
+      renderedChars.forEach(char => {
+        char.classList.remove("visible", "active", "spoken", "cursor-hit");
+      });
+    }
+
+    function startExperience() {
+      unlockAudio();
+      if (started) return;
+      started = true;
+      statusText.textContent = "Iniciando";
+      document.getElementById("lectura").scrollIntoView({ behavior: "smooth", block: "start" });
+      setTimeout(() => revealBlock(0), 450);
+    }
+
+    function bindCursorInteraction() {
+      document.addEventListener("mousemove", (event) => {
+        cursorGlow.style.left = event.clientX + "px";
+        cursorGlow.style.top = event.clientY + "px";
+
+        renderedChars.forEach((char) => {
+          if (!char.classList.contains("visible")) return;
+          const rect = char.getBoundingClientRect();
+          const cx = rect.left + rect.width / 2;
+          const cy = rect.top + rect.height / 2;
+          const dx = event.clientX - cx;
+          const dy = event.clientY - cy;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          const hit = distance < 34;
+          char.classList.toggle("cursor-hit", hit);
+        });
+      });
+
+      readingCopy.addEventListener("mouseover", (event) => {
+        const target = event.target;
+        if (!(target instanceof HTMLElement)) return;
+        if (!target.classList.contains("char")) return;
+        if (!target.textContent.trim()) return;
+        if (!target.classList.contains("visible")) return;
+        beep(620, 0.012, 0.015);
+      });
+    }
+
+    function setupVoiceToggle() {
+      toggleAudioBtn.addEventListener("click", () => {
+        unlockAudio();
+        voiceEnabled = !voiceEnabled;
+        toggleAudioBtn.textContent = voiceEnabled ? "Desactivar voz" : "Activar voz";
+        voiceMode.textContent = voiceEnabled ? "Encendido" : "Apagado";
+        voiceWarning.style.display = voiceEnabled ? "block" : "none";
+
+        if (voiceEnabled && started) {
+          speakBlock(currentBlockIndex);
+        } else {
+          stopVoice();
+        }
+      });
+    }
+
+    function setupButtons() {
+      startBtn.addEventListener("click", startExperience);
+      heroStartBtn.addEventListener("click", startExperience);
+      replayBtn.addEventListener("click", () => {
+        resetExperience();
+        setTimeout(startExperience, 180);
+      });
+    }
+
+    function initNeuralCanvas() {
+      const canvas = document.getElementById("neurons");
+      const ctx = canvas.getContext("2d");
+      let width = 0;
+      let height = 0;
+      let nodes = [];
+      const mouse = { x: 0, y: 0, active: false };
+
+      function resize() {
+        width = canvas.width = window.innerWidth * window.devicePixelRatio;
+        height = canvas.height = window.innerHeight * window.devicePixelRatio;
+        canvas.style.width = window.innerWidth + "px";
+        canvas.style.height = window.innerHeight + "px";
+        ctx.setTransform(window.devicePixelRatio, 0, 0, window.devicePixelRatio, 0, 0);
+        createNodes();
+      }
+
+      function createNodes() {
+        const count = Math.min(90, Math.max(44, Math.floor(window.innerWidth / 18)));
+        nodes = Array.from({ length: count }, () => ({
+          x: Math.random() * window.innerWidth,
+          y: Math.random() * window.innerHeight,
+          vx: (Math.random() - 0.5) * 0.35,
+          vy: (Math.random() - 0.5) * 0.35,
+          r: Math.random() * 2 + 1.2
+        }));
+      }
+
+      function step() {
+        ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+
+        nodes.forEach((node) => {
+          node.x += node.vx;
+          node.y += node.vy;
+          if (node.x < 0 || node.x > window.innerWidth) node.vx *= -1;
+          if (node.y < 0 || node.y > window.innerHeight) node.vy *= -1;
+        });
+
+        for (let i = 0; i < nodes.length; i += 1) {
+          const a = nodes[i];
+          for (let j = i + 1; j < nodes.length; j += 1) {
+            const b = nodes[j];
+            const dx = a.x - b.x;
+            const dy = a.y - b.y;
+            const d = Math.sqrt(dx * dx + dy * dy);
+            if (d < 130) {
+              const alpha = (1 - d / 130) * 0.22;
+              ctx.strokeStyle = `rgba(170, 150, 255, ${alpha})`;
+              ctx.lineWidth = 1;
+              ctx.beginPath();
+              ctx.moveTo(a.x, a.y);
+              ctx.lineTo(b.x, b.y);
+              ctx.stroke();
+            }
+          }
+
+          if (mouse.active) {
+            const dx = a.x - mouse.x;
+            const dy = a.y - mouse.y;
+            const d = Math.sqrt(dx * dx + dy * dy);
+            if (d < 180) {
+              const alpha = (1 - d / 180) * 0.35;
+              ctx.strokeStyle = `rgba(114, 231, 209, ${alpha})`;
+              ctx.beginPath();
+              ctx.moveTo(a.x, a.y);
+              ctx.lineTo(mouse.x, mouse.y);
+              ctx.stroke();
+            }
+          }
+
+          ctx.fillStyle = "rgba(210, 198, 255, 0.8)";
+          ctx.beginPath();
+          ctx.arc(a.x, a.y, a.r, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        requestAnimationFrame(step);
+      }
+
+      window.addEventListener("mousemove", (event) => {
+        mouse.x = event.clientX;
+        mouse.y = event.clientY;
+        mouse.active = true;
+      });
+
+      window.addEventListener("mouseleave", () => {
+        mouse.active = false;
+      });
+
+      window.addEventListener("resize", resize);
+      resize();
+      step();
+    }
+
+    buildReadingContent();
+    updateProgress();
+    bindCursorInteraction();
+    setupVoiceToggle();
+    setupButtons();
+    initNeuralCanvas();
+
+    document.addEventListener("click", unlockAudio, { once: true });
+  </script>
+</body>
+</html>
