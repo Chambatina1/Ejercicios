@@ -1,1 +1,257 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sinapsis | Chambari</title>
 
+  <style>
+    :root {
+      --bg: #f7f4ef;
+      --card: #ffffff;
+      --text: #2b2430;
+      --muted: #6f6472;
+      --primary: #7b5ea7;
+      --primary-soft: #efe6ff;
+      --green: #a8c3a0;
+      --green-soft: #edf5ea;
+      --line: #e7ddd3;
+      --shadow: 0 12px 30px rgba(66, 40, 80, 0.08);
+      --radius: 22px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background:
+        radial-gradient(circle at top right, #efe6ff 0%, transparent 20%),
+        linear-gradient(180deg, var(--bg) 0%, #f3efe7 100%);
+      color: var(--text);
+    }
+
+    .wrap {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 20px 16px 80px;
+    }
+
+    h1 {
+      font-size: 28px;
+      line-height: 1.1;
+      margin-bottom: 10px;
+      color: var(--primary);
+    }
+
+    h2 {
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+
+    p {
+      font-size: 15px;
+      line-height: 1.6;
+      color: var(--muted);
+      margin: 0;
+    }
+
+    .card {
+      background: var(--card);
+      padding: 18px;
+      border-radius: var(--radius);
+      margin-bottom: 16px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--line);
+    }
+
+    .hero {
+      background: linear-gradient(180deg, #fbf8f4 0%, #ffffff 100%);
+    }
+
+    .highlight {
+      background: var(--primary-soft);
+      padding: 12px;
+      border-radius: 14px;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+
+    .block {
+      background: var(--green-soft);
+      padding: 12px;
+      border-radius: 14px;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+
+    .row {
+      display: flex;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .chip {
+      flex: 1;
+      text-align: center;
+      padding: 10px;
+      border-radius: 14px;
+      background: #f6f1e8;
+      font-size: 13px;
+      border: 1px solid var(--line);
+    }
+
+    button {
+      width: 100%;
+      margin-top: 14px;
+      padding: 14px;
+      border-radius: 16px;
+      border: none;
+      background: var(--primary);
+      color: white;
+      font-weight: 700;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    .exercise {
+      background: #f9f6ff;
+      border: 1px dashed #c7b7e6;
+      border-radius: 14px;
+      padding: 14px;
+      margin-top: 14px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      margin-top: 10px;
+      font-size: 16px;
+    }
+
+    .result {
+      margin-top: 10px;
+      font-size: 14px;
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <div class="card hero">
+    <h1>Sinapsis</h1>
+    <p>
+      No aprendes palabras nuevas.
+      <br><br>
+      Despiertas lo que ya sabes.
+    </p>
+
+    <div class="highlight">
+      Palabras conocidas + combinaciones correctas = fluidez real
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Cómo funciona</h2>
+
+    <div class="block">
+      Tienes bloques en tu mente:
+    </div>
+
+    <div class="row">
+      <div class="chip">get</div>
+      <div class="chip">make</div>
+      <div class="chip">go</div>
+    </div>
+
+    <div class="block">
+      Solo necesitas conectarlos correctamente.
+    </div>
+
+  </div>
+
+  <div class="card">
+    <h2>El error común</h2>
+    <p>
+      Intentar traducir palabra por palabra.
+      <br><br>
+      Eso rompe la fluidez.
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>La solución</h2>
+    <p>
+      Entrenar combinaciones reales.
+    </p>
+
+    <div class="highlight">
+      I get tired<br>
+      I make dinner<br>
+      I go to work
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Entrena ahora</h2>
+
+    <div class="exercise">
+      <p>Completa:</p>
+      <p><strong>I ___ tired at night</strong></p>
+
+      <input id="input1" placeholder="write here...">
+
+      <button onclick="check1()">Revisar</button>
+
+      <div id="res1" class="result"></div>
+    </div>
+
+    <div class="exercise">
+      <p>Completa:</p>
+      <p><strong>I ___ dinner</strong></p>
+
+      <input id="input2" placeholder="write here...">
+
+      <button onclick="check2()">Revisar</button>
+
+      <div id="res2" class="result"></div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+function check1() {
+  const val = document.getElementById("input1").value.toLowerCase();
+  const res = document.getElementById("res1");
+
+  if (val === "get") {
+    res.innerHTML = "✔ Bien. Eso es fluidez.";
+    res.style.color = "green";
+  } else {
+    res.innerHTML = "Intenta con una palabra simple que ya conoces.";
+    res.style.color = "red";
+  }
+}
+
+function check2() {
+  const val = document.getElementById("input2").value.toLowerCase();
+  const res = document.getElementById("res2");
+
+  if (val === "make") {
+    res.innerHTML = "✔ Correcto. Estás combinando bien.";
+    res.style.color = "green";
+  } else {
+    res.innerHTML = "Piensa en combinaciones reales.";
+    res.style.color = "red";
+  }
+}
+</script>
+
+</body>
+</html>
