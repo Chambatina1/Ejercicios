@@ -8,14 +8,15 @@
 
 <meta name="theme-color" content="#6c8cff">
 
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
 <style>
 :root {
-    --bg-main: #f7f9fc;
+    --bg-main: #f4f6fb;
     --bg-card: #ffffff;
-    --primary: #6c8cff;
-    --secondary: #a7c7e7;
-    --accent: #ffd6e0;
-    --text-main: #2d2d2d;
+    --primary: #4f6ef7;
+    --accent: #eef2ff;
+    --text-main: #1f2937;
     --text-soft: #6b7280;
     --border-soft: #e5e7eb;
 }
@@ -23,79 +24,89 @@
 body {
     margin: 0;
     background: var(--bg-main);
-    font-family: 'Segoe UI', Tahoma, sans-serif;
+    font-family: 'Inter', sans-serif;
     color: var(--text-main);
 }
 
 /* Header */
 .header {
-    padding: 16px;
+    padding: 18px;
     background: white;
     border-bottom: 1px solid var(--border-soft);
 }
 
 .brand-title {
-    font-size: 22px;
-    font-weight: bold;
+    font-size: 20px;
+    font-weight: 600;
     color: var(--primary);
 }
 
-/* Contenido */
+/* Layout */
 .container {
     padding: 16px;
+}
+
+/* Módulo */
+.module-title {
+    font-size: 16px;
+    margin: 20px 0 10px;
+    color: var(--text-soft);
 }
 
 /* Cards */
 .card {
     background: var(--bg-card);
-    border-radius: 14px;
+    border-radius: 12px;
     padding: 16px;
-    margin-bottom: 16px;
+    margin-bottom: 14px;
     border: 1px solid var(--border-soft);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
 }
 
-.card h2 {
-    margin: 0 0 8px;
-    color: var(--primary);
-    font-size: 18px;
+/* Texto clase */
+.content-text {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text-main);
 }
 
-.card p {
-    color: var(--text-soft);
-    line-height: 1.6;
-}
-
-/* Botones */
-.btn {
-    background: var(--primary);
-    color: white;
-    padding: 10px;
-    border-radius: 10px;
-    border: none;
-    cursor: pointer;
-    margin-top: 10px;
-}
-
-/* Ejercicios */
-.ejercicio-box {
+/* Sección práctica */
+.practice-box {
+    margin-top: 14px;
+    padding: 14px;
     background: var(--accent);
-    padding: 12px;
     border-radius: 10px;
-    margin-top: 12px;
+}
+
+/* Pregunta */
+.question {
+    margin-bottom: 12px;
+    font-weight: 600;
+}
+
+/* Opciones */
+.option {
+    margin-bottom: 6px;
+    padding: 8px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.option:hover {
+    background: #e0e7ff;
 }
 
 /* iframe */
 iframe {
     width: 100%;
-    border-radius: 12px;
-    margin-top: 10px;
+    border-radius: 10px;
+    margin-top: 12px;
 }
 
 /* Links */
 a {
     display: block;
     margin-top: 6px;
+    font-size: 14px;
     color: var(--primary);
     text-decoration: none;
 }
@@ -130,25 +141,24 @@ function renderAlumno(data) {
     let html = '';
 
     data.modulos.forEach(modulo => {
-        html += `<div class="card">
-                    <h2>${modulo.title}</h2>
-                </div>`;
+        html += `<div class="module-title">${modulo.title}</div>`;
 
         modulo.clases.forEach(clase => {
             html += `<div class="card">`;
 
             if (clase.text_content) {
                 const partes = clase.text_content.split('---EJERCICIOS_CHAMBARI---');
-                html += `<p>${partes[0]}</p>`;
+
+                html += `<div class="content-text">${partes[0]}</div>`;
 
                 if (partes[1]) {
                     try {
                         const ejercicios = JSON.parse(partes[1]);
-                        html += `<div class="ejercicio-box">
+                        html += `<div class="practice-box">
                                     ${renderEjercicios(ejercicios)}
-                                </div>`;
+                                 </div>`;
                     } catch (e) {
-                        console.error("Error en ejercicios", e);
+                        console.error(e);
                     }
                 }
             }
@@ -164,7 +174,7 @@ function renderAlumno(data) {
 
             for (let i = 1; i <= 5; i++) {
                 if (clase[`link_${i}`]) {
-                    html += `<a href="${clase[`link_${i}`]}" target="_blank">Recurso adicional</a>`;
+                    html += `<a href="${clase[`link_${i}`]}" target="_blank">Material complementario</a>`;
                 }
             }
 
@@ -186,12 +196,10 @@ function renderEjercicios(ejercicios) {
     let html = '';
 
     ejercicios.forEach((ej, i) => {
-        html += `<div style="margin-bottom:10px;">
-                    <strong>${i + 1}. ${ej.pregunta}</strong>
-                 </div>`;
+        html += `<div class="question">${i + 1}. ${ej.pregunta}</div>`;
 
         ej.opciones.forEach(op => {
-            html += `<div>
+            html += `<div class="option">
                         <input type="radio" name="ej_${i}">
                         ${op}
                      </div>`;
