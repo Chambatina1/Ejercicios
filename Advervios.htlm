@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ejercicios: Adverbios de Frecuencia</title>
+  <title>Chambari - Ejercicios: Adverbios de Frecuencia</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -81,7 +81,7 @@
 </head>
 <body>
   <div class="container">
-    <h1>Ejercicios: Adverbios de Frecuencia</h1>
+    <h1>Chambari - Ejercicios: Adverbios de Frecuencia</h1>
     <p>Selecciona el adverbio correcto en cada oración.</p>
 
     <form id="quizForm">
