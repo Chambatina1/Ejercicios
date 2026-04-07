@@ -1,1017 +1,183 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Synapsis | Interactive Reading</title>
-  <style>
-    :root {
-      --bg-1: #0c0814;
-      --bg-2: #17102a;
-      --bg-3: #24193b;
-      --text: #f4efff;
-      --muted: #b6a9cf;
-      --soft: rgba(255,255,255,0.08);
-      --soft-2: rgba(255,255,255,0.14);
-      --primary: #9f7aea;
-      --primary-2: #c4a7ff;
-      --accent: #72e7d1;
-      --accent-2: #ffd37d;
-      --glow: 0 0 24px rgba(159, 122, 234, 0.45);
-      --radius: 22px;
-    }
-
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-
-    body {
-      margin: 0;
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      color: var(--text);
-      background:
-        radial-gradient(circle at 20% 20%, rgba(114, 231, 209, 0.08), transparent 26%),
-        radial-gradient(circle at 80% 10%, rgba(196, 167, 255, 0.14), transparent 32%),
-        radial-gradient(circle at 50% 80%, rgba(255, 211, 125, 0.06), transparent 28%),
-        linear-gradient(180deg, var(--bg-1), var(--bg-2) 42%, var(--bg-3) 100%);
-      overflow-x: hidden;
-      min-height: 100vh;
-    }
-
-    canvas#neurons {
-      position: fixed;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 0;
-      opacity: 0.95;
-    }
-
-    .noise {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 1;
-      opacity: 0.045;
-      background-image:
-        radial-gradient(circle at 20% 30%, #fff 0.5px, transparent 0.7px),
-        radial-gradient(circle at 80% 40%, #fff 0.5px, transparent 0.7px),
-        radial-gradient(circle at 40% 70%, #fff 0.5px, transparent 0.7px),
-        radial-gradient(circle at 70% 90%, #fff 0.5px, transparent 0.7px);
-      background-size: 170px 170px;
-      mix-blend-mode: screen;
-    }
-
-    .cursor-glow {
-      position: fixed;
-      width: 280px;
-      height: 280px;
-      border-radius: 50%;
-      pointer-events: none;
-      z-index: 2;
-      background: radial-gradient(circle, rgba(159, 122, 234, 0.18) 0%, rgba(114, 231, 209, 0.08) 28%, transparent 72%);
-      transform: translate(-50%, -50%);
-      filter: blur(10px);
-      transition: transform 0.05s linear;
-    }
-
-    .topbar {
-      position: fixed;
-      top: 14px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: min(1100px, calc(100% - 24px));
-      z-index: 10;
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      align-items: center;
-      padding: 12px 14px;
-      border: 1px solid var(--soft-2);
-      border-radius: 999px;
-      background: rgba(12, 8, 20, 0.52);
-      backdrop-filter: blur(18px);
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.28);
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      min-width: 0;
-    }
-
-    .brand-dot {
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--accent), var(--primary));
-      box-shadow: var(--glow);
-      animation: pulseDot 2.2s infinite ease-in-out;
-    }
-
-    @keyframes pulseDot {
-      0%, 100% { transform: scale(1); opacity: 0.85; }
-      50% { transform: scale(1.35); opacity: 1; }
-    }
-
-    .brand-text {
-      font-size: 14px;
-      color: var(--muted);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .controls {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-    }
-
-    button,
-    .ghost-link {
-      border: 0;
-      border-radius: 999px;
-      padding: 10px 14px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: 0.22s ease;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      font-size: 13px;
-    }
-
-    button.primary {
-      background: linear-gradient(135deg, var(--primary), #7f5df5);
-      color: white;
-      box-shadow: var(--glow);
-    }
-
-    button.soft,
-    .ghost-link {
-      background: rgba(255,255,255,0.08);
-      color: var(--text);
-      border: 1px solid rgba(255,255,255,0.1);
-    }
-
-    .page {
-      position: relative;
-      z-index: 3;
-      width: min(1100px, calc(100% - 28px));
-      margin: 0 auto;
-      padding: 110px 0 80px;
-    }
-
-    .hero {
-      min-height: 100vh;
-      display: grid;
-      align-items: center;
-      padding: 40px 0 20px;
-    }
-
-    .hero-card {
-      position: relative;
-      border-radius: 32px;
-      padding: clamp(28px, 5vw, 54px);
-      border: 1px solid rgba(255,255,255,0.12);
-      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
-      backdrop-filter: blur(18px);
-      overflow: hidden;
-      box-shadow: 0 26px 80px rgba(0, 0, 0, 0.32);
-    }
-
-    .eyebrow {
-      display: inline-flex;
-      gap: 8px;
-      align-items: center;
-      font-size: 12px;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 18px;
-      font-weight: 700;
-    }
-
-    .hero h1 {
-      font-size: clamp(42px, 7vw, 96px);
-      line-height: 0.95;
-      margin: 0 0 18px;
-      max-width: 850px;
-      letter-spacing: -0.05em;
-    }
-
-    .hero p {
-      font-size: clamp(18px, 2.3vw, 24px);
-      color: var(--muted);
-      line-height: 1.6;
-      max-width: 760px;
-      margin: 0 0 28px;
-    }
-
-    .hero-actions {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-bottom: 28px;
-    }
-
-    .hero-meta {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 14px;
-      margin-top: 12px;
-    }
-
-    .meta-box {
-      border: 1px solid rgba(255,255,255,0.09);
-      background: rgba(255,255,255,0.04);
-      border-radius: 20px;
-      padding: 16px;
-    }
-
-    .meta-box strong {
-      display: block;
-      font-size: 22px;
-      margin-bottom: 6px;
-      color: var(--primary-2);
-    }
-
-    .meta-box span {
-      color: var(--muted);
-      font-size: 14px;
-      line-height: 1.5;
-    }
-
-    .section { padding: 80px 0 10px; }
-
-    .section-head {
-      display: grid;
-      grid-template-columns: 1.1fr 0.9fr;
-      gap: 24px;
-      align-items: end;
-      margin-bottom: 26px;
-    }
-
-    .section h2 {
-      font-size: clamp(32px, 4.2vw, 58px);
-      line-height: 1.02;
-      margin: 0;
-      letter-spacing: -0.04em;
-    }
-
-    .section .lead {
-      color: var(--muted);
-      font-size: 17px;
-      line-height: 1.7;
-      margin: 0;
-    }
-
-    .reading-stage {
-      display: grid;
-      grid-template-columns: 1fr 320px;
-      gap: 18px;
-      align-items: start;
-    }
-
-    .panel,
-    .sidebar-card,
-    .phase-card,
-    .timeline-card {
-      background: rgba(255,255,255,0.045);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 28px;
-      backdrop-filter: blur(16px);
-      box-shadow: 0 16px 60px rgba(0,0,0,0.22);
-    }
-
-    .panel {
-      padding: clamp(18px, 3vw, 34px);
-      min-height: 390px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .reading-copy {
-      font-size: clamp(24px, 3vw, 40px);
-      line-height: 1.7;
-      letter-spacing: -0.02em;
-      min-height: 240px;
-      user-select: none;
-    }
-
-    .reading-copy .word {
-      white-space: nowrap;
-      display: inline-block;
-      margin-right: 0.34em;
-      margin-bottom: 0.12em;
-    }
-
-    .reading-copy .char {
-      position: relative;
-      display: inline-block;
-      opacity: 0.18;
-      transform: translateY(14px) scale(0.97);
-      filter: blur(4px);
-      transition: opacity 0.2s ease, transform 0.2s ease, filter 0.2s ease, color 0.2s ease, text-shadow 0.2s ease;
-    }
-
-    .reading-copy .char.visible {
-      opacity: 0.65;
-      transform: translateY(0) scale(1);
-      filter: blur(0);
-    }
-
-    .reading-copy .char.active {
-      opacity: 1;
-      color: #fff;
-      text-shadow: 0 0 14px rgba(196,167,255,0.8), 0 0 26px rgba(114,231,209,0.35);
-      transform: translateY(-2px) scale(1.05);
-    }
-
-    .reading-copy .char.cursor-hit {
-      color: var(--accent);
-      text-shadow: 0 0 16px rgba(114, 231, 209, 0.68);
-    }
-
-    .reading-copy .char::after {
-      content: "";
-      position: absolute;
-      left: 50%;
-      bottom: -10px;
-      width: 8px;
-      height: 8px;
-      border-radius: 999px;
-      background: rgba(114,231,209,0.9);
-      transform: translateX(-50%) scale(0);
-      transition: transform 0.18s ease;
-      box-shadow: 0 0 12px rgba(114,231,209,0.7);
-      pointer-events: none;
-    }
-
-    .reading-copy .char.cursor-hit::after,
-    .reading-copy .char.active::after {
-      transform: translateX(-50%) scale(1);
-    }
-
-    .reading-footer {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 22px;
-      padding-top: 18px;
-      border-top: 1px solid rgba(255,255,255,0.08);
-    }
-
-    .hint,
-    .small-text {
-      font-size: 13px;
-      color: var(--muted);
-      line-height: 1.6;
-    }
-
-    .sidebar-stack {
-      display: grid;
-      gap: 16px;
-      position: sticky;
-      top: 92px;
-    }
-
-    .sidebar-card,
-    .phase-card,
-    .timeline-card {
-      padding: 18px;
-    }
-
-    .sidebar-card h3,
-    .timeline-card h3 { margin: 0 0 12px; font-size: 16px; }
-
-    .status-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 10px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.06);
-      color: var(--muted);
-      font-size: 12px;
-      font-weight: 700;
-      border: 1px solid rgba(255,255,255,0.08);
-    }
-
-    .status-pulse {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--accent);
-      box-shadow: 0 0 10px rgba(114,231,209,0.8);
-      animation: pulseDot 1.8s infinite ease-in-out;
-    }
-
-    .progress-wrap { margin-top: 12px; }
-
-    .progress-bar {
-      height: 10px;
-      background: rgba(255,255,255,0.08);
-      border-radius: 999px;
-      overflow: hidden;
-      margin-top: 8px;
-    }
-
-    .progress-fill {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, var(--accent), var(--primary));
-      box-shadow: var(--glow);
-      transition: width 0.22s ease;
-      border-radius: inherit;
-    }
-
-    .stats-grid {
-      display: grid;
-      gap: 10px;
-      margin-top: 12px;
-    }
-
-    .stats-mini {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 12px 14px;
-      border-radius: 16px;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.08);
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .stats-mini strong {
-      color: var(--text);
-      font-size: 15px;
-    }
-
-    .phases {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 18px;
-      margin-top: 12px;
-    }
-
-    .phase-card h3 {
-      margin: 0 0 10px;
-      font-size: 26px;
-      letter-spacing: -0.03em;
-    }
-
-    .phase-card p,
-    .phase-card li,
-    .timeline-card p {
-      color: var(--muted);
-      line-height: 1.7;
-    }
-
-    .phase-card ul {
-      list-style: none;
-      margin: 0;
-      padding: 0;
-      display: grid;
-      gap: 10px;
-    }
-
-    .phase-card li {
-      position: relative;
-      padding-left: 20px;
-    }
-
-    .phase-card li::before {
-      content: "";
-      position: absolute;
-      left: 0;
-      top: 0.72em;
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--accent), var(--primary));
-      box-shadow: 0 0 12px rgba(114,231,209,0.5);
-    }
-
-    .phase-card .tag {
-      display: inline-flex;
-      padding: 7px 10px;
-      font-size: 11px;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      border-radius: 999px;
-      background: rgba(114,231,209,0.09);
-      color: var(--accent);
-      margin-bottom: 12px;
-      border: 1px solid rgba(114,231,209,0.16);
-      font-weight: 800;
-    }
-
-    .timeline { display: grid; gap: 14px; margin-top: 12px; }
-
-    .timeline-item {
-      display: grid;
-      grid-template-columns: 130px 1fr;
-      gap: 16px;
-      align-items: start;
-      padding: 14px;
-      border-radius: 18px;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.08);
-    }
-
-    .timeline-item strong {
-      color: var(--accent-2);
-      font-size: 13px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-
-    .footer {
-      padding: 70px 0 30px;
-      text-align: center;
-      color: var(--muted);
-    }
-
-    .voice-warning {
-      display: none;
-      margin-top: 14px;
-      padding: 12px 14px;
-      border-radius: 16px;
-      color: #fbeec9;
-      background: rgba(255,211,125,0.12);
-      border: 1px solid rgba(255,211,125,0.2);
-      font-size: 13px;
-      line-height: 1.6;
-    }
-
-    @media (max-width: 980px) {
-      .hero-meta,
-      .phases,
-      .section-head,
-      .reading-stage { grid-template-columns: 1fr; }
-      .sidebar-stack { position: relative; top: 0; }
-      .timeline-item { grid-template-columns: 1fr; }
-    }
-
-    @media (max-width: 640px) {
-      .controls { width: 100%; justify-content: stretch; }
-      .controls > * { flex: 1; }
-      .hero h1 { font-size: 46px; }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chambari Academy - Frases Divertidas</title>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  background: #0f172a;
+  color: #fff;
+}
+
+.container {
+  max-width: 900px;
+  margin: auto;
+  padding: 20px;
+}
+
+.card {
+  background: #1e293b;
+  border-radius: 20px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+  text-align: center;
+}
+
+.image {
+  width: 100%;
+  border-radius: 15px;
+  margin-bottom: 15px;
+}
+
+.phrase {
+  font-size: 26px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.translation {
+  color: #94a3b8;
+  margin-bottom: 20px;
+}
+
+.buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+button {
+  padding: 12px 16px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.play { background: #22c55e; }
+.quiz { background: #3b82f6; }
+.next { background: #f59e0b; }
+
+.quiz-box {
+  margin-top: 20px;
+}
+
+input {
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.result {
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+</style>
 </head>
 <body>
-  <canvas id="neurons"></canvas>
-  <div class="noise"></div>
-  <div class="cursor-glow" id="cursorGlow"></div>
 
-  <div class="topbar">
-    <div class="brand">
-      <div class="brand-dot"></div>
-      <div class="brand-text">Synapsis · slow interactive reading in American English</div>
+<div class="container">
+  <h1>Aprende frases como nativo</h1>
+  <div id="app"></div>
+</div>
+
+<script>
+
+const frases = [
+  {
+    texto: "What's up?",
+    traduccion: "¿Qué tal?",
+    imagen: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e"
+  },
+  {
+    texto: "I'm down",
+    traduccion: "Me apunto",
+    imagen: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e"
+  },
+  {
+    texto: "No way!",
+    traduccion: "¡No puede ser!",
+    imagen: "https://images.unsplash.com/photo-1517841905240-472988babdf9"
+  }
+];
+
+let index = 0;
+
+function renderAlumno() {
+  const frase = frases[index];
+
+  document.getElementById('app').innerHTML = `
+    <div class="card">
+      <img class="image" src="${frase.imagen}" />
+      <div class="phrase">${frase.texto}</div>
+      <div class="translation">${frase.traduccion}</div>
+
+      <div class="buttons">
+        <button class="play" id="btnPlay">Escuchar</button>
+        <button class="quiz" id="btnQuiz">Practicar</button>
+        <button class="next" id="btnNext">Siguiente</button>
+      </div>
+
+      <div id="quiz"></div>
     </div>
-    <div class="controls">
-      <button class="soft" id="toggleAudioBtn">Voice off</button>
-      <button class="soft" id="replayBtn">Restart</button>
-      <a class="ghost-link" href="#development">Development</a>
-      <button class="primary" id="startBtn">Start</button>
+  `;
+
+  // EVENTOS (esto arregla que no funcionen)
+  document.getElementById('btnPlay').addEventListener('click', playAudio);
+  document.getElementById('btnQuiz').addEventListener('click', mostrarQuiz);
+  document.getElementById('btnNext').addEventListener('click', nextFrase);
+}
+
+function playAudio() {
+  const texto = frases[index].texto;
+  const utterance = new SpeechSynthesisUtterance(texto);
+  utterance.lang = 'en-US';
+  speechSynthesis.speak(utterance);
+}
+
+function mostrarQuiz() {
+  document.getElementById('quiz').innerHTML = `
+    <div class="quiz-box">
+      <input id="respuesta" placeholder="Escribe la frase en inglés" />
+      <button id="btnValidar">Validar</button>
+      <div id="resultado" class="result"></div>
     </div>
-  </div>
+  `;
 
-  <main class="page">
-    <section class="hero" id="home">
-      <div class="hero-card">
-        <div class="eyebrow">Connect · understand · practice · use</div>
-        <h1>Synapsis is not memorizing.<br>It is making meaning connect.</h1>
-        <p>
-          This version is shorter, slower, and cleaner. The voice follows one line at a time, in American English, without jumping ahead.
-        </p>
-        <div class="hero-actions">
-          <button class="primary" id="heroStartBtn">Begin</button>
-          <a class="ghost-link" href="#reading">Open reading</a>
-        </div>
-        <div class="hero-meta">
-          <div class="meta-box">
-            <strong>01</strong>
-            <span>Short text blocks for calm reading.</span>
-          </div>
-          <div class="meta-box">
-            <strong>02</strong>
-            <span>One voice at a time with controlled timing.</span>
-          </div>
-          <div class="meta-box">
-            <strong>03</strong>
-            <span>Cursor glow and letter activation.</span>
-          </div>
-        </div>
-      </div>
-    </section>
+  document.getElementById('btnValidar').addEventListener('click', validarRespuesta);
+}
 
-    <section class="section" id="reading">
-      <div class="section-head">
-        <h2>Interactive document</h2>
-        <p class="lead">
-          Move through the letters and let the reading unfold at a medium pace. Each block speaks only after its own line is fully revealed.
-        </p>
-      </div>
+function validarRespuesta() {
+  const input = document.getElementById('respuesta').value.trim().toLowerCase();
+  const correcta = frases[index].texto.toLowerCase();
+  const result = document.getElementById('resultado');
 
-      <div class="reading-stage">
-        <div class="panel">
-          <div class="reading-copy" id="readingCopy" aria-live="polite"></div>
-          <div class="voice-warning" id="voiceWarning">
-            Your browser may require one click before speech can play.
-          </div>
-          <div class="reading-footer">
-            <div class="hint">Tip: move your cursor slowly across the letters.</div>
-            <div class="small-text" id="currentLine">Waiting to begin...</div>
-          </div>
-        </div>
+  if (input === correcta) {
+    result.innerText = "Correcto";
+    result.style.color = "#22c55e";
+  } else {
+    result.innerText = "Intenta otra vez";
+    result.style.color = "#ef4444";
+  }
+}
 
-        <div class="sidebar-stack">
-          <div class="sidebar-card">
-            <h3>Reading status</h3>
-            <div class="status-pill"><span class="status-pulse"></span><span id="statusText">Idle</span></div>
-            <div class="progress-wrap">
-              <div class="small-text" id="progressLabel">0% complete</div>
-              <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
-            </div>
-            <div class="stats-grid">
-              <div class="stats-mini"><span>Block</span><strong id="blockIndex">0 / 0</strong></div>
-              <div class="stats-mini"><span>Letters shown</span><strong id="lettersActivated">0</strong></div>
-              <div class="stats-mini"><span>Voice</span><strong id="voiceMode">Off</strong></div>
-            </div>
-          </div>
+function nextFrase() {
+  index++;
+  if (index >= frases.length) index = 0;
+  renderAlumno();
+}
 
-          <div class="sidebar-card">
-            <h3>Current idea</h3>
-            <div class="small-text" id="activeIdea">The active meaning will appear here when the reading starts.</div>
-          </div>
-        </div>
-      </div>
-    </section>
+renderAlumno();
 
-    <section class="section" id="development">
-      <div class="section-head">
-        <h2>How to build synapsis</h2>
-        <p class="lead">
-          A useful learning connection follows a simple path. Wake up prior knowledge, explain clearly, practice fast, then use it in context.
-        </p>
-      </div>
+</script>
 
-      <div class="phases">
-        <article class="phase-card">
-          <div class="tag">Step 1</div>
-          <h3>Wake up memory</h3>
-          <p>Start with something the learner already knows.</p>
-          <ul>
-            <li>Ask a familiar question.</li>
-            <li>Use a real example.</li>
-            <li>Name what already feels known.</li>
-          </ul>
-        </article>
-
-        <article class="phase-card">
-          <div class="tag">Step 2</div>
-          <h3>Explain simply</h3>
-          <p>Keep one clear idea in front of the learner.</p>
-          <ul>
-            <li>Use human language.</li>
-            <li>Keep the structure calm.</li>
-            <li>Remove extra noise.</li>
-          </ul>
-        </article>
-
-        <article class="phase-card">
-          <div class="tag">Step 3</div>
-          <h3>Practice now</h3>
-          <p>Let the learner do something right away.</p>
-          <ul>
-            <li>Use short tasks.</li>
-            <li>Give quick feedback.</li>
-            <li>Repeat with variation.</li>
-          </ul>
-        </article>
-
-        <article class="phase-card">
-          <div class="tag">Step 4</div>
-          <h3>Use it for real</h3>
-          <p>Move the idea into a real situation.</p>
-          <ul>
-            <li>Apply it in context.</li>
-            <li>Check independent use.</li>
-            <li>Turn theory into action.</li>
-          </ul>
-        </article>
-      </div>
-
-      <div class="timeline-card">
-        <h3>Simple path</h3>
-        <div class="timeline">
-          <div class="timeline-item">
-            <strong>First</strong>
-            <p>The mind recognizes something familiar.</p>
-          </div>
-          <div class="timeline-item">
-            <strong>Next</strong>
-            <p>The new idea connects to that familiar point.</p>
-          </div>
-          <div class="timeline-item">
-            <strong>Then</strong>
-            <p>Practice makes the connection stronger.</p>
-          </div>
-          <div class="timeline-item">
-            <strong>After</strong>
-            <p>Real use makes the connection useful.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <footer class="footer">
-      <p>Synapsis · slow reading, clear meaning, one voice at a time.</p>
-    </footer>
-  </main>
-
-  <script>
-    const readingBlocks = [
-      {
-        idea: "A new idea needs a bridge.",
-        text: "Synapsis happens when new meaning connects with something already known."
-      },
-      {
-        idea: "Learning starts with recognition.",
-        text: "The mind learns faster when it first recognizes a memory, a pattern, or a familiar feeling."
-      },
-      {
-        idea: "Clear structure helps connection.",
-        text: "A calm explanation gives the brain space to connect instead of defend itself from overload."
-      },
-      {
-        idea: "Practice makes the link stronger.",
-        text: "The connection becomes real when the learner uses the idea and sees that it works."
-      }
-    ];
-
-    const readingCopy = document.getElementById("readingCopy");
-    const progressFill = document.getElementById("progressFill");
-    const progressLabel = document.getElementById("progressLabel");
-    const statusText = document.getElementById("statusText");
-    const activeIdea = document.getElementById("activeIdea");
-    const blockIndexEl = document.getElementById("blockIndex");
-    const lettersActivatedEl = document.getElementById("lettersActivated");
-    const currentLine = document.getElementById("currentLine");
-    const toggleAudioBtn = document.getElementById("toggleAudioBtn");
-    const replayBtn = document.getElementById("replayBtn");
-    const startBtn = document.getElementById("startBtn");
-    const heroStartBtn = document.getElementById("heroStartBtn");
-    const voiceMode = document.getElementById("voiceMode");
-    const voiceWarning = document.getElementById("voiceWarning");
-    const cursorGlow = document.getElementById("cursorGlow");
-
-    let voiceEnabled = false;
-    let started = false;
-    let audioUnlocked = false;
-    let currentBlockIndex = 0;
-    let revealedChars = 0;
-    let totalChars = 0;
-    let renderedChars = [];
-    let currentUtterance = null;
-    let activeRunId = 0;
-    let audioCtx = null;
-    const synth = window.speechSynthesis;
-    let selectedVoice = null;
-
-    function buildReadingContent() {
-      readingCopy.innerHTML = "";
-      renderedChars = [];
-      totalChars = 0;
-
-      readingBlocks.forEach((block, blockIndex) => {
-        const wrapper = document.createElement("div");
-        wrapper.style.marginBottom = "1.2em";
-
-        block.text.split(" ").forEach((wordText, wordIndex) => {
-          const word = document.createElement("span");
-          word.className = "word";
-
-          [...wordText].forEach((charText, charIndex) => {
-            const char = document.createElement("span");
-            char.className = "char";
-            char.textContent = charText;
-            char.dataset.block = String(blockIndex);
-            char.dataset.word = String(wordIndex);
-            char.dataset.char = String(charIndex);
-            char.dataset.global = String(totalChars);
-            word.appendChild(char);
-            renderedChars.push(char);
-            totalChars += 1;
-          });
-
-          const space = document.createElement("span");
-          space.className = "char visible";
-          space.textContent = "\u00A0";
-          space.style.opacity = "0.3";
-          space.style.filter = "none";
-          space.style.transform = "none";
-          word.appendChild(space);
-          wrapper.appendChild(word);
-        });
-
-        readingCopy.appendChild(wrapper);
-      });
-
-      blockIndexEl.textContent = `0 / ${readingBlocks.length}`;
-    }
-
-    function updateProgress() {
-      const pct = totalChars ? Math.min(100, Math.round((revealedChars / totalChars) * 100)) : 0;
-      progressFill.style.width = pct + "%";
-      progressLabel.textContent = pct + "% complete";
-      lettersActivatedEl.textContent = String(revealedChars);
-      blockIndexEl.textContent = `${Math.min(currentBlockIndex + (started ? 1 : 0), readingBlocks.length)} / ${readingBlocks.length}`;
-    }
-
-    function stopVoice() {
-      if (synth && synth.speaking) synth.cancel();
-      currentUtterance = null;
-    }
-
-    function unlockAudio() {
-      if (audioUnlocked) return;
-      try {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        if (audioCtx.state === "suspended") audioCtx.resume();
-        audioUnlocked = true;
-      } catch (error) {
-        console.warn(error);
-      }
-    }
-
-    function beep(frequency = 420, duration = 0.016, gainValue = 0.018) {
-      if (!audioUnlocked || !audioCtx) return;
-      const oscillator = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      oscillator.type = "sine";
-      oscillator.frequency.value = frequency;
-      gain.gain.value = gainValue;
-      oscillator.connect(gain);
-      gain.connect(audioCtx.destination);
-      oscillator.start();
-      oscillator.stop(audioCtx.currentTime + duration);
-    }
-
-    function sleep(ms) {
-      return new Promise(resolve => setTimeout(resolve, ms));
-    }
-
-    function waitForSpeechEnd(utterance) {
-      return new Promise((resolve) => {
-        utterance.onend = () => resolve();
-        utterance.onerror = () => resolve();
-      });
-    }
-
-    function loadVoices() {
-      const voices = synth ? synth.getVoices() : [];
-      if (!voices.length) return;
-
-      const preferred = [
-        "Samantha",
-        "Allison",
-        "Ava",
-        "Jenny",
-        "Aria",
-        "Olivia",
-        "Emma",
-        "Google US English",
-        "Microsoft Aria Online (Natural)",
-        "Microsoft Jenny Online (Natural)",
-        "Microsoft Ava Online (Natural)",
-        "Karen",
-        "Moira"
-      ];
-
-      const enUSVoices = voices.filter(v => /^en-US/i.test(v.lang) || /US English|English \(United States\)|American/i.test(v.name + " " + v.lang));
-
-      selectedVoice = preferred
-        .map(name => enUSVoices.find(v => v.name.toLowerCase().includes(name.toLowerCase())))
-        .find(Boolean)
-        || enUSVoices.find(v => /female|woman|zira|aria|jenny|ava|allison|samantha|olivia|emma/i.test(v.name))
-        || enUSVoices[0]
-        || voices.find(v => /^en/i.test(v.lang))
-        || voices[0]
-        || null;
-    }
-
-    function describeVoice() {
-      if (!selectedVoice) return "Default";
-      return `${selectedVoice.name} (${selectedVoice.lang})`;
-    }
-
-    async function speakCurrentBlock(blockIndex, runId) {
-      if (!voiceEnabled || !synth || runId !== activeRunId) return;
-      stopVoice();
-      const block = readingBlocks[blockIndex];
-      if (!block) return;
-
-      currentUtterance = new SpeechSynthesisUtterance(block.text);
-      currentUtterance.lang = "en-US";
-      currentUtterance.rate = 0.78;
-      currentUtterance.pitch = 1.02;
-      currentUtterance.volume = 1;
-      if (selectedVoice) currentUtterance.voice = selectedVoice;
-
-      synth.speak(currentUtterance);
-      await waitForSpeechEnd(currentUtterance);
-    }
-
-    async function revealBlock(blockIndex, runId) {
-      if (runId !== activeRunId) return;
-
-      currentBlockIndex = blockIndex;
-      const block = readingBlocks[blockIndex];
-      const chars = renderedChars.filter(c => Number(c.dataset.block) === blockIndex);
-      activeIdea.textContent = block.idea;
-      currentLine.textContent = block.text;
-      statusText.textContent = "Reading";
-      updateProgress();
-
-      for (let i = 0; i < chars.length; i += 1) {
-        if (runId !== activeRunId) return;
-        const char = chars[i];
-        if (char.textContent.trim()) {
-          char.classList.add("visible", "active");
-          revealedChars = Math.max(revealedChars, Number(char.dataset.global) + 1);
-          updateProgress();
-          if (i % 3 === 0) beep(350 + (i % 8) * 14);
-        }
-        if (i > 0 && chars[i - 1]) chars[i - 1].classList.remove("active");
-        await sleep(42);
-      }
-
-      chars.forEach(char => char.classList.remove("active"));
-      await sleep(180);
-      await speakCurrentBlock(blockIndex, runId);
-      await sleep(320);
-    }
-
-    async function playSequence() {
-      const runId = ++activeRunId;
-      started = true;
-      statusText.textContent = "Starting";
-      document.getElementById("reading").scrollIntoView({ behavior: "smooth", block: "start" });
-      await sleep(350);
-
-      for (let i = 0; i < readingBlocks.length; i += 1) {
-        if (runId !== activeRunId) return;
-        await revealBlock(i, runId);
-      }
-
-      if (runId === activeRunId) {
-        statusText.textContent = "Complete";
-        currentLine.textContent = "Reading finished.";
-      }
-    }
-
-    function resetExperience() {
-      activeRunId += 1;
-      stopVoice();
-      started = false;
-      currentBlockIndex = 0;
-      revealedChars = 0;
-      buildReadingContent();
-    updateProgress();
-    bindCursorInteraction();
-    setupVoiceToggle();
-    setupButtons();
-    initNeuralCanvas();
-
-    if (synth) {
-      loadVoices();
-      if (typeof synth.onvoiceschanged !== "undefined") {
-        synth.onvoiceschanged = () => {
-          loadVoices();
-          if (voiceEnabled) voiceMode.textContent = describeVoice();
-        };
-      }
-    }
-
-    voiceWarning.innerHTML = "Best result: use Safari on iPhone or Mac, or Edge on Windows. The browser decides the actual voice quality. This code now prefers a soft American female voice when one is available.";
-
-    document.addEventListener("click", () => {
-      unlockAudio();
-      loadVoices();
-    }, { once: true });
-  </script>
 </body>
 </html>
