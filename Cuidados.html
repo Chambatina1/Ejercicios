@@ -27,27 +27,30 @@
 
   <script>
     // ==============================================================
-    // ELDERLY CARE EXERCISES - THREE TYPES
+    // ELDERLY CARE EXERCISES - THREE TYPES (Multiple Choice, True/False, Short Answer)
     // ==============================================================
     
     const EXERCISES = [
-      // Multiple Choice - Caregiving situations
+      // MULTIPLE CHOICE - Caregiving situations
       { type: "multiple", question: "How do you politely ask if an elderly person needs help walking?", options: ["Let me carry you", "Would you like me to help you walk?", "You need to walk now"], correct: 1, explanation: "Would you like me to help you walk? is respectful and kind." },
       { type: "multiple", question: "What is the most calming phrase for an anxious senior?", options: ["Calm down", "Everything is okay. I am here with you.", "Stop worrying"], correct: 1, explanation: "Everything is okay. I am here with you provides security and comfort." },
       { type: "multiple", question: "Best response when a senior refuses medication:", options: ["You have to take it now", "I understand. Would you like me to stay with you while you take it?", "Fine, skip it then"], correct: 1, explanation: "Validating feelings and offering companionship is best practice." },
       { type: "multiple", question: "What does 'I will bring you a warm blanket' mean?", options: ["I will bring you medicine", "I will bring you a warm blanket", "I will help you walk"], correct: 1, explanation: "A warm blanket provides comfort and warmth to the senior." },
+      { type: "multiple", question: "How do you ask about pain in a gentle way?", options: ["Does it hurt?", "Are you in any pain?", "Pain?"], correct: 1, explanation: "Are you in any pain? is gentle and professional." },
+      { type: "multiple", question: "Complete the sentence: '______ I check your blood pressure?'", options: ["May", "Should", "Will"], correct: 0, explanation: "May I... is the most formal and respectful way to ask." },
       
-      // True/False - Caregiving knowledge
+      // TRUE/FALSE - Caregiving knowledge
       { type: "truefalse", question: "You should always speak loudly to elderly people so they can hear you better.", correct: "false", explanation: "False! Speak clearly and at a normal volume. Shouting can be perceived as aggressive." },
       { type: "truefalse", question: "Asking 'How are you feeling today?' shows empathy and concern.", correct: "true", explanation: "Correct! Asking about feelings shows you care about their emotional state." },
       { type: "truefalse", question: "You should rush elderly people when they are eating or walking.", correct: "false", explanation: "False! Always allow them to move at their own pace. Rushing can cause falls and anxiety." },
       { type: "truefalse", question: "Offering choices like 'Would you like water or juice?' respects their autonomy.", correct: "true", explanation: "Correct! Offering choices empowers seniors and respects their preferences." },
+      { type: "truefalse", question: "It is important to maintain eye contact when speaking with elderly adults.", correct: "true", explanation: "Correct! Eye contact shows respect and helps with communication." },
       
-      // Short Answer - Key caregiving phrases
-      { type: "short", question: "What phrase would you use to ask if someone needs to use the restroom politely?", correctKeywords: ["would you like me to assist you to the restroom", "can I help you to the bathroom", "do you need help with the bathroom"], explanation: "Always ask politely and respectfully: 'Would you like me to assist you to the restroom?'" },
+      // SHORT ANSWER - Key caregiving phrases
+      { type: "short", question: "What phrase would you use to ask if someone needs to use the restroom politely?", correctKeywords: ["would you like me to assist you to the restroom", "can I help you to the bathroom", "do you need help with the bathroom", "assist you to the restroom"], explanation: "Always ask politely and respectfully: 'Would you like me to assist you to the restroom?'" },
       { type: "short", question: "How do you ask if someone is in pain in a gentle way?", correctKeywords: ["are you in any pain", "do you have pain", "does it hurt"], explanation: "Are you in any pain? is a gentle and caring way to ask about discomfort." },
-      { type: "short", question: "What is a kind way to say 'It's time to take your medicine'?", correctKeywords: ["it is time for your medication", "time for your medication", "may I bring your medication"], explanation: "It's time for your medication, may I bring it to you? is polite and respectful." },
-      { type: "short", question: "How would you reassure someone who feels anxious?", correctKeywords: ["i am here with you", "you are safe", "everything is okay"], explanation: "I am here with you. You are safe. provides comfort and security." }
+      { type: "short", question: "What is a kind way to say 'It is time to take your medicine'?", correctKeywords: ["it is time for your medication", "time for your medication", "may i bring your medication", "time for your medicine"], explanation: "It's time for your medication, may I bring it to you? is polite and respectful." },
+      { type: "short", question: "How would you reassure someone who feels anxious?", correctKeywords: ["i am here with you", "you are safe", "everything is okay", "i am here"], explanation: "I am here with you. You are safe. provides comfort and security." }
     ];
 
     // REAL CAREGIVER-SENIOR DIALOGUES
@@ -61,7 +64,8 @@
       { role: "senior", text: "You are very patient with me. I really appreciate your kindness." },
       { role: "caregiver", text: "It is my pleasure. Now, are you ready for your medication?" },
       { role: "senior", text: "Yes, I will take it with your help. Thank you for being here." },
-      { role: "caregiver", text: "I will be right outside if you need anything. Rest well, my friend." }
+      { role: "caregiver", text: "I will be right outside if you need anything. Rest well, my friend." },
+      { role: "senior", text: "Thank you. You make me feel safe and cared for." }
     ];
 
     // USEFUL CAREGIVING PHRASES
@@ -380,7 +384,7 @@
         feedbackType = 'complete';
         showFeedback();
         if (nextBtn) nextBtn.disabled = true;
-        optionsContainer.innerHTML = `<div class="text-center p-8 bg-amber-50 rounded-2xl"><i class="fas fa-trophy text-6xl text-amber-500 mb-3"></i><p class="text-xl font-bold">✨ Training Complete! ✨</p><p class="text-stone-600 mt-2">You have practiced Multiple Choice, True/False, and Short Answer questions.</p><button id="resetFinalBtn" class="mt-6 bg-amber-700 text-white px-6 py-3 rounded-xl font-bold hover:bg-amber-800">Restart Practice</button></div>';
+        optionsContainer.innerHTML = `<div class="text-center p-8 bg-amber-50 rounded-2xl"><i class="fas fa-trophy text-6xl text-amber-500 mb-3"></i><p class="text-xl font-bold">✨ Training Complete! ✨</p><p class="text-stone-600 mt-2">You have practiced Multiple Choice, True/False, and Short Answer questions.</p><button id="resetFinalBtn" class="mt-6 bg-amber-700 text-white px-6 py-3 rounded-xl font-bold hover:bg-amber-800">Restart Practice</button></div>`;
         document.getElementById('resetFinalBtn')?.addEventListener('click', () => resetGame());
       }
     }
@@ -547,25 +551,4 @@
           let badgeText = '', badgeColor = '';
           if (type === 'multiple') { badgeText = 'MULTIPLE CHOICE'; badgeColor = 'bg-purple-100 text-purple-700'; }
           else if (type === 'truefalse') { badgeText = 'TRUE / FALSE'; badgeColor = 'bg-green-100 text-green-700'; }
-          else { badgeText = 'SHORT ANSWER'; badgeColor = 'bg-orange-100 text-orange-700'; }
-          typeBadge.textContent = badgeText;
-          typeBadge.className = `inline-block px-3 py-1 rounded-full text-xs font-semibold ${badgeColor}`;
-        }
-      }
-      
-      currentIndex = 0; totalScore = 0; lives = 5; answered = false; selectedOption = null;
-      updateUIState();
-      renderCurrentExercise();
-      updateTypeBadge();
-      
-      const originalRender = renderCurrentExercise;
-      window.renderCurrentExercise = function() { originalRender(); updateTypeBadge(); };
-      renderCurrentExercise = window.renderCurrentExercise;
-      
-      setTimeout(() => loadAmericanVoice(), 500);
-    }
-    
-    buildFullUI();
-  </script>
-</body>
-</html>
+          else { badgeText = 'SH
