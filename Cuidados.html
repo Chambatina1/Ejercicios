@@ -1,269 +1,460 @@
-import { useState } from 'react'
-import { AiOutlineCheckCircle, AiOutlineCloseCircle } from 'react-icons/ai'
-
-function App() {
-  const [currentExercise, setCurrentExercise] = useState(0)
-  const [score, setScore] = useState(0)
-  const [lives, setLives] = useState(3)
-  const [progress, setProgress] = useState(0)
-  const [showFeedback, setShowFeedback] = useState(null)
-  const [userAnswer, setUserAnswer] = useState('')
-
-  const exercises = [
-    {
-      type: 'multipleChoice',
-      question:
-        '¿Cuál de las siguientes frases es más adecuada para saludar a un adulto mayor por la mañana?',
-      options: [
-        "Hey, what's up?",
-        'Good morning! How are you today?',
-        'Yo, how you feeling?',
-      ],
-      answer: 1,
-    },
-    {
-      type: 'fillInTheBlank',
-      question: 'Complete la frase: "¿Necesita algo de ____ o agua?"',
-      sentence: 'Do you need some ____ or water?',
-      options: ['medicine', 'food', 'rest'],
-      answer: 0,
-    },
-    {
-      type: 'match',
-      phrase: 'I am here to help you.',
-      options: [
-        { word: 'Estoy aquí para ayudarte.', meaning: 'I am here to help you.' },
-        { word: '¿Cómo estás?', meaning: 'How are you?' },
-        { word: '¿Quieres descansar?', meaning: 'Do you want to rest?' },
-      ],
-      answerIndex: 0,
-    },
-    {
-      type: 'translate',
-      phrase: '¿Te sientes cómodo?',
-      answer: 'Do you feel comfortable?',
-    },
-  ]
-
-  const totalExercises = exercises.length
-
-  const handleAnswer = (answerIndex) => {
-    const current = exercises[currentExercise]
-    let isCorrect = false
-
-    if (current.type === 'multipleChoice' || current.type === 'fillInTheBlank') {
-      isCorrect = answerIndex === current.answer
-    } else if (current.type === 'match') {
-      isCorrect = answerIndex === current.answerIndex
-    } else if (current.type === 'translate') {
-      isCorrect = userAnswer.trim().toLowerCase() === current.answer.toLowerCase()
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>ElderCare English | Aprende Inglés para el Cuidado del Adulto Mayor</title>
+  <!-- Tailwind CSS v3 + Font Awesome Icons + Google Fonts (Inter) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Custom Tailwind Config override for smoother look -->
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap');
+    * {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
     }
-
-    if (isCorrect) {
-      setScore(score + 10)
-      setShowFeedback('correct')
-    } else {
-      setLives(lives - 1)
-      setShowFeedback('incorrect')
+    body {
+      background: linear-gradient(145deg, #fef9f0 0%, #fff6ea 100%);
     }
-
-    const newProgress = ((currentExercise + 1) / totalExercises) * 100
-    setProgress(newProgress)
-
-    setTimeout(() => {
-      setShowFeedback(null)
-      setUserAnswer('')
-      if (currentExercise + 1 < totalExercises && lives > 0) {
-        setCurrentExercise(currentExercise + 1)
+    /* custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1e6d8;
+      border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #c0a080;
+      border-radius: 10px;
+    }
+    /* heart pulse animation */
+    @keyframes gentlePulse {
+      0% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.08); opacity: 0.9; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .heart-beat {
+      animation: gentlePulse 0.4s ease;
+    }
+    .card-transition {
+      transition: all 0.25s ease-in-out;
+    }
+    .option-btn {
+      transition: all 0.2s;
+    }
+    .option-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      background-color: #fef3e8;
+      border-color: #e2c7a5;
+    }
+    .feedback-enter {
+      animation: fadeSlideUp 0.3s ease;
+    }
+    @keyframes fadeSlideUp {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
       }
-    }, 1000)
-  }
-
-  const renderExercise = () => {
-    const current = exercises[currentExercise]
-
-    if (current.type === 'multipleChoice') {
-      return (
-        <div className="grid gap-4 mt-4 md:grid-cols-1">
-          {current.options.map((opt, index) => (
-            <button
-              key={index}
-              className="bg-white rounded-xl shadow-lg p-4 text-lg font-semibold hover:bg-gray-100 transition transform hover:scale-105"
-              onClick={() => handleAnswer(index)}
-            >
-              {opt}
-            </button>
-          ))}
-        </div>
-      )
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
+  </style>
+</head>
+<body class="antialiased">
 
-    if (current.type === 'fillInTheBlank') {
-      return (
-        <div className="mt-4">
-          <p className="text-xl font-semibold mb-4">{current.sentence.replace('____', '______')}</p>
-          <div className="flex flex-col md:flex-row gap-4 mb-4">
-            {current.options.map((opt, index) => (
-              <button
-                key={index}
-                className={`bg-white rounded-xl shadow-lg p-3 flex-1 text-center font-semibold hover:bg-gray-100 transition ${
-                  userAnswer === opt ? 'border-4 border-blue-400' : ''
-                }`}
-                onClick={() => setUserAnswer(opt)}
-              >
-                {opt}
-              </button>
-            ))}
-          </div>
-          {userAnswer && (
-            <button
-              className="mt-2 w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg transition"
-              onClick={() => handleAnswer(current.options.indexOf(userAnswer))}
-            >
-              Confirmar
-            </button>
-          )}
-        </div>
-      )
+<div id="root"></div>
+
+<!-- React + ReactDOM (CDN) + standalone JSX transform -->
+<script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.development.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.development.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@babel/standalone/babel.min.js"></script>
+
+<script type="text/babel">
+  // --------------------------------------------------------------
+  // DATA: ejercicios enfocados en cuidado de adultos mayores
+  // Vocabulario, frases reales, expresiones cálidas
+  // --------------------------------------------------------------
+  const exerciseLibrary = [
+    { // 0: múltiple opción - vocabulario esencial
+      type: 'multiple',
+      question: '¿Cómo se dice "ayudar al adulto mayor a caminar" en inglés?',
+      options: ['To help the elderly walking', 'To assist the senior to walk', 'To support old people walk'],
+      correct: 1,
+      explanation: '✔️ "To assist the senior to walk" es la forma más educada y profesional en cuidado de ancianos.'
+    },
+    { // 1: completar frase (fill gap)
+      type: 'fill',
+      question: 'Completa la frase: "______ I help you get comfortable?" (¿Puedo ayudarte a ponerte cómodo?)',
+      options: ['May', 'Should', 'Will'],
+      correct: 0,
+      explanation: '🔹 "May I help you..." es la expresión más educada y suave para preguntar.'
+    },
+    { // 2: elegir frase más adecuada para calma
+      type: 'multiple',
+      question: 'El adulto mayor se siente ansioso. ¿Cuál es la mejor frase para tranquilizarle?',
+      options: ['Calm down now', 'Everything is okay, I am here with you', 'Stop worrying please'],
+      correct: 1,
+      explanation: '💙 "Everything is okay, I am here with you" transmite seguridad y acompañamiento.'
+    },
+    { // 3: emparejar palabra con significado (simulado)
+      type: 'match',
+      question: 'Empareja "Hydration" con su significado:',
+      options: ['Comida balanceada', 'Ingesta de líquidos / agua', 'Movilidad suave'],
+      correct: 1,
+      explanation: '💧 Hydration = hidratación. Es vital preguntar: "Are you drinking enough water?"'
+    },
+    { // 4: traducir frase corta
+      type: 'translate',
+      question: 'Traduce al inglés: "¿Tiene dolor en alguna parte?"',
+      options: ['Are you in pain?', 'Do you have pain somewhere?', 'Does it hurt you?'],
+      correct: 1,
+      explanation: '✅ La forma más clara y empática: "Do you have pain somewhere?"'
+    },
+    { // 5: mini reto - expresión para medicinas
+      type: 'multiple',
+      question: 'Para recordar la medicina diaria, la frase más respetuosa es:',
+      options: ['Take your pill now', 'It’s time for your medication, may I bring it to you?', 'You need medicine'],
+      correct: 1,
+      explanation: '💊 Ofrecer la medicina con cortesía: "It\'s time for your medication, may I bring it to you?"'
+    },
+    { // 6: completar (movilidad)
+      type: 'fill',
+      question: 'Completa: "Let me ______ you to the dining room." (Déjame acompañarte al comedor)',
+      options: ['escort', 'accompany', 'walk'],
+      correct: 1,
+      explanation: '🚶 "accompany" es más cálido y profesional que "walk".'
+    },
+    { // 7: expresiones para preguntar por estado emocional
+      type: 'multiple',
+      question: '¿Cómo preguntar con sensibilidad sobre el estado emocional?',
+      options: ['You look sad', 'How are you feeling today, my friend?', 'Why are you sad?'],
+      correct: 1,
+      explanation: '🌟 "How are you feeling today, my friend?" invita a compartir sin presión.'
+    },
+    { // 8: frase para dar ánimo / comida
+      type: 'translate',
+      question: 'Traduce: "¿Desea un poco más de agua o té?"',
+      options: ['Do you want water or tea?', 'Would you like some more water or tea?', 'You need more water?'],
+      correct: 1,
+      explanation: '☕ "Would you like..." es la forma más educada y amable en cuidado.'
+    },
+    { // 9: expresión para acompañar en descanso
+      type: 'multiple',
+      question: 'Para ayudar a dormir o descansar, lo mejor es decir:',
+      options: ['Go to sleep now', 'I’ll be right outside if you need anything. Rest well', 'Sleep early'],
+      correct: 1,
+      explanation: '🛌 Ofrecer seguridad: "I’ll be right outside... Rest well" genera calma.'
     }
+  ];
 
-    if (current.type === 'match') {
-      return (
-        <div className="grid gap-4 mt-4">
-          {current.options.map((option, index) => (
-            <button
-              key={index}
-              className="bg-white rounded-xl shadow-lg p-4 text-lg font-semibold hover:bg-gray-100 transition"
-              onClick={() => handleAnswer(index)}
-            >
-              {option.word}
-            </button>
-          ))}
-        </div>
-      )
-    }
-
-    if (current.type === 'translate') {
-      return (
-        <div className="mt-4">
-          <input
-            type="text"
-            placeholder="Escribe la frase en inglés"
-            className="w-full p-3 rounded-xl shadow-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
-            value={userAnswer}
-            onChange={(e) => setUserAnswer(e.target.value)}
-          />
-          <button
-            className="mt-4 w-full bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-xl shadow-lg transition font-semibold"
-            onClick={() => handleAnswer(0)}
-          >
-            Verificar
-          </button>
-        </div>
-      )
-    }
-  }
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 to-rose-50 font-sans flex flex-col">
-      {/* Header con sello y logo */}
-      <header className="bg-amber-100 p-6 md:flex md:justify-between items-center shadow-xl rounded-b-3xl">
-        {/* Logo y sello */}
-        <div className="flex items-center space-x-4 mb-4 md:mb-0">
-          <div className="bg-amber-300 p-3 rounded-full shadow-md">
-            <svg className="w-10 h-10 text-white mx-auto" fill="currentColor" viewBox="0 0 24 24">
-              <circle cx="12" cy="12" r="10" stroke="none" />
-              <text x="12" y="16" textAnchor="middle" className="text-xl font-bold" fill="white">CA</text>
-            </svg>
+  // Componente principal: ElderCareEnglishApp
+  const App = () => {
+    const [currentIndex, setCurrentIndex] = React.useState(0);
+    const [score, setScore] = React.useState(0);
+    const [hearts, setHearts] = React.useState(5);   // vidas
+    const [feedback, setFeedback] = React.useState(null); // {type: 'correct'/'wrong', message}
+    const [selectedOption, setSelectedOption] = React.useState(null);
+    const [answered, setAnswered] = React.useState(false);
+    const [progress, setProgress] = React.useState(0);
+    
+    const totalExercises = exerciseLibrary.length;
+    // actualizar barra progreso en base a índice respondido? Se actualiza cuando pasa al siguiente.
+    React.useEffect(() => {
+      const answeredCount = currentIndex; // cuántos ejercicios ya completados (avanzados)
+      const prog = (currentIndex / totalExercises) * 100;
+      setProgress(prog);
+    }, [currentIndex, totalExercises]);
+    
+    const currentExercise = exerciseLibrary[currentIndex];
+    
+    const handleAnswer = (selectedIdx) => {
+      if (answered) return;
+      const isCorrect = (selectedIdx === currentExercise.correct);
+      setSelectedOption(selectedIdx);
+      setAnswered(true);
+      
+      if (isCorrect) {
+        // acierto: suma puntos, feedback positivo
+        setScore(prev => prev + 10);
+        setFeedback({ type: 'correct', message: '✅ ¡Excelente! +10 puntos. ' + (currentExercise.explanation || 'Sigue así 💪') });
+        // animación corazón (no se pierde vida)
+      } else {
+        // error: pierde un corazón si tiene corazones > 0
+        if (hearts > 0) {
+          setHearts(prev => prev - 1);
+        }
+        setFeedback({ type: 'wrong', message: `❌ Incorrecto. ${currentExercise.explanation || 'Revisa la respuesta correcta.'}` });
+        // animación de corazón perdido (no restamos puntos)
+      }
+    };
+    
+    const nextExercise = () => {
+      if (!answered) return;
+      // si se acabaron los corazones y no más intentos? Redirigir o reiniciar opcional
+      if (hearts === 0 && currentIndex + 1 < totalExercises) {
+        // No puede continuar sin vidas? Mejor ofrecer reiniciar
+        if (window.confirm("❤️ Sin corazones. ¿Quieres reiniciar la práctica para seguir aprendiendo?")) {
+          resetGame();
+        }
+        return;
+      }
+      
+      if (currentIndex + 1 < totalExercises) {
+        setCurrentIndex(prev => prev + 1);
+        resetQuestionState();
+      } else {
+        // Finalizó todos los ejercicios
+        setFeedback({ type: 'complete', message: `🎉 ¡Has completado todos los ejercicios! Puntaje final: ${score + (feedback?.type === 'correct' ? 10 : 0)} / ${totalExercises*10}. ¡Eres un gran cuidador/a! 🌟` });
+        setAnswered(true);
+      }
+    };
+    
+    const resetQuestionState = () => {
+      setSelectedOption(null);
+      setAnswered(false);
+      setFeedback(null);
+    };
+    
+    const resetGame = () => {
+      setCurrentIndex(0);
+      setScore(0);
+      setHearts(5);
+      setSelectedOption(null);
+      setAnswered(false);
+      setFeedback(null);
+      setProgress(0);
+    };
+    
+    // renderizar según tipo de ejercicio
+    const renderExercise = () => {
+      if (!currentExercise) return null;
+      const { type, question, options, correct } = currentExercise;
+      
+      if (type === 'multiple' || type === 'translate' || type === 'match') {
+        // todos usan botones de selección múltiple similar
+        return (
+          <div className="space-y-6">
+            <h3 className="text-2xl md:text-3xl font-semibold text-stone-800 leading-tight">{question}</h3>
+            <div className="grid grid-cols-1 gap-4 mt-4">
+              {options.map((opt, idx) => {
+                let isSelected = selectedOption === idx;
+                let isCorrectAnswer = answered && idx === correct;
+                let isWrongSelected = answered && isSelected && idx !== correct;
+                let bgClass = "bg-white border-2 border-amber-200";
+                if (answered) {
+                  if (idx === correct) bgClass = "bg-emerald-50 border-emerald-400 ring-1 ring-emerald-200";
+                  else if (isSelected && idx !== correct) bgClass = "bg-rose-50 border-rose-300";
+                  else bgClass = "bg-white/70 border-amber-100";
+                } else if (isSelected) bgClass = "bg-amber-50 border-amber-400";
+                
+                return (
+                  <button
+                    key={idx}
+                    onClick={() => !answered && handleAnswer(idx)}
+                    disabled={answered}
+                    className={`${bgClass} p-5 rounded-2xl shadow-sm text-left transition-all duration-150 flex items-center gap-3 option-btn ${!answered ? 'cursor-pointer hover:shadow-md' : 'cursor-default'}`}
+                  >
+                    <span className="w-7 h-7 rounded-full bg-amber-100 text-amber-800 flex items-center justify-center font-medium text-sm">{String.fromCharCode(65+idx)}</span>
+                    <span className="text-stone-700 text-lg font-medium">{opt}</span>
+                    {answered && idx === correct && <span className="ml-auto text-emerald-600 text-xl">✓</span>}
+                    {answered && isSelected && idx !== correct && <span className="ml-auto text-rose-500 text-xl">✗</span>}
+                  </button>
+                );
+              })}
+            </div>
           </div>
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-800">Chambari Academy</h1>
-        </div>
-        <button className="bg-amber-400 hover:bg-amber-500 text-white font-semibold py-2 px-4 rounded-lg shadow-lg transition">
-          Inicio
-        </button>
-      </header>
-
-      {/* Hero principal con animación */}
-      <section className="bg-amber-50 p-8 text-center flex flex-col items-center">
-        <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-800 drop-shadow-lg">
-          Practica Inglés para Cuidado de Adultos Mayores
-        </h2>
-        <p className="text-lg md:text-xl text-gray-700 mb-6 max-w-2xl">
-          Mejora tus habilidades con ejercicios interactivos, frases útiles y vocabulario esencial para brindar una atención cálida, respetuosa y profesional.
-        </p>
-        <button className="bg-amber-400 hover:bg-amber-500 text-white font-semibold py-3 px-8 rounded-xl shadow-lg transition transform hover:scale-105">
-          Comenzar
-        </button>
-      </section>
-
-      {/* Contenido y ejercicios */}
-      <main className="flex-1 p-6 max-w-5xl mx-auto">
-        {/* Barra de progreso y estado */}
-        <div className="flex items-center justify-between mb-4">
-          <div className="w-full h-3 bg-gray-300 rounded-full overflow-hidden">
-            <div
-              className="h-3 bg-amber-400 transition-all duration-300 rounded-full"
-              style={{ width: `${progress}%` }}
-            ></div>
+        );
+      } 
+      else if (type === 'fill') {
+        return (
+          <div className="space-y-6">
+            <h3 className="text-2xl md:text-3xl font-semibold text-stone-800">{question}</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {options.map((opt, idx) => {
+                let isSelected = selectedOption === idx;
+                let isCorrectAnswer = answered && idx === correct;
+                let bgFill = "bg-white border-2 border-amber-200";
+                if (answered) {
+                  if (idx === correct) bgFill = "bg-emerald-50 border-emerald-400";
+                  else if (isSelected && idx !== correct) bgFill = "bg-rose-50 border-rose-300";
+                } else if (isSelected) bgFill = "bg-amber-50 border-amber-400";
+                return (
+                  <button
+                    key={idx}
+                    onClick={() => !answered && handleAnswer(idx)}
+                    disabled={answered}
+                    className={`${bgFill} p-5 rounded-2xl text-center font-medium text-xl shadow-sm transition-all ${!answered ? 'hover:shadow-md' : ''}`}
+                  >
+                    {opt}
+                    {answered && idx === correct && <span className="ml-2 text-emerald-600">✔</span>}
+                  </button>
+                );
+              })}
+            </div>
           </div>
-          <div className="ml-4 text-sm font-semibold text-gray-700 flex items-center space-x-2">
-            <AiOutlineCheckCircle className="text-green-400" /> <span>{score} pts</span>
-            <AiOutlineCloseCircle className="text-red-400" /> <span>{lives} ❤️</span>
+        );
+      }
+      return <div>Ejercicio no soportado</div>;
+    };
+    
+    const isGameFinished = currentIndex === totalExercises - 1 && answered && currentIndex + 1 === totalExercises;
+    const showCompletion = (currentIndex === totalExercises - 1 && answered && hearts > 0) || (currentIndex === totalExercises - 1 && answered);
+    
+    return (
+      <div className="min-h-screen">
+        {/* Hero principal */}
+        <header className="relative bg-gradient-to-br from-[#f9e7d2] to-[#f7e1c4] overflow-hidden shadow-sm">
+          <div className="absolute inset-0 opacity-10 pointer-events-none" style={{backgroundImage: 'radial-gradient(circle at 20% 40%, #b78c5a 2px, transparent 2px)', backgroundSize: '30px 30px'}}></div>
+          <div className="container mx-auto px-5 py-8 md:py-12 relative z-2">
+            <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+              <div className="flex-1 text-center md:text-left">
+                <div className="inline-block px-4 py-1 rounded-full bg-white/50 backdrop-blur-sm text-amber-800 text-sm font-semibold mb-4 shadow-sm">✨ Cuidado con empatía</div>
+                <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-stone-800 leading-tight">Habla con el ❤️<br/>Cuida en <span className="text-amber-700">Inglés</span></h1>
+                <p className="text-lg md:text-xl text-stone-600 mt-4 max-w-xl">Frases, vocabulario y expresiones reales para el cuidado diario de adultos mayores. Aprende con ejercicios interactivos tipo juego y conviértete en un cuidador excepcional.</p>
+                <button onClick={() => document.getElementById('learning-section')?.scrollIntoView({ behavior: 'smooth' })} className="mt-8 bg-amber-700 hover:bg-amber-800 text-white text-lg font-semibold px-8 py-4 rounded-2xl shadow-xl transition-all flex items-center gap-2 mx-auto md:mx-0">✨ Comenzar ahora →</button>
+              </div>
+              <div className="flex-1 flex justify-center">
+                <div className="relative w-64 h-64 md:w-80 md:h-80 bg-gradient-to-tr from-[#e9cfb0] to-[#dbbd97] rounded-full flex items-center justify-center shadow-2xl">
+                  <span className="text-8xl">👵🏽🤝👩🏽‍⚕️</span>
+                  <div className="absolute -bottom-4 -right-4 bg-white rounded-full p-3 shadow-lg"><span className="text-3xl">💬</span></div>
+                  <div className="absolute -top-5 -left-2 bg-amber-100 rounded-full p-2 shadow"><span className="text-xl">🧘🏽‍♀️</span></div>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
-
-        {/* Feedback con animación */}
-        {showFeedback && (
-          <div
-            className={`mb-4 p-4 rounded-xl shadow-lg text-center flex items-center justify-center gap-2 transition-all duration-500 ${
-              showFeedback === 'correct'
-                ? 'bg-green-100 text-green-800 animate-bounceIn'
-                : 'bg-red-100 text-red-800 animate-bounceIn'
-            }`}
-          >
-            {showFeedback === 'correct' ? (
-              <>
-                <AiOutlineCheckCircle className="text-2xl" /> ¡Correcto!
-              </>
-            ) : (
-              <>
-                <AiOutlineCloseCircle className="text-2xl" /> Intenta de nuevo.
-              </>
-            )}
+          {/* decoración suave */}
+          <div className="h-4 bg-gradient-to-r from-transparent via-amber-300/30 to-transparent"></div>
+        </header>
+        
+        {/* Sección principal APP INTERACTIVA */}
+        <section id="learning-section" className="container mx-auto px-4 py-10 md:py-14">
+          {/* Panel tipo app con barra progreso y corazones */}
+          <div className="max-w-4xl mx-auto">
+            <div className="bg-white/70 backdrop-blur-sm rounded-3xl shadow-2xl border border-white/50 p-5 md:p-8">
+              {/* Barra de estado: puntaje, corazones, progreso */}
+              <div className="flex flex-wrap justify-between items-center gap-4 mb-8 pb-3 border-b border-amber-200">
+                <div className="flex items-center gap-4">
+                  <div className="bg-amber-100 rounded-2xl px-4 py-2 shadow-inner">
+                    <span className="font-bold text-amber-800 text-lg">🏆 Puntaje</span>
+                    <span className="ml-2 text-2xl font-black text-amber-900">{score}</span>
+                  </div>
+                  <div className="flex gap-2 items-center bg-rose-50 px-4 py-2 rounded-2xl">
+                    {[...Array(5)].map((_, i) => (
+                      <span key={i} className={`text-2xl ${i < hearts ? 'text-red-500' : 'text-gray-300'}`}>❤️</span>
+                    ))}
+                  </div>
+                </div>
+                <div className="flex-1 max-w-xs">
+                  <div className="flex justify-between text-sm font-medium text-stone-600 mb-1"><span>Progreso</span><span>{Math.round(progress)}%</span></div>
+                  <div className="h-2.5 w-full bg-amber-100 rounded-full overflow-hidden"><div className="h-full bg-amber-600 rounded-full transition-all duration-300" style={{width: `${progress}%`}}></div></div>
+                </div>
+              </div>
+              
+              {/* Tarjeta principal del ejercicio */}
+              <div className="bg-white rounded-3xl shadow-xl p-6 md:p-10 transition-all card-transition">
+                {!isGameFinished && !(currentIndex === totalExercises-1 && answered && hearts > 0 && currentIndex+1 === totalExercises) ? (
+                  <>
+                    {renderExercise()}
+                    {/* feedback inmediato */}
+                    {feedback && (
+                      <div className={`mt-6 p-4 rounded-xl ${feedback.type === 'correct' ? 'bg-emerald-100 text-emerald-800 border-l-8 border-emerald-500' : 'bg-rose-100 text-rose-800 border-l-8 border-rose-400'} feedback-enter`}>
+                        <p className="font-medium">{feedback.message}</p>
+                      </div>
+                    )}
+                    
+                    {/* botón siguiente habilitado tras responder */}
+                    <div className="mt-8 flex justify-end">
+                      <button 
+                        onClick={nextExercise}
+                        disabled={!answered}
+                        className={`px-8 py-3 rounded-xl font-bold text-white text-lg transition-all ${answered ? 'bg-amber-700 hover:bg-amber-800 shadow-md' : 'bg-gray-300 cursor-not-allowed'}`}
+                      >
+                        Siguiente ejercicio →
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <div className="text-center py-12">
+                    <div className="text-7xl mb-4">🏆✨</div>
+                    <h2 className="text-3xl font-bold text-stone-800">¡Práctica completada!</h2>
+                    <p className="text-stone-600 text-lg mt-3 max-w-md mx-auto">Has demostrado compromiso con el cuidado y la comunicación en inglés. Sigue practicando frases para acompañar con calma, amor y profesionalismo.</p>
+                    <div className="mt-8 flex justify-center gap-4 flex-wrap">
+                      <button onClick={resetGame} className="bg-amber-700 text-white px-8 py-3 rounded-xl font-semibold shadow-lg hover:bg-amber-800">🔄 Reiniciar práctica</button>
+                      <button onClick={() => window.scrollTo({top:0, behavior:'smooth'})} className="bg-stone-200 text-stone-700 px-8 py-3 rounded-xl">Ir al inicio</button>
+                    </div>
+                    {feedback && feedback.type === 'complete' && <div className="mt-6 text-amber-800 bg-amber-50 p-4 rounded-2xl">{feedback.message}</div>}
+                  </div>
+                )}
+                
+                {/* mensaje adicional sin vidas */}
+                {hearts === 0 && !isGameFinished && !(currentIndex === totalExercises-1 && answered) && (
+                  <div className="mt-4 p-3 bg-rose-100 rounded-xl text-rose-700 text-center font-medium flex items-center justify-center gap-2">
+                    💔 Sin corazones. Reinicia la práctica para seguir aprendiendo.
+                    <button onClick={resetGame} className="ml-3 underline text-rose-800 font-bold">Reiniciar</button>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
-        )}
-
-        {/* Ejercicio */}
-        {lives > 0 ? (
-          <div className="bg-white p-8 rounded-3xl shadow-2xl border border-gray-200 animate-fadeInUp transition-all duration-700">
-            <h2 className="text-2xl md:text-3xl font-semibold mb-6 text-gray-800">{exercises[currentExercise].question}</h2>
-            {renderExercise()}
+        </section>
+        
+        {/* Sección de tips + imágenes integradas estilo visual cálido */}
+        <section className="container mx-auto px-4 py-16">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-4xl font-bold text-stone-800">Frases que sanan y acompañan 💛</h2>
+              <p className="text-stone-600 text-lg mt-3">Expresiones reales para el día a día con adultos mayores</p>
+            </div>
+            <div className="grid md:grid-cols-3 gap-8">
+              <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 shadow-md border border-amber-100 text-center hover:shadow-xl transition">
+                <div className="text-5xl mb-3">💧</div>
+                <h3 className="font-bold text-xl">Hidratación</h3>
+                <p className="text-stone-700 mt-2">“Would you like some water or juice?”<br/>“Let’s have a small sip together.”</p>
+              </div>
+              <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 shadow-md border border-amber-100 text-center hover:shadow-xl transition">
+                <div className="text-5xl mb-3">🚶🏽‍♂️</div>
+                <h3 className="font-bold text-xl">Movilidad</h3>
+                <p className="text-stone-700 mt-2">“Take my arm, I will walk with you.”<br/>“No rush, we go slowly.”</p>
+              </div>
+              <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 shadow-md border border-amber-100 text-center hover:shadow-xl transition">
+                <div className="text-5xl mb-3">💊</div>
+                <h3 className="font-bold text-xl">Medicina & Comodidad</h3>
+                <p className="text-stone-700 mt-2">“It’s time for your medication.”<br/>“Are you comfortable? Let me fix your pillow.”</p>
+              </div>
+              <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 shadow-md border border-amber-100 text-center hover:shadow-xl transition">
+                <div className="text-5xl mb-3">😌</div>
+                <h3 className="font-bold text-xl">Apoyo emocional</h3>
+                <p className="text-stone-700 mt-2">“I’m here for you, you’re safe.”<br/>“You are doing great today.”</p>
+              </div>
+              <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 shadow-md border border-amber-100 text-center hover:shadow-xl transition">
+                <div className="text-5xl mb-3">🍲</div>
+                <h3 className="font-bold text-xl">Alimentación</h3>
+                <p className="text-stone-700 mt-2">“Would you like a few more bites?”<br/>“This soup is warm and nourishing.”</p>
+              </div>
+              <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 shadow-md border border-amber-100 text-center hover:shadow-xl transition">
+                <div className="text-5xl mb-3">🛌</div>
+                <h3 className="font-bold text-xl">Descanso</h3>
+                <p className="text-stone-700 mt-2">“Time to rest, I’ll dim the lights.”<br/>“Sleep well, I’ll check on you.”</p>
+              </div>
+            </div>
           </div>
-        ) : (
-          <div className="text-center mt-12 animate-fadeInUp">
-            <h2 className="text-3xl font-bold text-red-600 mb-4">¡Juego terminado!</h2>
-            <p className="text-lg mb-6">Tu puntaje final: {score} puntos</p>
-            <button
-              className="bg-amber-400 hover:bg-amber-500 text-white px-8 py-3 rounded-xl shadow-lg transition"
-              onClick={() => {
-                setCurrentExercise(0)
-                setScore(0)
-                setLives(3)
-                setProgress(0)
-              }}
-            >
-              Reiniciar
-            </button>
+        </section>
+        
+        {/* Footer ilustrativo */}
+        <footer className="bg-stone-800 text-amber-100 py-8 mt-10 rounded-t-3xl">
+          <div className="container mx-auto px-6 text-center">
+            <p className="text-amber-200/80">✨ ElderCare English — Cuidar con palabras, sanar con presencia. ✨</p>
+            <p className="text-sm mt-2 opacity-70">Vocabulario práctico para profesionales del cuidado del adulto mayor.</p>
+            <div className="flex justify-center gap-4 mt-4 text-2xl">👩🏽‍⚕️🤝👴🏼❤️</div>
           </div>
-        )}
-      </main>
-
-      {/* Pie de página */}
-      <footer className="bg-amber-50 p-6 text-center text-gray-600 text-sm mt-8">
-        <p>Creado con mucho cariño para profesionales del cuidado y aprendices de inglés.</p>
-      </footer>
-    </div>
-  )
-}
-
-export default App
+        </footer>
+      </div>
+    );
+  };
+  
+  ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
