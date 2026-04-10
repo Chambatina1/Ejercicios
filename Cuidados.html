@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>ElderCare English | 35 Caregiving Exercises - American English</title>
+  <title>ElderCare English | 35 Caregiving Exercises</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
@@ -27,74 +27,67 @@
 
   <script>
     // ==============================================================
-    // 35 ELDERLY CARE EXERCISES - Multiple Choice, True/False, Short Answer
+    // 35 ELDERLY CARE EXERCISES
     // ==============================================================
     
     const EXERCISES = [
-      // MULTIPLE CHOICE (16 exercises)
       { type: "multiple", question: "How do you politely ask if an elderly person needs help walking?", options: ["Let me carry you", "Would you like me to help you walk?", "You need to walk now"], correct: 1, explanation: "Would you like me to help you walk? is respectful and kind." },
-      { type: "multiple", question: "What is the most calming phrase for an anxious senior?", options: ["Calm down", "Everything is okay. I am here with you.", "Stop worrying"], correct: 1, explanation: "Everything is okay. I am here with you provides security and comfort." },
-      { type: "multiple", question: "Best response when a senior refuses medication:", options: ["You have to take it now", "I understand. Would you like me to stay with you while you take it?", "Fine, skip it then"], correct: 1, explanation: "Validating feelings and offering companionship is best practice." },
-      { type: "multiple", question: "What does 'I will bring you a warm blanket' mean?", options: ["I will bring you medicine", "I will bring you a warm blanket", "I will help you walk"], correct: 1, explanation: "A warm blanket provides comfort and warmth to the senior." },
+      { type: "multiple", question: "What is the most calming phrase for an anxious senior?", options: ["Calm down", "Everything is okay. I am here with you.", "Stop worrying"], correct: 1, explanation: "Everything is okay. I am here with you provides security." },
+      { type: "multiple", question: "Best response when a senior refuses medication:", options: ["You have to take it now", "I understand. Would you like me to stay with you?", "Fine, skip it then"], correct: 1, explanation: "Validating feelings is best practice." },
+      { type: "multiple", question: "What does 'I will bring you a warm blanket' mean?", options: ["Medicine", "Warm blanket", "Help walking"], correct: 1, explanation: "A warm blanket provides comfort." },
       { type: "multiple", question: "How do you ask about pain in a gentle way?", options: ["Does it hurt?", "Are you in any pain?", "Pain?"], correct: 1, explanation: "Are you in any pain? is gentle and professional." },
-      { type: "multiple", question: "Complete the sentence: '______ I check your blood pressure?'", options: ["May", "Should", "Will"], correct: 0, explanation: "May I... is the most formal and respectful way to ask." },
-      { type: "multiple", question: "What is the best way to offer hydration to a senior?", options: ["Drink this now", "Would you like some water or juice?", "You need to drink more"], correct: 1, explanation: "Offering choices respects their autonomy and preferences." },
-      { type: "multiple", question: "How to ask if someone needs to use the restroom respectfully?", options: ["Do you need to go?", "Would you like me to assist you to the restroom?", "Let's go to the bathroom"], correct: 1, explanation: "Would you like me to assist you... is the most polite option." },
-      { type: "multiple", question: "What does 'Let me accompany you' mean?", options: ["Let me carry you", "Let me walk with you", "Let me feed you"], correct: 1, explanation: "Accompany means to go somewhere with someone as a companion." },
-      { type: "multiple", question: "Best phrase to encourage a senior to eat:", options: ["Eat faster", "Would you like a few more bites?", "You need to finish everything"], correct: 1, explanation: "Would you like a few more bites? is gentle and encouraging." },
-      { type: "multiple", question: "How to offer emotional support to a sad senior?", options: ["Cheer up", "I am here for you. Would you like to talk?", "Stop being sad"], correct: 1, explanation: "I am here for you shows genuine care and support." },
-      { type: "multiple", question: "What does 'I will adjust your pillow' mean?", options: ["I will bring you food", "I will make your pillow more comfortable", "I will help you walk"], correct: 1, explanation: "Adjusting a pillow helps the senior feel more comfortable." },
-      { type: "multiple", question: "How to ask if a senior wants company?", options: ["Do you want company?", "Would you like me to stay with you for a while?", "You need company"], correct: 1, explanation: "Would you like me to stay... is respectful and offers choice." },
-      { type: "multiple", question: "What is a kind way to say goodnight?", options: ["Go to sleep now", "Rest well. I will check on you later.", "Sleep early"], correct: 1, explanation: "Rest well shows care and lets them know you will return." },
-      { type: "multiple", question: "How to ask about mobility needs?", options: ["Can you walk?", "Would you like me to help you move around?", "You need to exercise"], correct: 1, explanation: "Would you like me to help you move around? is polite and supportive." },
-      { type: "multiple", question: "Best way to ask about medication side effects:", options: ["Are you feeling okay after your medicine?", "Did the medicine hurt you?", "Tell me if you feel bad"], correct: 0, explanation: "Are you feeling okay after your medicine? is caring and specific." },
-      
-      // TRUE/FALSE (9 exercises)
-      { type: "truefalse", question: "You should always speak loudly to elderly people so they can hear you better.", correct: "false", explanation: "False! Speak clearly and at a normal volume. Shouting can be perceived as aggressive." },
-      { type: "truefalse", question: "Asking 'How are you feeling today?' shows empathy and concern.", correct: "true", explanation: "Correct! Asking about feelings shows you care about their emotional state." },
-      { type: "truefalse", question: "You should rush elderly people when they are eating or walking.", correct: "false", explanation: "False! Always allow them to move at their own pace. Rushing can cause falls and anxiety." },
-      { type: "truefalse", question: "Offering choices like 'Would you like water or juice?' respects their autonomy.", correct: "true", explanation: "Correct! Offering choices empowers seniors and respects their preferences." },
-      { type: "truefalse", question: "It is important to maintain eye contact when speaking with elderly adults.", correct: "true", explanation: "Correct! Eye contact shows respect and helps with communication." },
-      { type: "truefalse", question: "You should ignore a senior who seems sad or withdrawn.", correct: "false", explanation: "False! Always acknowledge their feelings and offer support." },
-      { type: "truefalse", question: "Using a gentle touch on the shoulder can be reassuring.", correct: "true", explanation: "Correct! Gentle touch, when appropriate, can provide comfort and connection." },
-      { type: "truefalse", question: "It is okay to talk about a senior as if they are not in the room.", correct: "false", explanation: "False! Always speak directly to the senior, not about them to others." },
-      { type: "truefalse", question: "Asking permission before providing care shows respect.", correct: "true", explanation: "Correct! Asking 'May I help you?' respects their dignity and autonomy." },
-      
-      // SHORT ANSWER (10 exercises)
-      { type: "short", question: "What phrase would you use to ask if someone needs to use the restroom politely?", correctKeywords: ["would you like me to assist you to the restroom", "can I help you to the bathroom", "do you need help with the bathroom", "assist you to the restroom"], explanation: "Always ask politely and respectfully: 'Would you like me to assist you to the restroom?'" },
-      { type: "short", question: "How do you ask if someone is in pain in a gentle way?", correctKeywords: ["are you in any pain", "do you have pain", "does it hurt", "any pain"], explanation: "Are you in any pain? is a gentle and caring way to ask about discomfort." },
-      { type: "short", question: "What is a kind way to say 'It is time to take your medicine'?", correctKeywords: ["it is time for your medication", "time for your medication", "may i bring your medication", "time for your medicine"], explanation: "It's time for your medication, may I bring it to you? is polite and respectful." },
-      { type: "short", question: "How would you reassure someone who feels anxious?", correctKeywords: ["i am here with you", "you are safe", "everything is okay", "i am here"], explanation: "I am here with you. You are safe. provides comfort and security." },
-      { type: "short", question: "What phrase offers help with walking?", correctKeywords: ["would you like me to help you walk", "let me help you walk", "take my arm", "help you walk"], explanation: "Would you like me to help you walk? is polite and offers assistance." },
-      { type: "short", question: "How to ask if a senior wants something to drink?", correctKeywords: ["would you like some water", "would you like something to drink", "can i get you some water", "some juice"], explanation: "Would you like some water or juice? offers hydration with respect." },
-      { type: "short", question: "What phrase shows you are listening to their concerns?", correctKeywords: ["i understand", "tell me more", "i hear you", "i understand how you feel"], explanation: "I understand. Tell me more. shows empathy and active listening." },
-      { type: "short", question: "How to ask about their comfort level?", correctKeywords: ["are you comfortable", "would you like me to adjust", "is there anything you need", "how can I make you more comfortable"], explanation: "Are you comfortable? Would you like me to adjust anything?" },
-      { type: "short", question: "What phrase to use when helping with meals?", correctKeywords: ["would you like some help with your meal", "can i help you eat", "let me help you with your food", "help with your meal"], explanation: "Would you like some help with your meal? respects their independence." },
-      { type: "short", question: "How to say goodnight in a caring way?", correctKeywords: ["rest well", "sleep well", "good night", "i will check on you later"], explanation: "Rest well. I will check on you later. provides comfort and security." }
+      { type: "multiple", question: "Complete: '______ I check your blood pressure?'", options: ["May", "Should", "Will"], correct: 0, explanation: "May I is the most respectful way." },
+      { type: "multiple", question: "Best way to offer hydration:", options: ["Drink this now", "Would you like some water or juice?", "You need to drink"], correct: 1, explanation: "Offering choices respects autonomy." },
+      { type: "multiple", question: "How to ask about restroom needs respectfully?", options: ["Do you need to go?", "Would you like me to assist you to the restroom?", "Let's go"], correct: 1, explanation: "Would you like me to assist you is most polite." },
+      { type: "multiple", question: "What does 'Let me accompany you' mean?", options: ["Carry you", "Walk with you", "Feed you"], correct: 1, explanation: "Accompany means to go with someone." },
+      { type: "multiple", question: "Best phrase to encourage eating:", options: ["Eat faster", "Would you like a few more bites?", "Finish everything"], correct: 1, explanation: "Would you like a few more bites is gentle." },
+      { type: "multiple", question: "How to offer emotional support?", options: ["Cheer up", "I am here for you. Would you like to talk?", "Stop being sad"], correct: 1, explanation: "I am here for you shows genuine care." },
+      { type: "multiple", question: "What does 'I will adjust your pillow' mean?", options: ["Bring food", "Make pillow comfortable", "Help walk"], correct: 1, explanation: "Adjusting a pillow helps comfort." },
+      { type: "multiple", question: "How to ask if a senior wants company?", options: ["Do you want company?", "Would you like me to stay with you?", "You need company"], correct: 1, explanation: "Would you like me to stay is respectful." },
+      { type: "multiple", question: "Kind way to say goodnight:", options: ["Go to sleep now", "Rest well. I will check on you.", "Sleep early"], correct: 1, explanation: "Rest well shows care and security." },
+      { type: "multiple", question: "How to ask about mobility needs?", options: ["Can you walk?", "Would you like me to help you move around?", "You need exercise"], correct: 1, explanation: "Would you like me to help is polite." },
+      { type: "multiple", question: "Best way to ask about medication side effects:", options: ["Are you feeling okay after your medicine?", "Did the medicine hurt you?", "Tell me if you feel bad"], correct: 0, explanation: "Are you feeling okay is caring." },
+      { type: "truefalse", question: "Speak loudly to elderly people so they can hear better.", correct: "false", explanation: "False! Speak clearly at normal volume." },
+      { type: "truefalse", question: "Asking 'How are you feeling?' shows empathy.", correct: "true", explanation: "Correct! It shows you care about their emotional state." },
+      { type: "truefalse", question: "Rush elderly people when they are eating or walking.", correct: "false", explanation: "False! Allow them to move at their own pace." },
+      { type: "truefalse", question: "Offering choices respects their autonomy.", correct: "true", explanation: "Correct! Choices empower seniors." },
+      { type: "truefalse", question: "Maintain eye contact when speaking with elderly adults.", correct: "true", explanation: "Correct! Eye contact shows respect." },
+      { type: "truefalse", question: "Ignore a senior who seems sad or withdrawn.", correct: "false", explanation: "False! Acknowledge their feelings and offer support." },
+      { type: "truefalse", question: "Gentle touch on the shoulder can be reassuring.", correct: "true", explanation: "Correct! Gentle touch provides comfort." },
+      { type: "truefalse", question: "Talk about a senior as if they are not in the room.", correct: "false", explanation: "False! Always speak directly to the senior." },
+      { type: "truefalse", question: "Asking permission before providing care shows respect.", correct: "true", explanation: "Correct! May I help you respects dignity." },
+      { type: "short", question: "Polite phrase to ask about restroom needs?", correctKeywords: ["would you like me to assist you to the restroom", "help you to the bathroom", "assist you"], explanation: "Would you like me to assist you to the restroom?" },
+      { type: "short", question: "Gentle way to ask about pain?", correctKeywords: ["are you in any pain", "do you have pain", "does it hurt"], explanation: "Are you in any pain?" },
+      { type: "short", question: "Kind way to say it's time for medicine?", correctKeywords: ["time for your medication", "may i bring your medication", "time for your medicine"], explanation: "It's time for your medication. May I bring it to you?" },
+      { type: "short", question: "How to reassure an anxious senior?", correctKeywords: ["i am here with you", "you are safe", "everything is okay"], explanation: "I am here with you. You are safe." },
+      { type: "short", question: "Phrase to offer help with walking?", correctKeywords: ["would you like me to help you walk", "let me help you walk", "take my arm"], explanation: "Would you like me to help you walk?" },
+      { type: "short", question: "How to offer something to drink?", correctKeywords: ["would you like some water", "something to drink", "can i get you water"], explanation: "Would you like some water or juice?" },
+      { type: "short", question: "Phrase showing you are listening to concerns?", correctKeywords: ["i understand", "tell me more", "i hear you"], explanation: "I understand. Tell me more." },
+      { type: "short", question: "How to ask about comfort level?", correctKeywords: ["are you comfortable", "would you like me to adjust", "how can i make you comfortable"], explanation: "Are you comfortable? Would you like me to adjust anything?" },
+      { type: "short", question: "Phrase to use when helping with meals?", correctKeywords: ["help with your meal", "can i help you eat", "help you with your food"], explanation: "Would you like some help with your meal?" },
+      { type: "short", question: "Caring way to say goodnight?", correctKeywords: ["rest well", "sleep well", "i will check on you later"], explanation: "Rest well. I will check on you later." }
     ];
 
-    // REAL CAREGIVER-SENIOR DIALOGUES
     const DIALOGUES = [
-      { role: "caregiver", text: "Good morning, Mrs. Johnson. How did you sleep last night?" },
-      { role: "senior", text: "Good morning. I slept a little, but I had some beautiful dreams." },
-      { role: "caregiver", text: "That is wonderful. Would you like some warm water before breakfast?" },
-      { role: "senior", text: "Yes, please. You are always so thoughtful. Thank you." },
-      { role: "caregiver", text: "Of course. I am here to make sure you feel comfortable and safe." },
-      { role: "caregiver", text: "Let me help you sit up slowly. Take your time, there is no rush." },
-      { role: "senior", text: "You are very patient with me. I really appreciate your kindness." },
-      { role: "caregiver", text: "It is my pleasure. Now, are you ready for your medication?" },
-      { role: "senior", text: "Yes, I will take it with your help. Thank you for being here." },
-      { role: "caregiver", text: "I will be right outside if you need anything. Rest well, my friend." }
+      { role: "caregiver", text: "Good morning. How did you sleep last night?" },
+      { role: "senior", text: "Good morning. I slept a little, but I had beautiful dreams." },
+      { role: "caregiver", text: "That is wonderful. Would you like some warm water?" },
+      { role: "senior", text: "Yes, please. You are so thoughtful. Thank you." },
+      { role: "caregiver", text: "I am here to make sure you feel comfortable and safe." },
+      { role: "caregiver", text: "Let me help you sit up slowly. Take your time." },
+      { role: "senior", text: "You are very patient. I appreciate your kindness." },
+      { role: "caregiver", text: "It is my pleasure. Are you ready for your medication?" },
+      { role: "senior", text: "Yes, I will take it with your help. Thank you." },
+      { role: "caregiver", text: "I will be right outside if you need anything. Rest well." }
     ];
 
-    // USEFUL CAREGIVING PHRASES
     const USEFUL_PHRASES = [
-      { icon: "fa-tint", title: "Hydration", phrase: "Would you like some water or juice? Staying hydrated is important." },
-      { icon: "fa-walking", title: "Mobility", phrase: "Take my arm, I will walk with you slowly. There is no rush." },
-      { icon: "fa-pills", title: "Medication", phrase: "It is time for your medication. May I bring it to you?" },
-      { icon: "fa-heartbeat", title: "Emotional Support", phrase: "I am here for you. You are safe with me. Everything is okay." },
-      { icon: "fa-utensils", title: "Mealtime", phrase: "Would you like a few more bites? This soup is warm and nourishing." },
-      { icon: "fa-bed", title: "Rest", phrase: "Time to rest. I will dim the lights for you. Sleep well." }
+      { icon: "fa-tint", title: "Hydration", phrase: "Would you like some water or juice?" },
+      { icon: "fa-walking", title: "Mobility", phrase: "Take my arm, I will walk with you slowly." },
+      { icon: "fa-pills", title: "Medication", phrase: "It is time for your medication. May I bring it?" },
+      { icon: "fa-heartbeat", title: "Support", phrase: "I am here for you. You are safe with me." },
+      { icon: "fa-utensils", title: "Mealtime", phrase: "Would you like a few more bites?" },
+      { icon: "fa-bed", title: "Rest", phrase: "Time to rest. I will dim the lights." }
     ];
 
     const TOTAL_EXERCISES = EXERCISES.length;
@@ -110,9 +103,6 @@
 
     let scoreSpan, heartsContainer, progressFill, progressPercentSpan, questionEl, optionsContainer, nextBtn, feedbackEl;
 
-    // ==============================================================
-    // AUDIO SYSTEM - AMERICAN ENGLISH
-    // ==============================================================
     let selectedVoice = null;
     let voiceReady = false;
 
@@ -120,8 +110,7 @@
       let cleaned = text;
       cleaned = cleaned.replace(/[.,!?;:'"“”‘’()\[\]{}]/g, ' ');
       cleaned = cleaned.replace(/\s+/g, ' ').trim();
-      cleaned = cleaned.toLowerCase();
-      return cleaned;
+      return cleaned.toLowerCase();
     }
 
     async function loadAmericanVoice() {
@@ -135,7 +124,7 @@
             selectedVoice = americanVoice;
             voiceReady = true;
             const statusDiv = document.getElementById('audioStatus');
-            if (statusDiv) statusDiv.innerHTML = `<span class="text-green-700"><i class="fas fa-check-circle"></i> Audio ready: ${americanVoice.name} | 35 Exercises</span>`;
+            if (statusDiv) statusDiv.innerHTML = `<span class="text-green-700"><i class="fas fa-check-circle"></i> Audio ready: ${americanVoice.name}</span>`;
           }
           resolve(voiceReady);
         };
@@ -147,7 +136,6 @@
     async function speakEnglish(text, element = null) {
       if (!voiceReady || !selectedVoice) await loadAmericanVoice();
       if (!voiceReady || !selectedVoice) return;
-      
       const cleanText = cleanTextForSpeech(text);
       window.speechSynthesis.cancel();
       setTimeout(() => {
@@ -155,7 +143,6 @@
         utterance.lang = 'en-US';
         utterance.voice = selectedVoice;
         utterance.rate = 0.85;
-        utterance.pitch = 1.0;
         if (element) {
           element.classList.add('playing');
           utterance.onend = () => element.classList.remove('playing');
@@ -165,323 +152,4 @@
     }
 
     loadAmericanVoice();
-
-    function updateUIState() {
-      if (scoreSpan) scoreSpan.innerText = totalScore;
-      if (progressPercentSpan) progressPercentSpan.innerText = Math.round((currentIndex / TOTAL_EXERCISES) * 100);
-      if (progressFill) progressFill.style.width = `${(currentIndex / TOTAL_EXERCISES) * 100}%`;
-      if (heartsContainer) {
-        heartsContainer.innerHTML = '';
-        for (let i = 0; i < 5; i++) {
-          const heart = document.createElement('i');
-          heart.className = i < lives ? 'fas fa-heart text-red-500 text-2xl mx-0.5' : 'far fa-heart text-gray-400 text-2xl mx-0.5';
-          heartsContainer.appendChild(heart);
-        }
-      }
-    }
-
-    function checkShortAnswer() {
-      if (answered) return;
-      const input = document.getElementById("shortInput");
-      if (!input) return;
-      const userAnswer = input.value.trim().toLowerCase();
-      const exercise = EXERCISES[currentIndex];
-      const isCorrect = exercise.correctKeywords.some(keyword => userAnswer.includes(keyword.toLowerCase()));
-      
-      answered = true;
-      
-      if (isCorrect) {
-        totalScore += POINTS_PER_CORRECT;
-        feedbackType = 'correct';
-        feedbackMsg = `✅ Excellent! +${POINTS_PER_CORRECT} points. ${exercise.explanation}`;
-      } else {
-        if (lives > 0) lives--;
-        if (heartsContainer) heartsContainer.classList.add('heart-pulse');
-        setTimeout(() => heartsContainer?.classList.remove('heart-pulse'), 400);
-        feedbackType = 'wrong';
-        feedbackMsg = `❌ Incorrect. ${exercise.explanation}`;
-      }
-      updateUIState();
-      renderCurrentExercise();
-      showFeedback();
-      
-      if (lives === 0) setTimeout(() => { if (confirm("No hearts left. Restart?")) resetGame(); }, 150);
-    }
-
-    function handleMultipleChoice(selectedIdx) {
-      if (answered) return;
-      const exercise = EXERCISES[currentIndex];
-      const isCorrect = (selectedIdx === exercise.correct);
-      selectedOption = selectedIdx;
-      answered = true;
-      
-      if (isCorrect) {
-        totalScore += POINTS_PER_CORRECT;
-        feedbackType = 'correct';
-        feedbackMsg = `✅ Excellent! +${POINTS_PER_CORRECT} points. ${exercise.explanation}`;
-      } else {
-        if (lives > 0) lives--;
-        if (heartsContainer) heartsContainer.classList.add('heart-pulse');
-        setTimeout(() => heartsContainer?.classList.remove('heart-pulse'), 400);
-        feedbackType = 'wrong';
-        const correctAnswer = exercise.options[exercise.correct];
-        feedbackMsg = `❌ Incorrect. Correct answer: "${correctAnswer}". ${exercise.explanation}`;
-      }
-      updateUIState();
-      renderCurrentExercise();
-      showFeedback();
-      
-      if (lives === 0) setTimeout(() => { if (confirm("No hearts left. Restart?")) resetGame(); }, 150);
-    }
-
-    function handleTrueFalse(selected) {
-      if (answered) return;
-      const exercise = EXERCISES[currentIndex];
-      const isCorrect = (selected === exercise.correct);
-      selectedOption = selected;
-      answered = true;
-      
-      if (isCorrect) {
-        totalScore += POINTS_PER_CORRECT;
-        feedbackType = 'correct';
-        feedbackMsg = `✅ Excellent! +${POINTS_PER_CORRECT} points. ${exercise.explanation}`;
-      } else {
-        if (lives > 0) lives--;
-        if (heartsContainer) heartsContainer.classList.add('heart-pulse');
-        setTimeout(() => heartsContainer?.classList.remove('heart-pulse'), 400);
-        feedbackType = 'wrong';
-        feedbackMsg = `❌ Incorrect. The correct answer is "${exercise.correct}". ${exercise.explanation}`;
-      }
-      updateUIState();
-      renderCurrentExercise();
-      showFeedback();
-      
-      if (lives === 0) setTimeout(() => { if (confirm("No hearts left. Restart?")) resetGame(); }, 150);
-    }
-
-    function renderCurrentExercise() {
-      if (!questionEl || !optionsContainer) return;
-      const exercise = EXERCISES[currentIndex];
-      if (!exercise) return;
-      
-      questionEl.innerHTML = `<div class="text-2xl md:text-3xl font-bold text-stone-800">${exercise.question}</div>`;
-      optionsContainer.innerHTML = '';
-      
-      if (exercise.type === "multiple") {
-        exercise.options.forEach((opt, idx) => {
-          const btn = document.createElement('button');
-          btn.className = `option-btn w-full text-left p-5 rounded-2xl border-2 transition-all duration-150 flex items-center gap-3 ${!answered ? 'hover:shadow-md cursor-pointer' : 'cursor-default'} bg-white border-amber-200`;
-          
-          if (answered) {
-            if (idx === exercise.correct) btn.className += ' bg-emerald-50 border-emerald-400';
-            else if (idx === selectedOption && idx !== exercise.correct) btn.className += ' bg-rose-50 border-rose-300';
-            else btn.className += ' bg-white/70';
-          }
-          
-          const prefix = document.createElement('span');
-          prefix.className = 'w-7 h-7 rounded-full bg-amber-100 text-amber-800 flex items-center justify-center font-medium text-sm';
-          prefix.innerText = String.fromCharCode(65+idx);
-          
-          const textSpan = document.createElement('span');
-          textSpan.className = 'text-stone-700 text-lg font-medium flex-1';
-          textSpan.innerText = opt;
-          
-          btn.appendChild(prefix);
-          btn.appendChild(textSpan);
-          
-          const audioIcon = document.createElement('button');
-          audioIcon.className = 'audio-btn ml-2 p-2 rounded-full bg-amber-100 text-amber-700 hover:bg-amber-200 transition flex-shrink-0';
-          audioIcon.innerHTML = '<i class="fas fa-volume-up"></i>';
-          audioIcon.addEventListener('click', async (e) => { e.stopPropagation(); await speakEnglish(opt, audioIcon); });
-          btn.appendChild(audioIcon);
-          
-          if (answered && idx === exercise.correct) {
-            const check = document.createElement('span');
-            check.className = 'text-emerald-600 text-xl ml-1';
-            check.innerHTML = '✓';
-            btn.appendChild(check);
-          } else if (answered && idx === selectedOption && idx !== exercise.correct) {
-            const cross = document.createElement('span');
-            cross.className = 'text-rose-500 text-xl ml-1';
-            cross.innerHTML = '✗';
-            btn.appendChild(cross);
-          }
-          
-          if (!answered) btn.addEventListener('click', () => handleMultipleChoice(idx));
-          optionsContainer.appendChild(btn);
-        });
-      } 
-      else if (exercise.type === "truefalse") {
-        const btnContainer = document.createElement('div');
-        btnContainer.className = 'grid grid-cols-2 gap-4';
-        
-        const trueBtn = document.createElement('button');
-        trueBtn.className = `true-btn w-full p-5 rounded-2xl border-2 transition-all duration-150 flex items-center justify-center gap-3 text-xl font-bold ${!answered ? 'hover:shadow-md cursor-pointer' : 'cursor-default'} bg-white border-green-400 text-green-700`;
-        trueBtn.innerHTML = '<i class="fas fa-check-circle mr-2"></i> TRUE';
-        
-        const falseBtn = document.createElement('button');
-        falseBtn.className = `false-btn w-full p-5 rounded-2xl border-2 transition-all duration-150 flex items-center justify-center gap-3 text-xl font-bold ${!answered ? 'hover:shadow-md cursor-pointer' : 'cursor-default'} bg-white border-red-400 text-red-700`;
-        falseBtn.innerHTML = '<i class="fas fa-times-circle mr-2"></i> FALSE';
-        
-        if (answered) {
-          if (exercise.correct === "true") trueBtn.className += ' bg-emerald-50 border-emerald-500';
-          else falseBtn.className += ' bg-emerald-50 border-emerald-500';
-          if (selectedOption === "true" && exercise.correct !== "true") trueBtn.className += ' bg-rose-50 border-rose-400';
-          if (selectedOption === "false" && exercise.correct !== "false") falseBtn.className += ' bg-rose-50 border-rose-400';
-        }
-        
-        if (!answered) {
-          trueBtn.addEventListener('click', () => handleTrueFalse("true"));
-          falseBtn.addEventListener('click', () => handleTrueFalse("false"));
-        }
-        
-        btnContainer.appendChild(trueBtn);
-        btnContainer.appendChild(falseBtn);
-        optionsContainer.appendChild(btnContainer);
-      }
-      else if (exercise.type === "short") {
-        const inputGroup = document.createElement('div');
-        inputGroup.className = 'space-y-4';
-        
-        const input = document.createElement('input');
-        input.type = 'text';
-        input.id = 'shortInput';
-        input.placeholder = 'Type your answer here...';
-        input.className = 'short-input w-full p-5 rounded-2xl border-2 border-amber-200 text-lg focus:outline-none focus:border-amber-500 bg-white';
-        input.disabled = answered;
-        if (answered && selectedOption) input.value = selectedOption;
-        
-        const submitBtn = document.createElement('button');
-        submitBtn.textContent = 'Submit Answer';
-        submitBtn.className = 'w-full p-4 rounded-2xl font-bold text-white text-lg bg-amber-600 hover:bg-amber-700 transition';
-        submitBtn.disabled = answered;
-        
-        if (!answered) submitBtn.addEventListener('click', checkShortAnswer);
-        
-        inputGroup.appendChild(input);
-        inputGroup.appendChild(submitBtn);
-        optionsContainer.appendChild(inputGroup);
-      }
-      
-      if (nextBtn) {
-        if (answered) {
-          nextBtn.disabled = false;
-          nextBtn.classList.remove('bg-gray-300', 'cursor-not-allowed');
-          nextBtn.classList.add('bg-amber-700', 'hover:bg-amber-800', 'cursor-pointer');
-        } else {
-          nextBtn.disabled = true;
-          nextBtn.classList.add('bg-gray-300', 'cursor-not-allowed');
-          nextBtn.classList.remove('bg-amber-700', 'hover:bg-amber-800');
-        }
-      }
-    }
-
-    function showFeedback() {
-      if (!feedbackEl) return;
-      if (!feedbackMsg) { feedbackEl.classList.add('hidden'); return; }
-      feedbackEl.classList.remove('hidden');
-      const bgClass = feedbackType === 'correct' ? 'bg-emerald-100 border-l-8 border-emerald-500 text-emerald-800' : 'bg-rose-100 border-l-8 border-rose-400 text-rose-800';
-      feedbackEl.className = `feedback-animation p-4 rounded-xl ${bgClass} mt-6`;
-      feedbackEl.innerHTML = `<p class="font-medium">${feedbackMsg}</p>`;
-    }
-
-    function nextExercise() {
-      if (!answered) return;
-      if (lives === 0) { if (confirm("No lives left. Restart?")) resetGame(); return; }
-      if (currentIndex + 1 < TOTAL_EXERCISES) {
-        currentIndex++;
-        answered = false;
-        selectedOption = null;
-        feedbackMsg = null;
-        feedbackType = null;
-        if (feedbackEl) feedbackEl.classList.add('hidden');
-        renderCurrentExercise();
-        updateUIState();
-        updateTypeBadge();
-      } else {
-        answered = true;
-        feedbackMsg = `🎉 CONGRATULATIONS! You completed all 35 exercises! Final score: ${totalScore} / ${TOTAL_EXERCISES * POINTS_PER_CORRECT}. You are becoming an excellent caregiver! 🌟`;
-        feedbackType = 'complete';
-        showFeedback();
-        if (nextBtn) nextBtn.disabled = true;
-        optionsContainer.innerHTML = `<div class="text-center p-8 bg-amber-50 rounded-2xl"><i class="fas fa-trophy text-6xl text-amber-500 mb-3"></i><p class="text-xl font-bold">✨ All 35 Exercises Complete! ✨</p><p class="text-stone-600 mt-2">You have practiced Multiple Choice, True/False, and Short Answer questions.</p><button id="resetFinalBtn" class="mt-6 bg-amber-700 text-white px-6 py-3 rounded-xl font-bold hover:bg-amber-800">Restart Practice</button></div>`;
-        document.getElementById('resetFinalBtn')?.addEventListener('click', () => resetGame());
-      }
-    }
-
-    function resetGame() {
-      currentIndex = 0;
-      totalScore = 0;
-      lives = 5;
-      answered = false;
-      selectedOption = null;
-      feedbackMsg = null;
-      feedbackType = null;
-      if (feedbackEl) feedbackEl.classList.add('hidden');
-      updateUIState();
-      renderCurrentExercise();
-      updateTypeBadge();
-      document.getElementById('learning-app')?.scrollIntoView({ behavior: 'smooth' });
-    }
-
-    function updateTypeBadge() {
-      const typeBadge = document.getElementById('exerciseTypeBadge');
-      if (typeBadge && EXERCISES[currentIndex]) {
-        const type = EXERCISES[currentIndex].type;
-        let badgeText = '', badgeColor = '';
-        if (type === 'multiple') { badgeText = 'MULTIPLE CHOICE'; badgeColor = 'bg-purple-100 text-purple-700'; }
-        else if (type === 'truefalse') { badgeText = 'TRUE / FALSE'; badgeColor = 'bg-green-100 text-green-700'; }
-        else { badgeText = 'SHORT ANSWER'; badgeColor = 'bg-orange-100 text-orange-700'; }
-        typeBadge.textContent = badgeText;
-        typeBadge.className = `inline-block px-3 py-1 rounded-full text-xs font-semibold ${badgeColor}`;
-      }
-    }
-
-    function buildFullUI() {
-      const root = document.getElementById('app-root');
-      if (!root) return;
-      
-      let dialoguesHtml = '';
-      DIALOGUES.forEach((d) => {
-        const bgClass = d.role === 'caregiver' ? 'bg-amber-50 border-l-8 border-amber-400' : 'bg-white border-l-8 border-emerald-300';
-        const icon = d.role === 'caregiver' ? '<i class="fas fa-user-nurse text-amber-600"></i>' : '<i class="fas fa-user-friends text-emerald-600"></i>';
-        const roleName = d.role === 'caregiver' ? 'CAREGIVER' : 'SENIOR';
-        dialoguesHtml += `
-          <div class="${bgClass} p-5 rounded-2xl shadow-sm flex flex-col md:flex-row justify-between items-start gap-3 transition hover:shadow-md">
-            <div class="flex-1">
-              <div class="flex items-center gap-2 font-bold text-stone-700">${icon} <span>${roleName}</span></div>
-              <p class="text-xl font-semibold text-stone-800 mt-2">${d.text}</p>
-            </div>
-            <button class="audio-dialog-btn bg-amber-200 hover:bg-amber-300 text-amber-900 px-5 py-3 rounded-xl flex items-center gap-2 transition font-medium" data-phrase="${d.text.replace(/['"]/g, '\\"')}">
-              <i class="fas fa-volume-up"></i> Listen (US)
-            </button>
-          </div>
-        `;
-      });
-      
-      let phrasesHtml = '';
-      USEFUL_PHRASES.forEach((p) => {
-        phrasesHtml += `
-          <div class="bg-white rounded-2xl p-6 shadow-md border border-amber-100 hover:shadow-xl transition text-center">
-            <i class="fas ${p.icon} text-4xl text-amber-600 mb-3"></i>
-            <h3 class="font-bold text-xl text-stone-700">${p.title}</h3>
-            <p class="text-stone-600 mt-2 font-medium">"${p.phrase}"</p>
-            <button class="phrase-audio-btn mt-3 bg-amber-100 hover:bg-amber-200 text-amber-700 px-4 py-2 rounded-xl text-sm transition" data-phrase="${p.phrase.replace(/['"]/g, '\\"')}">
-              <i class="fas fa-volume-up mr-1"></i> Hear it
-            </button>
-          </div>
-        `;
-      });
-      
-      root.innerHTML = `
-        <header class="relative bg-gradient-to-br from-[#f9e7d2] to-[#f7e1c4] overflow-hidden shadow-md">
-          <div class="container mx-auto px-5 py-10 md:py-14">
-            <div class="flex flex-col md:flex-row justify-between items-center gap-8">
-              <div class="flex-1 text-center md:text-left">
-                <div class="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-white/60 backdrop-blur-sm text-amber-800 text-sm font-semibold mb-4"><i class="fas fa-heart"></i> 35 Exercises - Complete Training</div>
-                <h1 class="text-4xl md:text-6xl font-extrabold text-stone-800 leading-tight">Speak, Listen &<br/>Care in <span class="text-amber-700">English</span></h1>
-                <p class="text-lg text-stone-600 mt-4 max-w-xl">35 interactive exercises: Multiple Choice, True/False, and Short Answer. Real caregiving dialogues + natural American pronunciation.</p>
-                <button id="startHeroBtn" class="mt-8 bg-amber-700 hover:bg-amber-800 text-white font-semibold px-8 py-4 rounded-2xl shadow-xl transition"><i class="fas fa-play mr-2"></i> Start 35 Exercises</button>
-              </div>
-              <div class="flex-1 flex justify-center">
-                <div class="relative w-64 h-64 md:w-80 md:h-80 bg-gradient
+    
