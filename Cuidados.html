@@ -1,148 +1,125 @@
-import React, { useMemo, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
-import { motion } from "framer-motion";
-import { Trophy, RotateCcw } from "lucide-react";
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>English for Elderly Care</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f7fa;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+    }
+    .exercise {
+      background: white;
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .question {
+      font-weight: bold;
+    }
+    input {
+      width: 100%;
+      padding: 8px;
+      margin-top: 8px;
+    }
+    button {
+      margin-top: 10px;
+      padding: 8px 12px;
+      cursor: pointer;
+    }
+    .result {
+      margin-top: 8px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
 
-// MUCH MÁS LARGO (tipo Duolingo real)
-const rounds = [
-  // BASICS
-  { id: 1, title: "Meaning", question: "These adjectives describe...", options: ["A) people", "B) food", "C) places"], answer: 0 },
-  { id: 2, title: "Positive", question: "Which is positive?", options: ["A) lazy", "B) generous", "C) jealous"], answer: 1 },
-  { id: 3, title: "Negative", question: "Which is negative?", options: ["A) strong", "B) reliable", "C) unsociable"], answer: 2 },
-  { id: 4, title: "Opposite", question: "Opposite of happy?", options: ["A) sad", "B) strong", "C) perfect"], answer: 0 },
-  { id: 5, title: "Opposite", question: "Opposite of hardworking?", options: ["A) lazy", "B) jealous", "C) friendly"], answer: 0 },
+<h1>🩺 English Practice: Elderly Care</h1>
 
-  // VERSE 1
-  { id: 6, title: "Verse 1", question: "She wanted a ____ man", options: ["A) selfish", "B) generous", "C) lazy"], answer: 1 },
-  { id: 7, title: "Verse 1", question: "Hardworking, ____ with family plans", options: ["A) outgoing", "B) unsociable", "C) jealous"], answer: 0 },
-  { id: 8, title: "Verse 1", question: "Strong and ____", options: ["A) insecure", "B) reliable", "C) selfish"], answer: 1 },
-  { id: 9, title: "Verse 1", question: "...and ____", options: ["A) sensitive", "B) stubborn", "C) lazy"], answer: 0 },
+<div id="app"></div>
 
-  // CHORUS
-  { id: 10, title: "Chorus", question: "I'm not ____", options: ["A) perfect", "B) strong", "C) happy"], answer: 0 },
-  { id: 11, title: "Chorus", question: "I'm ____", options: ["A) unique", "B) jealous", "C) unfriendly"], answer: 0 },
-
-  // VERSE 2
-  { id: 12, title: "Verse 2", question: "She said I was ____", options: ["A) selfish", "B) reliable", "C) strong"], answer: 0 },
-  { id: 13, title: "Verse 2", question: "____, that I don't understand", options: ["A) unsympathetic", "B) sensitive", "C) perfect"], answer: 0 },
-  { id: 14, title: "Verse 2", question: "I'm ____", options: ["A) lazy", "B) happy", "C) outgoing"], answer: 0 },
-  { id: 15, title: "Verse 2", question: "I'm unfriendly, an ____ freak", options: ["A) unsociable", "B) generous", "C) reliable"], answer: 0 },
-
-  // VERSE 3
-  { id: 16, title: "Verse 3", question: "____ and moody", options: ["A) bad-tempered", "B) strong", "C) perfect"], answer: 0 },
-  { id: 17, title: "Verse 3", question: "first she's ____ then ____", options: ["A) happy / sad", "B) strong / weak", "C) lazy / active"], answer: 0 },
-  { id: 18, title: "Verse 3", question: "She was jealous and ____", options: ["A) insecure", "B) reliable", "C) friendly"], answer: 0 },
-  { id: 19, title: "Verse 3", question: "she's ____ too", options: ["A) stubborn", "B) generous", "C) strong"], answer: 0 },
-
-  // EXTRA PRACTICE (IMPORTANTE para hacerlo largo)
-  { id: 20, title: "Meaning", question: "What is 'a good catch'?", options: ["A) good partner", "B) good singer", "C) good teacher"], answer: 0 },
-  { id: 21, title: "Vocabulary", question: "Which is negative?", options: ["A) kind", "B) selfish", "C) strong"], answer: 1 },
-  { id: 22, title: "Vocabulary", question: "Which is positive?", options: ["A) jealous", "B) lazy", "C) reliable"], answer: 2 },
-  { id: 23, title: "Vocabulary", question: "Opposite of strong?", options: ["A) weak", "B) lazy", "C) sad"], answer: 0 },
-  { id: 24, title: "Vocabulary", question: "Opposite of friendly?", options: ["A) unfriendly", "B) generous", "C) happy"], answer: 0 },
-
-  // MÁS RONDAS (para hacerlo tipo Duolingo largo)
-  { id: 25, title: "Quick", question: "Generous = ?", options: ["A) kind", "B) lazy", "C) jealous"], answer: 0 },
-  { id: 26, title: "Quick", question: "Lazy = ?", options: ["A) hardworking", "B) strong", "C) friendly"], answer: 0 },
-  { id: 27, title: "Quick", question: "Jealous = ?", options: ["A) insecure", "B) strong", "C) reliable"], answer: 0 },
-  { id: 28, title: "Quick", question: "Outgoing = ?", options: ["A) social", "B) lazy", "C) selfish"], answer: 0 },
-  { id: 29, title: "Quick", question: "Unsociable = ?", options: ["A) not social", "B) happy", "C) strong"], answer: 0 },
-  { id: 30, title: "Final", question: "Best partner quality?", options: ["A) selfish", "B) reliable", "C) jealous"], answer: 1 },
+<script>
+const exercises = [
+  {
+    question: "How do you ask if the patient is in pain?",
+    answer: "Are you in pain?"
+  },
+  {
+    question: "How do you offer help walking?",
+    answer: "Do you need help walking?"
+  },
+  {
+    question: "Say this: 'Voy a ayudarte a levantarte'",
+    answer: "I will help you stand up"
+  },
+  {
+    question: "How do you ask if they took their medicine?",
+    answer: "Did you take your medicine?"
+  },
+  {
+    question: "Say: 'Es hora de comer'",
+    answer: "It is time to eat"
+  },
+  {
+    question: "How do you ask if they feel dizzy?",
+    answer: "Do you feel dizzy?"
+  },
+  {
+    question: "Say: 'Voy a cambiar tu posición'",
+    answer: "I will change your position"
+  },
+  {
+    question: "How do you ask if they are comfortable?",
+    answer: "Are you comfortable?"
+  },
+  {
+    question: "Say: 'Voy a revisar tu presión'",
+    answer: "I will check your blood pressure"
+  },
+  {
+    question: "How do you reassure them?",
+    answer: "Everything is okay"
+  }
 ];
 
-function Option({ text, onClick, selected, correct, show }) {
-  return (
-    <button
-      onClick={onClick}
-      className={`w-full rounded-2xl border p-4 text-left ${
-        show
-          ? correct
-            ? "bg-green-100 border-green-500"
-            : selected
-            ? "bg-red-100 border-red-400"
-            : "bg-white"
-          : selected
-          ? "bg-black text-white"
-          : "bg-white"
-      }`}
-    >
-      {text}
-    </button>
-  );
+const app = document.getElementById("app");
+
+exercises.forEach((ex, index) => {
+  const div = document.createElement("div");
+  div.className = "exercise";
+
+  div.innerHTML = `
+    <div class="question">${index + 1}. ${ex.question}</div>
+    <input type="text" id="input-${index}" placeholder="Your answer...">
+    <button onclick="checkAnswer(${index})">Check</button>
+    <div class="result" id="result-${index}"></div>
+  `;
+
+  app.appendChild(div);
+});
+
+function checkAnswer(index) {
+  const userInput = document.getElementById(`input-${index}`).value.toLowerCase().trim();
+  const correct = exercises[index].answer.toLowerCase();
+
+  const resultDiv = document.getElementById(`result-${index}`);
+
+  if (userInput === correct) {
+    resultDiv.textContent = "✅ Correct!";
+    resultDiv.style.color = "green";
+  } else {
+    resultDiv.textContent = `❌ Correct answer: "${exercises[index].answer}"`;
+    resultDiv.style.color = "red";
+  }
 }
+</script>
 
-export default function Game() {
-  const [i, setI] = useState(0);
-  const [selected, setSelected] = useState(null);
-  const [show, setShow] = useState(false);
-  const [score, setScore] = useState(0);
-  const [hearts, setHearts] = useState(5);
-
-  const q = rounds[i];
-  const progress = (i / rounds.length) * 100;
-
-  const check = () => {
-    if (selected === null) return;
-    setShow(true);
-    if (selected === q.answer) setScore(score + 1);
-    else setHearts(hearts - 1);
-  };
-
-  const next = () => {
-    setShow(false);
-    setSelected(null);
-    if (i + 1 < rounds.length) setI(i + 1);
-  };
-
-  if (hearts <= 0)
-    return (
-      <div className="p-10 text-center">
-        <h1 className="text-2xl">Game Over</h1>
-        <Button onClick={() => location.reload()}>Restart</Button>
-      </div>
-    );
-
-  if (i >= rounds.length)
-    return (
-      <div className="p-10 text-center">
-        <Trophy />
-        <h1 className="text-2xl">Score {score}/{rounds.length}</h1>
-      </div>
-    );
-
-  return (
-    <div className="p-6 max-w-xl mx-auto space-y-6">
-      <Progress value={progress} />
-      <div>❤️ {hearts} ⭐ {score}</div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>{q.title}</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <p>{q.question}</p>
-
-          {q.options.map((opt, idx) => (
-            <Option
-              key={idx}
-              text={opt}
-              selected={selected === idx}
-              correct={idx === q.answer}
-              show={show}
-              onClick={() => setSelected(idx)}
-            />
-          ))}
-
-          {!show ? (
-            <Button onClick={check}>Check</Button>
-          ) : (
-            <Button onClick={next}>Next</Button>
-          )}
-        </CardContent>
-      </Card>
-    </div>
-  );
-}
+</body>
+</html>
