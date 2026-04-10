@@ -1,375 +1,349 @@
-import React, { useMemo, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
-import { motion } from "framer-motion";
-import { CheckCircle2, Circle, RotateCcw, Trophy, Music4 } from "lucide-react";
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>ElderCare English | Aprende con Diálogos y Audio Americano</title>
+  <!-- Tailwind CSS + Font Awesome -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700&display=swap');
+    * { font-family: 'Inter', sans-serif; }
+    body { background: linear-gradient(135deg, #fef7e8 0%, #fff3e0 100%); }
+    .option-btn { transition: all 0.2s; }
+    .option-btn:hover:not(:disabled) { transform: translateY(-3px); box-shadow: 0 10px 20px -5px rgba(0,0,0,0.1); }
+    @keyframes fadeSlide { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    .feedback-animation { animation: fadeSlide 0.3s ease forwards; }
+    .heart-pulse { animation: pulse 0.4s ease; }
+    @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
+    .audio-btn { transition: all 0.15s; }
+    .audio-btn:hover { transform: scale(1.05); background-color: #fde68a; }
+  </style>
+</head>
+<body>
+  <div id="app-root" class="min-h-screen flex flex-col"></div>
 
-const adjectiveBank = [
-  "sensitive",
-  "reliable",
-  "happy",
-  "moody",
-  "sad",
-  "perfect",
-  "hardworking",
-  "insecure",
-  "bad-tempered",
-  "selfish",
-  "lazy",
-  "generous",
-  "unique",
-  "unfriendly",
-  "unsympathetic",
-  "stubborn",
-  "strong",
-  "outgoing",
-  "jealous",
-  "unsociable",
-];
+  <script>
+    // --------------------------------------------------------------
+    // EJERCICIOS (con foco en comprensión y diálogos)
+    // --------------------------------------------------------------
+    const EXERCISES = [
+      { type: "multiple", question: "🧓🏽 Cuidador dice: 'How are you feeling today?' ¿Cuál es la mejor respuesta del paciente?", options: ["I'm fine, leave me alone", "I feel a little tired, but thank you for asking", "I don't know"], correct: 1, explanation: "✔️ Una respuesta amable y realista fortalece la comunicación." },
+      { type: "multiple", question: "Para preguntar si necesita ir al baño, la frase más respetuosa es:", options: ["Do you need to go to the bathroom?", "Let me take you to the toilet", "Would you like me to help you to the restroom?"], correct: 2, explanation: "✅ 'Would you like me to help you...' es la opción más educada y empática." },
+      { type: "fill", question: "Completa la frase del cuidador: '______ I check your blood pressure?' (¿Puedo revisar tu presión arterial?)", options: ["May", "Must", "Should"], correct: 0, explanation: "🔹 'May I...' es formal y respetuoso." },
+      { type: "multiple", question: "Escucha la frase (usa el botón de audio después). ¿Qué significa 'I'll bring you a warm blanket'?", options: ["Te traeré una medicina", "Te traeré una manta caliente", "Te ayudaré a caminar"], correct: 1, explanation: "🧣 Manta caliente = warm blanket. Cuidado con la comodidad." },
+      { type: "translate", question: "Traduce al inglés: '¿Le duele algo?', pensando en un tono suave.", options: ["Does it hurt?", "Are you in any pain?", "Pain?"], correct: 1, explanation: "💙 'Are you in any pain?' es más completo y gentil." },
+      { type: "multiple", question: "Diálogo: Cuidador: 'It's time for your medication.' Paciente: 'I don't want to.' Mejor respuesta del cuidador:", options: ["You have to take it", "I understand, but let's try together. It will help you feel better", "Okay, skip it"], correct: 1, explanation: "🌟 Validar sentimientos y ofrecer compañía es clave en cuidado geriátrico." }
+    ];
 
-const heardAnswers = adjectiveBank;
+    // --------------------------------------------------------------
+    // DIÁLOGOS COMPLETOS (con frases para audio)
+    // --------------------------------------------------------------
+    const DIALOGUES = [
+      { role: "caregiver", text: "Good morning, Mrs. Johnson. Did you sleep well?", translation: "Buenos días, Sra. Johnson. ¿Durmió bien?" },
+      { role: "patient", text: "Good morning. A little, but I had some dreams.", translation: "Buenos días. Un poco, pero tuve algunos sueños." },
+      { role: "caregiver", text: "I understand. Would you like some water before breakfast?", translation: "Entiendo. ¿Le gustaría un poco de agua antes del desayuno?" },
+      { role: "patient", text: "Yes, please. Thank you for being so kind.", translation: "Sí, por favor. Gracias por ser tan amable." },
+      { role: "caregiver", text: "Of course. I'm here to help you feel comfortable and safe.", translation: "Por supuesto. Estoy aquí para ayudarle a sentirse cómodo y seguro." },
+      { role: "caregiver", text: "Let me help you sit up slowly. Take your time.", translation: "Déjeme ayudarle a incorporarse lentamente. Tómese su tiempo." },
+      { role: "patient", text: "You are very patient. I appreciate that.", translation: "Usted es muy paciente. Eso lo aprecio." }
+    ];
 
-const gapQuestions = [
-  {
-    title: "Verse 1",
-    prompt: "She said that she wanted a ____ man / ____, ____ with family plans / ____ and ____ and ____",
-    answers: ["generous", "hardworking", "outgoing", "strong", "reliable", "sensitive"],
-  },
-  {
-    title: "Chorus",
-    prompt: "I know that I'm not ____ / Don't try to change me, I'm ____",
-    answers: ["perfect", "unique"],
-  },
-  {
-    title: "Verse 2",
-    prompt: "She said I was ____, that's how she began / ____, that I don't understand / She told me I'm ____, and that I live like a pig / She said I'm ____, an ____ freak",
-    answers: ["selfish", "unsympathetic", "lazy", "unfriendly", "unsociable"],
-  },
-  {
-    title: "Verse 3",
-    prompt: "____ and ____, first she's ____ then ____ / I said she was ____ and so ____ / She insisted she wasn't, 'cause she's ____ too",
-    answers: ["bad-tempered", "moody", "happy", "sad", "jealous", "insecure", "stubborn"],
-  },
-];
+    const TOTAL_EXERCISES = EXERCISES.length;
+    const POINTS_PER_CORRECT = 10;
 
-const reflectionPrompts = [
-  "Which adjectives are positive and which are negative?",
-  "Which opposites do you know?",
-  "Which adjectives describe you? Which describe someone you know?",
-  "What qualities do you look for in a partner?",
-  "Do you care what other people think of you? Why?",
-];
+    // Estado global
+    let currentIndex = 0;
+    let totalScore = 0;
+    let lives = 5;
+    let answered = false;
+    let selectedOptionIdx = null;
+    let feedbackMsg = null;
+    let feedbackType = null;
 
-function normalize(text) {
-  return text.trim().toLowerCase();
-}
+    // Elementos DOM
+    let scoreSpan, heartsContainer, progressFill, progressPercentSpan, questionEl, optionsContainer, nextBtn, feedbackEl;
 
-function ScorePill({ ok }) {
-  return ok ? (
-    <Badge className="rounded-full px-3 py-1 text-sm">Correcto</Badge>
-  ) : (
-    <Badge variant="secondary" className="rounded-full px-3 py-1 text-sm">Pendiente</Badge>
-  );
-}
+    // Función de síntesis de voz (inglés americano)
+    function speakEnglish(text) {
+      if (!window.speechSynthesis) {
+        alert("Tu navegador no soporta audio por voz. Pero igual puedes practicar la lectura.");
+        return;
+      }
+      // Cancelar cualquier utterance en curso para evitar solapamiento
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'en-US';       // Inglés Americano
+      utterance.rate = 0.9;           // Velocidad clara para estudiantes
+      utterance.pitch = 1.0;
+      utterance.volume = 1;
+      // Intentar seleccionar voz femenina americana si está disponible (opcional)
+      window.speechSynthesis.speak(utterance);
+    }
 
-export default function DuolingoStyleWorksheetApp() {
-  const [screen, setScreen] = useState("welcome");
-  const [heardSelected, setHeardSelected] = useState([]);
-  const [heardChecked, setHeardChecked] = useState(false);
-  const [gapInputs, setGapInputs] = useState(
-    gapQuestions.map((q) => q.answers.map(() => ""))
-  );
-  const [gapChecked, setGapChecked] = useState(false);
-  const [reflections, setReflections] = useState(reflectionPrompts.map(() => ""));
+    function updateUIState() {
+      if (scoreSpan) scoreSpan.innerText = totalScore;
+      if (progressPercentSpan) progressPercentSpan.innerText = Math.round((currentIndex / TOTAL_EXERCISES) * 100);
+      if (progressFill) progressFill.style.width = `${(currentIndex / TOTAL_EXERCISES) * 100}%`;
+      if (heartsContainer) {
+        heartsContainer.innerHTML = '';
+        for (let i = 0; i < 5; i++) {
+          const heart = document.createElement('i');
+          heart.className = i < lives ? 'fas fa-heart text-red-500 text-2xl mx-0.5' : 'far fa-heart text-gray-400 text-2xl mx-0.5';
+          heartsContainer.appendChild(heart);
+        }
+      }
+    }
 
-  const heardScore = useMemo(() => {
-    const correct = heardSelected.filter((item) => heardAnswers.includes(item)).length;
-    const incorrect = heardSelected.filter((item) => !heardAnswers.includes(item)).length;
-    return Math.max(0, correct - incorrect);
-  }, [heardSelected]);
-
-  const totalGapItems = gapQuestions.reduce((acc, q) => acc + q.answers.length, 0);
-  const gapScore = useMemo(() => {
-    let score = 0;
-    gapQuestions.forEach((q, qi) => {
-      q.answers.forEach((ans, ai) => {
-        if (normalize(gapInputs[qi][ai]) === normalize(ans)) score += 1;
+    function renderCurrentExercise() {
+      if (!questionEl || !optionsContainer) return;
+      const exercise = EXERCISES[currentIndex];
+      if (!exercise) return;
+      
+      // Aviso de audio si es útil
+      let audioHint = '';
+      if (exercise.question.includes("Escucha la frase")) {
+        audioHint = `<div class="mb-3 flex items-center gap-2 text-amber-700 bg-amber-50 p-2 rounded-xl"><i class="fas fa-headphones"></i> <span>Haz clic en el ícono de audio junto a la respuesta para escuchar la pronunciación americana.</span></div>`;
+      }
+      questionEl.innerHTML = `<div class="text-2xl md:text-3xl font-bold text-stone-800">${exercise.question}</div>${audioHint}`;
+      
+      optionsContainer.innerHTML = '';
+      exercise.options.forEach((opt, idx) => {
+        const btn = document.createElement('button');
+        btn.className = `option-btn w-full text-left p-5 rounded-2xl border-2 transition-all duration-150 flex items-center gap-3 ${!answered ? 'hover:shadow-md cursor-pointer' : 'cursor-default'}`;
+        
+        if (answered) {
+          if (idx === exercise.correct) btn.className += ' bg-emerald-50 border-emerald-400 ring-1 ring-emerald-200';
+          else if (idx === selectedOptionIdx && idx !== exercise.correct) btn.className += ' bg-rose-50 border-rose-300';
+          else btn.className += ' bg-white/70 border-amber-100';
+        } else {
+          btn.className += ' bg-white border-amber-200';
+          if (selectedOptionIdx === idx) btn.className += ' bg-amber-50 border-amber-400';
+        }
+        
+        const prefix = document.createElement('span');
+        prefix.className = 'w-7 h-7 rounded-full bg-amber-100 text-amber-800 flex items-center justify-center font-medium text-sm';
+        prefix.innerText = String.fromCharCode(65+idx);
+        
+        const textSpan = document.createElement('span');
+        textSpan.className = 'text-stone-700 text-lg font-medium flex-1';
+        textSpan.innerText = opt;
+        
+        btn.appendChild(prefix);
+        btn.appendChild(textSpan);
+        
+        // Botón de audio al lado de cada opción (para practicar pronunciación)
+        const audioIcon = document.createElement('button');
+        audioIcon.className = 'audio-btn ml-2 p-2 rounded-full bg-amber-100 text-amber-700 hover:bg-amber-200 transition';
+        audioIcon.innerHTML = '<i class="fas fa-volume-up"></i>';
+        audioIcon.addEventListener('click', (e) => {
+          e.stopPropagation();
+          speakEnglish(opt);
+        });
+        btn.appendChild(audioIcon);
+        
+        if (answered && idx === exercise.correct) {
+          const check = document.createElement('span');
+          check.className = 'text-emerald-600 text-xl ml-1';
+          check.innerHTML = '✓';
+          btn.appendChild(check);
+        } else if (answered && idx === selectedOptionIdx && idx !== exercise.correct) {
+          const cross = document.createElement('span');
+          cross.className = 'text-rose-500 text-xl ml-1';
+          cross.innerHTML = '✗';
+          btn.appendChild(cross);
+        }
+        
+        if (!answered) {
+          btn.addEventListener('click', () => handleAnswer(idx));
+        }
+        optionsContainer.appendChild(btn);
       });
-    });
-    return score;
-  }, [gapInputs]);
+      
+      if (nextBtn) {
+        if (answered) {
+          nextBtn.disabled = false;
+          nextBtn.classList.remove('bg-gray-300', 'cursor-not-allowed');
+          nextBtn.classList.add('bg-amber-700', 'hover:bg-amber-800', 'cursor-pointer');
+        } else {
+          nextBtn.disabled = true;
+          nextBtn.classList.add('bg-gray-300', 'cursor-not-allowed');
+          nextBtn.classList.remove('bg-amber-700', 'hover:bg-amber-800');
+        }
+      }
+    }
 
-  const totalScore = heardScore + gapScore;
-  const totalPossible = heardAnswers.length + totalGapItems;
-  const progress = screen === "welcome" ? 5 : screen === "listen1" ? 33 : screen === "listen2" ? 66 : 100;
-
-  const toggleHeard = (word) => {
-    setHeardSelected((prev) =>
-      prev.includes(word) ? prev.filter((w) => w !== word) : [...prev, word]
-    );
-  };
-
-  const updateGap = (qIndex, aIndex, value) => {
-    setGapInputs((prev) => prev.map((row, r) => row.map((cell, c) => (r === qIndex && c === aIndex ? value : cell))));
-  };
-
-  const resetAll = () => {
-    setScreen("welcome");
-    setHeardSelected([]);
-    setHeardChecked(false);
-    setGapChecked(false);
-    setGapInputs(gapQuestions.map((q) => q.answers.map(() => "")));
-    setReflections(reflectionPrompts.map(() => ""));
-  };
-
-  const gapInputClass = (qIndex, aIndex, answer) => {
-    if (!gapChecked) return "border-slate-200";
-    return normalize(gapInputs[qIndex][aIndex]) === normalize(answer)
-      ? "border-green-500 bg-green-50"
-      : "border-red-400 bg-red-50";
-  };
-
-  return (
-    <div className="min-h-screen bg-slate-50 p-4 md:p-8">
-      <div className="mx-auto max-w-5xl space-y-6">
-        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
-          <Card className="rounded-3xl border-0 shadow-lg">
-            <CardContent className="flex flex-col gap-4 p-6 md:flex-row md:items-center md:justify-between">
-              <div>
-                <p className="text-sm font-medium uppercase tracking-wide text-slate-500">Worksheet interactivo</p>
-                <h1 className="text-3xl font-bold text-slate-900">Don't try to change me</h1>
-                <p className="mt-1 text-slate-600">Experiencia tipo Duolingo para practicar personality adjectives.</p>
-              </div>
-              <div className="flex items-center gap-3">
-                <a href="https://youtu.be/CyaHnGf3TNM" target="_blank" rel="noreferrer">
-                  <Button className="rounded-2xl"><Music4 className="mr-2 h-4 w-4" /> YouTube</Button>
-                </a>
-                <a href="https://sptfy.es/dttcm" target="_blank" rel="noreferrer">
-                  <Button variant="secondary" className="rounded-2xl">Spotify</Button>
-                </a>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        <Card className="rounded-3xl border-0 shadow-sm">
-          <CardContent className="p-5">
-            <div className="flex items-center justify-between gap-4">
-              <div className="w-full">
-                <div className="mb-2 flex items-center justify-between text-sm text-slate-600">
-                  <span>Progreso</span>
-                  <span>{progress}%</span>
-                </div>
-                <Progress value={progress} className="h-3 rounded-full" />
-              </div>
-              <Button variant="outline" className="rounded-2xl" onClick={resetAll}>
-                <RotateCcw className="mr-2 h-4 w-4" /> Reiniciar
-              </Button>
+    function handleAnswer(selectedIdx) {
+      if (answered) return;
+      const exercise = EXERCISES[currentIndex];
+      const isCorrect = (selectedIdx === exercise.correct);
+      selectedOptionIdx = selectedIdx;
+      answered = true;
+      
+      if (isCorrect) {
+        totalScore += POINTS_PER_CORRECT;
+        feedbackType = 'correct';
+        feedbackMsg = `✅ ¡Excelente! +${POINTS_PER_CORRECT} puntos. ${exercise.explanation}`;
+      } else {
+        if (lives > 0) lives--;
+        if (heartsContainer) heartsContainer.classList.add('heart-pulse');
+        setTimeout(() => heartsContainer?.classList.remove('heart-pulse'), 400);
+        feedbackType = 'wrong';
+        feedbackMsg = `❌ Incorrecto. ${exercise.explanation}`;
+      }
+      updateUIState();
+      renderCurrentExercise();
+      showFeedback();
+      
+      if (lives === 0) {
+        setTimeout(() => {
+          if (confirm("💔 Sin corazones. ¿Reiniciar la práctica?")) resetGame();
+        }, 150);
+      }
+    }
+    
+    function showFeedback() {
+      if (!feedbackEl) return;
+      if (!feedbackMsg) { feedbackEl.classList.add('hidden'); return; }
+      feedbackEl.classList.remove('hidden');
+      const bgClass = feedbackType === 'correct' ? 'bg-emerald-100 border-l-8 border-emerald-500 text-emerald-800' : 'bg-rose-100 border-l-8 border-rose-400 text-rose-800';
+      feedbackEl.className = `feedback-animation p-4 rounded-xl ${bgClass} mt-6`;
+      feedbackEl.innerHTML = `<p class="font-medium">${feedbackMsg}</p>`;
+    }
+    
+    function nextExercise() {
+      if (!answered) return;
+      if (lives === 0) {
+        if (confirm("❤️‍🩹 Sin vidas. Reiniciar para seguir aprendiendo.")) resetGame();
+        return;
+      }
+      if (currentIndex + 1 < TOTAL_EXERCISES) {
+        currentIndex++;
+        answered = false;
+        selectedOptionIdx = null;
+        feedbackMsg = null;
+        feedbackType = null;
+        if (feedbackEl) feedbackEl.classList.add('hidden');
+        renderCurrentExercise();
+        updateUIState();
+      } else {
+        // Finalización completa
+        answered = true;
+        feedbackMsg = `🎉 ¡Increíble! Completaste todos los ejercicios. Puntaje final: ${totalScore} / ${TOTAL_EXERCISES * POINTS_PER_CORRECT}. ¡Eres un gran cuidador/a! 🌟 Ahora practica los diálogos con audio.`;
+        feedbackType = 'complete';
+        showFeedback();
+        if (nextBtn) nextBtn.disabled = true;
+        optionsContainer.innerHTML = `<div class="text-center p-8 bg-amber-50 rounded-2xl"><i class="fas fa-trophy text-6xl text-amber-500 mb-3"></i><p class="text-xl font-bold">✨ Módulo completado ✨</p><button id="resetFinalBtn" class="mt-6 bg-amber-700 text-white px-6 py-3 rounded-xl font-bold">Reiniciar práctica</button></div>`;
+        document.getElementById('resetFinalBtn')?.addEventListener('click', () => resetGame());
+      }
+    }
+    
+    function resetGame() {
+      currentIndex = 0;
+      totalScore = 0;
+      lives = 5;
+      answered = false;
+      selectedOptionIdx = null;
+      feedbackMsg = null;
+      feedbackType = null;
+      if (feedbackEl) feedbackEl.classList.add('hidden');
+      updateUIState();
+      renderCurrentExercise();
+      document.getElementById('learning-app')?.scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    // Construir página completa con Hero + Diálogos + Audio
+    function buildFullUI() {
+      const root = document.getElementById('app-root');
+      if (!root) return;
+      
+      // Generar HTML de diálogos con botones de audio
+      let dialoguesHtml = '';
+      DIALOGUES.forEach((d, idx) => {
+        const bgClass = d.role === 'caregiver' ? 'bg-amber-50 border-l-8 border-amber-400' : 'bg-white border-l-8 border-emerald-300';
+        const icon = d.role === 'caregiver' ? '<i class="fas fa-user-nurse text-amber-600"></i>' : '<i class="fas fa-user-friends text-emerald-600"></i>';
+        dialoguesHtml += `
+          <div class="${bgClass} p-5 rounded-2xl shadow-sm flex flex-col md:flex-row justify-between items-start gap-3">
+            <div class="flex-1">
+              <div class="flex items-center gap-2 font-bold text-stone-700">${icon} <span>${d.role === 'caregiver' ? '👩🏽‍⚕️ Cuidador/a:' : '👵🏽 Adulto Mayor:'}</span></div>
+              <p class="text-lg font-medium text-stone-800 mt-1">${d.text}</p>
+              <p class="text-sm text-stone-500 italic">${d.translation}</p>
             </div>
-          </CardContent>
-        </Card>
-
-        {screen === "welcome" && (
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-            <Card className="rounded-3xl border-0 shadow-lg">
-              <CardHeader>
-                <CardTitle className="text-2xl">Antes de escuchar</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="grid gap-3 md:grid-cols-2">
-                  <div className="rounded-2xl bg-slate-100 p-4">
-                    <p className="font-semibold">Piensa y comenta</p>
-                    <ul className="mt-2 space-y-2 text-sm text-slate-700">
-                      <li>What can these adjectives describe?</li>
-                      <li>Which are positive and which are negative?</li>
-                      <li>Do you know the opposite of any of them?</li>
-                      <li>Which describe you or someone you know?</li>
-                    </ul>
-                  </div>
-                  <div className="rounded-2xl bg-indigo-50 p-4">
-                    <p className="font-semibold">Banco de adjetivos</p>
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      {adjectiveBank.map((word) => (
-                        <Badge key={word} variant="secondary" className="rounded-full px-3 py-1 text-sm">{word}</Badge>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-                <Button className="rounded-2xl px-6" onClick={() => setScreen("listen1")}>Empezar</Button>
-              </CardContent>
-            </Card>
-          </motion.div>
-        )}
-
-        {screen === "listen1" && (
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-            <Card className="rounded-3xl border-0 shadow-lg">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-2xl">Ejercicio 1 · Tick the adjectives that you hear</CardTitle>
-                  <ScorePill ok={heardChecked} />
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <p className="text-slate-600">Escucha la canción una vez y toca los adjetivos que escuches.</p>
-                <div className="flex flex-wrap gap-3">
-                  {adjectiveBank.map((word) => {
-                    const active = heardSelected.includes(word);
-                    const showCorrect = heardChecked && heardAnswers.includes(word);
-                    const showIncorrect = heardChecked && active && !heardAnswers.includes(word);
-                    return (
-                      <button
-                        key={word}
-                        onClick={() => toggleHeard(word)}
-                        className={`rounded-full border px-4 py-2 text-sm font-medium transition ${
-                          active ? "scale-105 border-slate-900 bg-slate-900 text-white" : "border-slate-200 bg-white text-slate-700"
-                        } ${showCorrect ? "ring-2 ring-green-500" : ""} ${showIncorrect ? "ring-2 ring-red-400" : ""}`}
-                      >
-                        {word}
-                      </button>
-                    );
-                  })}
-                </div>
-
-                {heardChecked && (
-                  <div className="rounded-2xl bg-slate-100 p-4 text-sm text-slate-700">
-                    <p className="font-semibold">Resultado</p>
-                    <p className="mt-1">Puntuación: {heardScore} / {heardAnswers.length}</p>
-                    <p className="mt-1">En esta canción aparecen todos los adjetivos del banco.</p>
-                  </div>
-                )}
-
-                <div className="flex flex-wrap gap-3">
-                  <Button className="rounded-2xl" onClick={() => setHeardChecked(true)}>Comprobar</Button>
-                  <Button variant="secondary" className="rounded-2xl" onClick={() => setScreen("listen2")}>Siguiente</Button>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        )}
-
-        {screen === "listen2" && (
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-            <Card className="rounded-3xl border-0 shadow-lg">
-              <CardHeader>
-                <div className="flex items-center justify-between gap-4">
-                  <CardTitle className="text-2xl">Ejercicio 2 · Fill the gaps</CardTitle>
-                  <ScorePill ok={gapChecked} />
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <p className="text-slate-600">Escucha otra vez y completa los espacios con los adjetivos del ejercicio anterior.</p>
-                <div className="grid gap-4">
-                  {gapQuestions.map((question, qIndex) => (
-                    <div key={question.title} className="rounded-2xl border border-slate-200 bg-white p-4">
-                      <div className="mb-3 flex items-center justify-between">
-                        <h3 className="text-lg font-semibold">{question.title}</h3>
-                        <span className="text-sm text-slate-500">{question.answers.length} respuestas</span>
-                      </div>
-                      <p className="mb-4 text-sm text-slate-600">{question.prompt}</p>
-                      <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-                        {question.answers.map((answer, aIndex) => (
-                          <div key={`${question.title}-${aIndex}`} className="space-y-1">
-                            <label className="text-xs font-medium uppercase tracking-wide text-slate-500">Blank {aIndex + 1}</label>
-                            <Input
-                              value={gapInputs[qIndex][aIndex]}
-                              onChange={(e) => updateGap(qIndex, aIndex, e.target.value)}
-                              className={`rounded-2xl ${gapInputClass(qIndex, aIndex, answer)}`}
-                              placeholder="Write the adjective"
-                            />
-                            {gapChecked && normalize(gapInputs[qIndex][aIndex]) !== normalize(answer) && (
-                              <p className="text-xs text-red-600">Correct answer: {answer}</p>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                {gapChecked && (
-                  <div className="rounded-2xl bg-slate-100 p-4 text-sm text-slate-700">
-                    <p className="font-semibold">Resultado</p>
-                    <p className="mt-1">Puntuación: {gapScore} / {totalGapItems}</p>
-                  </div>
-                )}
-
-                <div className="flex flex-wrap gap-3">
-                  <Button className="rounded-2xl" onClick={() => setGapChecked(true)}>Comprobar</Button>
-                  <Button variant="secondary" className="rounded-2xl" onClick={() => setScreen("finish")}>Ver cierre</Button>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        )}
-
-        {screen === "finish" && (
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-            <div className="grid gap-6 lg:grid-cols-[1.2fr,0.8fr]">
-              <Card className="rounded-3xl border-0 shadow-lg">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-2xl"><Trophy className="h-6 w-6" /> Post-listening</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {reflectionPrompts.map((prompt, i) => (
-                    <div key={prompt} className="rounded-2xl bg-slate-100 p-4">
-                      <p className="mb-2 font-medium text-slate-800">{prompt}</p>
-                      <textarea
-                        value={reflections[i]}
-                        onChange={(e) => setReflections((prev) => prev.map((item, idx) => (idx === i ? e.target.value : item)))}
-                        className="min-h-[96px] w-full rounded-2xl border border-slate-200 bg-white p-3 text-sm outline-none"
-                        placeholder="Write your answer here"
-                      />
-                    </div>
-                  ))}
-                </CardContent>
-              </Card>
-
-              <Card className="rounded-3xl border-0 shadow-lg">
-                <CardHeader>
-                  <CardTitle className="text-2xl">Resumen</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="rounded-2xl bg-emerald-50 p-4">
-                    <p className="text-sm text-slate-600">Puntuación total</p>
-                    <p className="mt-1 text-4xl font-bold text-slate-900">{totalScore}<span className="text-lg text-slate-500">/{totalPossible}</span></p>
-                  </div>
-                  <div className="space-y-3 text-sm text-slate-700">
-                    <div className="flex items-center justify-between rounded-2xl bg-slate-100 p-3">
-                      <span>Ejercicio 1</span>
-                      <span className="font-semibold">{heardScore}/{heardAnswers.length}</span>
-                    </div>
-                    <div className="flex items-center justify-between rounded-2xl bg-slate-100 p-3">
-                      <span>Ejercicio 2</span>
-                      <span className="font-semibold">{gapScore}/{totalGapItems}</span>
-                    </div>
-                  </div>
-                  <div className="rounded-2xl border border-slate-200 p-4">
-                    <p className="font-semibold text-slate-800">Objetivo</p>
-                    <p className="mt-2 text-sm text-slate-600">Practicar adjetivos de personalidad con una experiencia simple, clara y reutilizable como lección web.</p>
-                  </div>
-                  <div className="flex flex-col gap-3">
-                    <Button className="rounded-2xl" onClick={() => setScreen("listen1")}>Volver a practicar</Button>
-                    <Button variant="outline" className="rounded-2xl" onClick={resetAll}>Empezar de nuevo</Button>
-                  </div>
-                </CardContent>
-              </Card>
+            <button class="audio-dialog-btn bg-amber-200 hover:bg-amber-300 text-amber-900 px-4 py-2 rounded-xl flex items-center gap-2 transition" data-phrase="${d.text.replace(/['"]/g, '\\"')}">
+              <i class="fas fa-headphones"></i> Escuchar (US)
+            </button>
+          </div>
+        `;
+      });
+      
+      root.innerHTML = `
+        <header class="relative bg-gradient-to-br from-[#f9e7d2] to-[#f7e1c4] overflow-hidden shadow-md">
+          <div class="container mx-auto px-5 py-10 md:py-14">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-8">
+              <div class="flex-1 text-center md:text-left">
+                <div class="inline-block px-4 py-1 rounded-full bg-white/60 backdrop-blur-sm text-amber-800 text-sm font-semibold mb-4">🎧 Aprende con Audio Americano 🇺🇸</div>
+                <h1 class="text-4xl md:text-6xl font-extrabold text-stone-800 leading-tight">Habla y escucha <br/>Inglés para <span class="text-amber-700">Cuidado Geriátrico</span></h1>
+                <p class="text-lg text-stone-600 mt-4 max-w-xl">Diálogos reales, pronunciación americana y ejercicios interactivos. Entrena tu oído y aprende frases cálidas.</p>
+                <button id="startHeroBtn" class="mt-8 bg-amber-700 hover:bg-amber-800 text-white font-semibold px-8 py-4 rounded-2xl shadow-xl"><i class="fas fa-play mr-2"></i> Comenzar ahora</button>
+              </div>
+              <div class="flex-1 flex justify-center"><div class="relative w-64 h-64 md:w-80 md:h-80 bg-gradient-to-tr from-[#e9cfb0] to-[#dbbd97] rounded-full flex items-center justify-center shadow-2xl"><span class="text-8xl">🎙️👂</span><div class="absolute -bottom-4 -right-4 bg-white rounded-full p-3 shadow-lg"><i class="fas fa-microphone-alt text-3xl text-amber-600"></i></div></div></div>
             </div>
-          </motion.div>
-        )}
-
-        <Card className="rounded-3xl border-0 shadow-sm">
-          <CardContent className="p-5 text-sm text-slate-600">
-            <div className="flex items-start gap-3">
-              <CheckCircle2 className="mt-0.5 h-4 w-4" />
-              <p>Base interactiva lista para convertirla en página real dentro de Chambari Academy, con progreso, validación y bloques reutilizables por actividad.</p>
+          </div>
+        </header>
+        
+        <section id="learning-app" class="container mx-auto px-4 py-12">
+          <div class="max-w-4xl mx-auto">
+            <div class="bg-white/70 backdrop-blur-sm rounded-3xl shadow-2xl p-5 md:p-8">
+              <div class="flex flex-wrap justify-between items-center gap-4 mb-6 border-b border-amber-200 pb-3">
+                <div class="flex items-center gap-4"><div class="bg-amber-100 rounded-2xl px-4 py-2"><i class="fas fa-trophy text-amber-600"></i> <span class="font-bold">Puntaje</span> <span id="scoreValue" class="text-2xl font-black">0</span></div><div id="heartsContainer" class="flex gap-1"></div></div>
+                <div class="flex-1 max-w-xs"><div class="flex justify-between text-sm font-medium"><span>Progreso</span><span id="progressPercent">0</span>%</div><div class="h-2.5 bg-amber-100 rounded-full"><div id="progressFill" class="h-full bg-amber-600 rounded-full" style="width:0%"></div></div></div>
+              </div>
+              <div class="bg-white rounded-3xl shadow-xl p-6 md:p-10"><div id="questionDisplay" class="mb-6"></div><div id="optionsContainer" class="space-y-3"></div><div id="feedbackMessage" class="hidden"></div><div class="mt-8 flex justify-end"><button id="nextButton" class="px-8 py-3 rounded-xl font-bold text-white text-lg bg-gray-300 cursor-not-allowed" disabled>Siguiente →</button></div></div>
             </div>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
-  );
-}
+          </div>
+        </section>
+        
+        <!-- Sección de Diálogos Esenciales con Audio Americano -->
+        <section class="container mx-auto px-4 py-12">
+          <div class="max-w-5xl mx-auto">
+            <div class="text-center mb-10"><h2 class="text-3xl md:text-4xl font-bold text-stone-800">🗣️ Diálogos Reales: Cuidador + Adulto Mayor</h2><p class="text-stone-600 mt-2">Haz clic en "Escuchar" para oír la pronunciación con acento americano. Practica imitando el tono cálido.</p></div>
+            <div class="space-y-5" id="dialoguesList">${dialoguesHtml}</div>
+            <div class="mt-8 bg-amber-100 p-5 rounded-2xl text-center"><i class="fas fa-info-circle text-amber-700"></i> <span class="font-medium">Consejo:</span> Repite en voz alta después de escuchar. El cuidado empieza con una comunicación clara y amorosa.</div>
+          </div>
+        </section>
+        
+        <footer class="bg-stone-800 text-amber-100 py-8 mt-8 rounded-t-3xl"><div class="container mx-auto text-center"><p>✨ ElderCare English — Pronunciación Americana para Cuidadores ✨</p><p class="text-sm opacity-70">Mejora tu inglés y brinda un cuidado excepcional.</p></div></footer>
+      `;
+      
+      // Asignar referencias
+      scoreSpan = document.getElementById('scoreValue');
+      heartsContainer = document.getElementById('heartsContainer');
+      progressFill = document.getElementById('progressFill');
+      progressPercentSpan = document.getElementById('progressPercent');
+      questionEl = document.getElementById('questionDisplay');
+      optionsContainer = document.getElementById('optionsContainer');
+      nextBtn = document.getElementById('nextButton');
+      feedbackEl = document.getElementById('feedbackMessage');
+      
+      if (nextBtn) nextBtn.addEventListener('click', nextExercise);
+      document.getElementById('startHeroBtn')?.addEventListener('click', () => document.getElementById('learning-app')?.scrollIntoView({ behavior: 'smooth' }));
+      
+      // Asignar eventos de audio a los botones de diálogo
+      document.querySelectorAll('.audio-dialog-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const phrase = btn.getAttribute('data-phrase');
+          if (phrase) speakEnglish(phrase);
+        });
+      });
+      
+      // Inicializar estado
+      currentIndex = 0; totalScore = 0; lives = 5; answered = false; selectedOptionIdx = null;
+      updateUIState();
+      renderCurrentExercise();
+    }
+    
+    buildFullUI();
+  </script>
+</body>
+</html>
