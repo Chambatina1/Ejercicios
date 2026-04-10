@@ -1,125 +1,637 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <title>English for Elderly Care</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f5f7fa;
-      margin: 0;
-      padding: 20px;
-    }
-    h1 {
-      text-align: center;
-    }
-    .exercise {
-      background: white;
-      padding: 15px;
-      margin: 10px 0;
-      border-radius: 10px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-    .question {
-      font-weight: bold;
-    }
-    input {
-      width: 100%;
-      padding: 8px;
-      margin-top: 8px;
-    }
-    button {
-      margin-top: 10px;
-      padding: 8px 12px;
-      cursor: pointer;
-    }
-    .result {
-      margin-top: 8px;
-      font-weight: bold;
-    }
-  </style>
-</head>
-<body>
+import React, { useMemo, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
+import { CheckCircle2, XCircle, Heart, Volume2, RefreshCw, ArrowRight, Star } from "lucide-react";
 
-<h1>🩺 English Practice: Elderly Care</h1>
-
-<div id="app"></div>
-
-<script>
-const exercises = [
+const lessons = [
   {
-    question: "How do you ask if the patient is in pain?",
-    answer: "Are you in pain?"
+    id: 1,
+    type: "multiple",
+    title: "Greeting a resident",
+    image:
+      "https://images.unsplash.com/photo-1516574187841-cb9cc2ca948b?auto=format&fit=crop&w=1200&q=80",
+    prompt: "Choose the best phrase to greet an elderly resident politely.",
+    phrase: "Buenos días, ¿cómo se siente hoy?",
+    options: [
+      "Good morning, how are you feeling today?",
+      "Wake up now.",
+      "Move faster, please.",
+      "You must eat now."
+    ],
+    answer: "Good morning, how are you feeling today?",
+    tip: "En cuidado de ancianos se usa un tono amable, claro y tranquilo."
   },
   {
-    question: "How do you offer help walking?",
-    answer: "Do you need help walking?"
+    id: 2,
+    type: "multiple",
+    title: "Helping with mobility",
+    image:
+      "https://images.unsplash.com/photo-1576765608535-5f04d1e3f289?auto=format&fit=crop&w=1200&q=80",
+    prompt: "Choose the phrase a caregiver uses before helping someone walk.",
+    phrase: "¿Necesita ayuda para caminar?",
+    options: [
+      "Do you need help walking?",
+      "Can you cook alone?",
+      "Please clean the table.",
+      "Go to the garden now."
+    ],
+    answer: "Do you need help walking?",
+    tip: ""help walking" es una frase muy común en asistencia diaria."
   },
   {
-    question: "Say this: 'Voy a ayudarte a levantarte'",
-    answer: "I will help you stand up"
+    id: 3,
+    type: "fill",
+    title: "Medication time",
+    image:
+      "https://images.unsplash.com/photo-1584515933487-779824d29309?auto=format&fit=crop&w=1200&q=80",
+    prompt: "Complete the sentence.",
+    phrase: "It is time to take your _______.",
+    answer: "medicine",
+    choices: ["blanket", "medicine", "chair", "window"],
+    tip: ""Take your medicine" es una estructura esencial."
   },
   {
-    question: "How do you ask if they took their medicine?",
-    answer: "Did you take your medicine?"
+    id: 4,
+    type: "multiple",
+    title: "Checking comfort",
+    image:
+      "https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=1200&q=80",
+    prompt: "Choose the best question.",
+    phrase: "¿Está cómodo?",
+    options: [
+      "Are you comfortable?",
+      "Are you angry?",
+      "Can you run?",
+      "Do you drive?"
+    ],
+    answer: "Are you comfortable?",
+    tip: ""Comfortable" se usa mucho al acomodar al paciente en cama o silla."
   },
   {
-    question: "Say: 'Es hora de comer'",
-    answer: "It is time to eat"
+    id: 5,
+    type: "match",
+    title: "Useful care vocabulary",
+    image:
+      "https://images.unsplash.com/photo-1519824145371-296894a0daa9?auto=format&fit=crop&w=1200&q=80",
+    prompt: "Match each English word with its meaning.",
+    pairs: [
+      { left: "wheelchair", right: "silla de ruedas" },
+      { left: "caregiver", right: "cuidador" },
+      { left: "dizzy", right: "mareado" },
+      { left: "bandage", right: "vendaje" }
+    ],
+    tip: "Este vocabulario aparece mucho en cuidado diario y emergencias leves."
   },
   {
-    question: "How do you ask if they feel dizzy?",
-    answer: "Do you feel dizzy?"
+    id: 6,
+    type: "multiple",
+    title: "Reassuring the resident",
+    image:
+      "https://images.unsplash.com/photo-1526256262350-7da7584cf5eb?auto=format&fit=crop&w=1200&q=80",
+    prompt: "Choose the most reassuring phrase.",
+    phrase: "Todo está bien. Estoy aquí para ayudarle.",
+    options: [
+      "Everything is okay. I am here to help you.",
+      "You are alone now.",
+      "Please be quiet.",
+      "Do not talk to me."
+    ],
+    answer: "Everything is okay. I am here to help you.",
+    tip: "Las frases de calma son claves para generar confianza."
   },
   {
-    question: "Say: 'Voy a cambiar tu posición'",
-    answer: "I will change your position"
+    id: 7,
+    type: "fill",
+    title: "Pain assessment",
+    image:
+      "https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=1200&q=80",
+    prompt: "Complete the question.",
+    phrase: "Are you in _______?",
+    answer: "pain",
+    choices: ["pain", "music", "kitchen", "paper"],
+    tip: ""Are you in pain?" es una pregunta básica y muy frecuente."
   },
   {
-    question: "How do you ask if they are comfortable?",
-    answer: "Are you comfortable?"
+    id: 8,
+    type: "multiple",
+    title: "Changing position",
+    image:
+      "https://images.unsplash.com/photo-1551076805-e1869033e561?auto=format&fit=crop&w=1200&q=80",
+    prompt: "Choose the correct sentence.",
+    phrase: "Voy a cambiar su posición para que esté más cómodo.",
+    options: [
+      "I am going to change your position so you can be more comfortable.",
+      "I am going to wash the car.",
+      "You need to leave now.",
+      "The room is closed."
+    ],
+    answer: "I am going to change your position so you can be more comfortable.",
+    tip: "Se usa mucho cuando el paciente está en cama o necesita apoyo físico."
   },
   {
-    question: "Say: 'Voy a revisar tu presión'",
-    answer: "I will check your blood pressure"
+    id: 9,
+    type: "multiple",
+    title: "Food and hydration",
+    image:
+      "https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=1200&q=80",
+    prompt: "Choose the phrase used to encourage hydration.",
+    phrase: "Por favor, tome un poco de agua.",
+    options: [
+      "Please drink some water.",
+      "Please close the door.",
+      "Please answer the phone.",
+      "Please wear your shoes."
+    ],
+    answer: "Please drink some water.",
+    tip: "La hidratación es parte central del cuidado diario."
   },
   {
-    question: "How do you reassure them?",
-    answer: "Everything is okay"
+    id: 10,
+    type: "multiple",
+    title: "Short idiomatic care phrase",
+    image:
+      "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=1200&q=80",
+    prompt: "Choose the expression closest to this caregiving phrase.",
+    phrase: "Take it easy.",
+    options: [
+      "Tómelo con calma.",
+      "Levántese rápido.",
+      "Termine ya.",
+      "Ignore the pain."
+    ],
+    answer: "Tómelo con calma.",
+    tip: ""Take it easy" se usa para transmitir calma y suavidad."
   }
 ];
 
-const app = document.getElementById("app");
-
-exercises.forEach((ex, index) => {
-  const div = document.createElement("div");
-  div.className = "exercise";
-
-  div.innerHTML = `
-    <div class="question">${index + 1}. ${ex.question}</div>
-    <input type="text" id="input-${index}" placeholder="Your answer...">
-    <button onclick="checkAnswer(${index})">Check</button>
-    <div class="result" id="result-${index}"></div>
-  `;
-
-  app.appendChild(div);
-});
-
-function checkAnswer(index) {
-  const userInput = document.getElementById(`input-${index}`).value.toLowerCase().trim();
-  const correct = exercises[index].answer.toLowerCase();
-
-  const resultDiv = document.getElementById(`result-${index}`);
-
-  if (userInput === correct) {
-    resultDiv.textContent = "✅ Correct!";
-    resultDiv.style.color = "green";
-  } else {
-    resultDiv.textContent = `❌ Correct answer: "${exercises[index].answer}"`;
-    resultDiv.style.color = "red";
-  }
+function shuffleArray(array) {
+  return [...array].sort(() => Math.random() - 0.5);
 }
-</script>
 
-</body>
-</html>
+function Header({ progress, hearts, score }) {
+  return (
+    <div className="sticky top-0 z-20 bg-white/90 backdrop-blur border-b">
+      <div className="max-w-5xl mx-auto px-4 py-4 flex items-center gap-4">
+        <div className="flex-1">
+          <Progress value={progress} className="h-3" />
+        </div>
+        <div className="flex items-center gap-2 text-rose-500 font-semibold">
+          <Heart className="w-5 h-5 fill-current" />
+          <span>{hearts}</span>
+        </div>
+        <div className="flex items-center gap-2 text-amber-500 font-semibold">
+          <Star className="w-5 h-5 fill-current" />
+          <span>{score}</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Hero() {
+  return (
+    <section className="max-w-5xl mx-auto px-4 pt-6 pb-4">
+      <div className="grid md:grid-cols-2 gap-6 items-center">
+        <div>
+          <Badge className="mb-3 rounded-full px-3 py-1 text-sm">English for Elderly Care</Badge>
+          <h1 className="text-4xl md:text-5xl font-bold leading-tight mb-4">
+            Practica inglés real para el cuidado de ancianos
+          </h1>
+          <p className="text-slate-600 text-lg mb-4">
+            Ejercicios con respuestas tipo Duolingo, imágenes agradables y frases que sí se usan en el trabajo diario.
+          </p>
+          <div className="flex flex-wrap gap-3 text-sm text-slate-600">
+            <span className="bg-slate-100 rounded-full px-3 py-1">10 ejercicios</span>
+            <span className="bg-slate-100 rounded-full px-3 py-1">Feedback inmediato</span>
+            <span className="bg-slate-100 rounded-full px-3 py-1">Vocabulario útil</span>
+            <span className="bg-slate-100 rounded-full px-3 py-1">Frases idiomáticas</span>
+          </div>
+        </div>
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="rounded-3xl overflow-hidden shadow-xl"
+        >
+          <img
+            src="https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&w=1400&q=80"
+            alt="Caregiver helping an elderly person"
+            className="w-full h-[320px] object-cover"
+          />
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
+function MultipleChoice({ lesson, onCorrect, onWrong }) {
+  const [selected, setSelected] = useState(null);
+  const [locked, setLocked] = useState(false);
+  const [options] = useState(() => shuffleArray(lesson.options));
+
+  const check = (option) => {
+    if (locked) return;
+    setSelected(option);
+    setLocked(true);
+    if (option === lesson.answer) onCorrect();
+    else onWrong();
+  };
+
+  return (
+    <div className="grid lg:grid-cols-2 gap-6 items-start">
+      <div className="space-y-4">
+        <div className="rounded-3xl overflow-hidden shadow-lg">
+          <img src={lesson.image} alt={lesson.title} className="w-full h-[300px] object-cover" />
+        </div>
+        <div className="bg-sky-50 border border-sky-100 rounded-2xl p-4">
+          <p className="text-sm text-slate-500 mb-1">Frase guía</p>
+          <p className="text-xl font-semibold">{lesson.phrase}</p>
+        </div>
+      </div>
+      <div className="space-y-4">
+        <div>
+          <h2 className="text-2xl font-bold mb-2">{lesson.title}</h2>
+          <p className="text-slate-600">{lesson.prompt}</p>
+        </div>
+
+        <div className="grid gap-3">
+          {options.map((option) => {
+            const isCorrect = option === lesson.answer;
+            const isSelected = selected === option;
+            const showCorrect = locked && isCorrect;
+            const showWrong = locked && isSelected && !isCorrect;
+
+            return (
+              <button
+                key={option}
+                onClick={() => check(option)}
+                className={`text-left rounded-2xl border-2 px-4 py-4 transition-all shadow-sm hover:shadow-md ${{
+                  true: ""
+                } && showCorrect
+                  ? "border-emerald-500 bg-emerald-50"
+                  : showWrong
+                  ? "border-red-500 bg-red-50"
+                  : "border-slate-200 bg-white hover:border-sky-300"}`}
+              >
+                <div className="flex items-center justify-between gap-3">
+                  <span className="font-medium">{option}</span>
+                  {showCorrect && <CheckCircle2 className="w-5 h-5 text-emerald-600" />}
+                  {showWrong && <XCircle className="w-5 h-5 text-red-600" />}
+                </div>
+              </button>
+            );
+          })}
+        </div>
+
+        <AnimatePresence>
+          {locked && (
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              className={`rounded-2xl p-4 border ${
+                selected === lesson.answer
+                  ? "bg-emerald-50 border-emerald-200"
+                  : "bg-red-50 border-red-200"
+              }`}
+            >
+              <p className="font-semibold mb-1">
+                {selected === lesson.answer ? "Excellent" : "Keep going"}
+              </p>
+              <p className="text-slate-700">{lesson.tip}</p>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </div>
+  );
+}
+
+function FillBlank({ lesson, onCorrect, onWrong }) {
+  const [selected, setSelected] = useState(null);
+  const [locked, setLocked] = useState(false);
+  const [choices] = useState(() => shuffleArray(lesson.choices));
+
+  const check = (choice) => {
+    if (locked) return;
+    setSelected(choice);
+    setLocked(true);
+    if (choice === lesson.answer) onCorrect();
+    else onWrong();
+  };
+
+  const renderedPhrase = lesson.phrase.replace("_______", selected ? selected : "_______");
+
+  return (
+    <div className="grid lg:grid-cols-2 gap-6 items-start">
+      <div className="space-y-4">
+        <div className="rounded-3xl overflow-hidden shadow-lg">
+          <img src={lesson.image} alt={lesson.title} className="w-full h-[300px] object-cover" />
+        </div>
+        <Card className="rounded-3xl border-0 shadow-md">
+          <CardContent className="p-5">
+            <p className="text-sm text-slate-500 mb-2">Complete la frase</p>
+            <p className="text-2xl font-bold leading-relaxed">{renderedPhrase}</p>
+          </CardContent>
+        </Card>
+      </div>
+      <div className="space-y-4">
+        <div>
+          <h2 className="text-2xl font-bold mb-2">{lesson.title}</h2>
+          <p className="text-slate-600">{lesson.prompt}</p>
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          {choices.map((choice) => {
+            const isCorrect = choice === lesson.answer;
+            const isSelected = selected === choice;
+            const showCorrect = locked && isCorrect;
+            const showWrong = locked && isSelected && !isCorrect;
+            return (
+              <button
+                key={choice}
+                onClick={() => check(choice)}
+                className={`rounded-2xl border-2 px-4 py-4 font-semibold transition-all ${
+                  showCorrect
+                    ? "border-emerald-500 bg-emerald-50"
+                    : showWrong
+                    ? "border-red-500 bg-red-50"
+                    : "border-slate-200 bg-white hover:border-sky-300"
+                }`}
+              >
+                {choice}
+              </button>
+            );
+          })}
+        </div>
+        <AnimatePresence>
+          {locked && (
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className={`rounded-2xl p-4 border ${
+                selected === lesson.answer
+                  ? "bg-emerald-50 border-emerald-200"
+                  : "bg-red-50 border-red-200"
+              }`}
+            >
+              <p className="font-semibold mb-1">
+                {selected === lesson.answer ? "Nice job" : `Correct answer: ${lesson.answer}`}
+              </p>
+              <p className="text-slate-700">{lesson.tip}</p>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </div>
+  );
+}
+
+function MatchExercise({ lesson, onCorrect, onWrong }) {
+  const [selectedLeft, setSelectedLeft] = useState(null);
+  const [matches, setMatches] = useState({});
+  const [locked, setLocked] = useState(false);
+  const rights = useMemo(() => shuffleArray(lesson.pairs.map((p) => p.right)), [lesson.pairs]);
+  const completed = Object.keys(matches).length === lesson.pairs.length;
+
+  const handleRightSelect = (right) => {
+    if (locked || !selectedLeft) return;
+    setMatches((prev) => ({ ...prev, [selectedLeft]: right }));
+    setSelectedLeft(null);
+  };
+
+  const validate = () => {
+    const ok = lesson.pairs.every((p) => matches[p.left] === p.right);
+    setLocked(true);
+    if (ok) onCorrect();
+    else onWrong();
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="grid lg:grid-cols-2 gap-6 items-start">
+        <div className="rounded-3xl overflow-hidden shadow-lg">
+          <img src={lesson.image} alt={lesson.title} className="w-full h-[320px] object-cover" />
+        </div>
+        <Card className="rounded-3xl border-0 shadow-md">
+          <CardHeader>
+            <CardTitle className="text-2xl">{lesson.title}</CardTitle>
+            <CardDescription>{lesson.prompt}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-slate-600">Toca una palabra en inglés y luego su significado en español.</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-6">
+        <div className="space-y-3">
+          {lesson.pairs.map((pair) => {
+            const chosen = selectedLeft === pair.left;
+            const matched = matches[pair.left];
+            return (
+              <button
+                key={pair.left}
+                onClick={() => !locked && !matched && setSelectedLeft(pair.left)}
+                className={`w-full text-left rounded-2xl px-4 py-4 border-2 transition ${
+                  matched
+                    ? "border-emerald-400 bg-emerald-50"
+                    : chosen
+                    ? "border-sky-500 bg-sky-50"
+                    : "border-slate-200 bg-white"
+                }`}
+              >
+                <div className="font-semibold">{pair.left}</div>
+                {matched && <div className="text-sm text-slate-500 mt-1">Matched with: {matched}</div>}
+              </button>
+            );
+          })}
+        </div>
+        <div className="space-y-3">
+          {rights.map((right) => {
+            const used = Object.values(matches).includes(right);
+            const correctForSelected = lesson.pairs.find((p) => p.left === selectedLeft)?.right === right;
+            return (
+              <button
+                key={right}
+                onClick={() => !used && handleRightSelect(right)}
+                className={`w-full text-left rounded-2xl px-4 py-4 border-2 transition ${
+                  used
+                    ? "border-slate-200 bg-slate-100 text-slate-400"
+                    : selectedLeft && correctForSelected
+                    ? "border-sky-300 bg-sky-50"
+                    : "border-slate-200 bg-white hover:border-sky-300"
+                }`}
+              >
+                <div className="font-semibold">{right}</div>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="flex flex-wrap gap-3 items-center">
+        <Button
+          onClick={validate}
+          disabled={!completed || locked}
+          className="rounded-2xl px-6"
+        >
+          Check matches
+        </Button>
+        {locked && (
+          <div className={`rounded-2xl px-4 py-3 border ${lesson.pairs.every((p) => matches[p.left] === p.right) ? "bg-emerald-50 border-emerald-200" : "bg-red-50 border-red-200"}`}>
+            <p className="font-semibold">
+              {lesson.pairs.every((p) => matches[p.left] === p.right) ? "Perfect matching" : "Some pairs need review"}
+            </p>
+            <p className="text-sm text-slate-700 mt-1">{lesson.tip}</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function Summary({ score, restart }) {
+  const level = score >= 90 ? "Excellent" : score >= 70 ? "Very good" : score >= 50 ? "Good start" : "Keep practicing";
+  return (
+    <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
+      <Card className="max-w-3xl mx-auto rounded-[28px] shadow-xl border-0">
+        <CardContent className="p-8 text-center">
+          <div className="w-20 h-20 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-5">
+            <CheckCircle2 className="w-10 h-10 text-emerald-600" />
+          </div>
+          <h2 className="text-3xl font-bold mb-2">Session complete</h2>
+          <p className="text-slate-600 text-lg mb-6">{level}. You finished the 10 elderly care English exercises.</p>
+          <div className="grid sm:grid-cols-3 gap-4 mb-6">
+            <div className="bg-slate-50 rounded-2xl p-4">
+              <div className="text-sm text-slate-500">Score</div>
+              <div className="text-3xl font-bold">{score}</div>
+            </div>
+            <div className="bg-slate-50 rounded-2xl p-4">
+              <div className="text-sm text-slate-500">Focus</div>
+              <div className="text-xl font-semibold">Care phrases</div>
+            </div>
+            <div className="bg-slate-50 rounded-2xl p-4">
+              <div className="text-sm text-slate-500">Next step</div>
+              <div className="text-xl font-semibold">Listening + speaking</div>
+            </div>
+          </div>
+          <Button onClick={restart} className="rounded-2xl px-6 gap-2">
+            <RefreshCw className="w-4 h-4" />
+            Practice again
+          </Button>
+        </CardContent>
+      </Card>
+    </motion.div>
+  );
+}
+
+export default function ElderlyCareEnglishPracticeApp() {
+  const [current, setCurrent] = useState(0);
+  const [hearts, setHearts] = useState(5);
+  const [score, setScore] = useState(0);
+  const [roundKey, setRoundKey] = useState(0);
+
+  const lesson = lessons[current];
+  const progress = ((current) / lessons.length) * 100;
+
+  const next = () => {
+    setTimeout(() => {
+      setCurrent((c) => c + 1);
+      setRoundKey((k) => k + 1);
+    }, 900);
+  };
+
+  const handleCorrect = () => {
+    setScore((s) => Math.min(100, s + 10));
+    next();
+  };
+
+  const handleWrong = () => {
+    setHearts((h) => Math.max(0, h - 1));
+    next();
+  };
+
+  const restart = () => {
+    setCurrent(0);
+    setHearts(5);
+    setScore(0);
+    setRoundKey((k) => k + 1);
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-sky-50 via-white to-emerald-50">
+      <Header progress={progress} hearts={hearts} score={score} />
+      <Hero />
+
+      <main className="max-w-5xl mx-auto px-4 pb-16">
+        {current < lessons.length ? (
+          <Card className="rounded-[30px] shadow-xl border-0 overflow-hidden">
+            <CardContent className="p-5 md:p-8">
+              <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+                <Badge variant="secondary" className="rounded-full px-3 py-1">
+                  Exercise {current + 1} / {lessons.length}
+                </Badge>
+                <button className="flex items-center gap-2 text-slate-500 hover:text-slate-700">
+                  <Volume2 className="w-4 h-4" />
+                  <span className="text-sm">Audio ready</span>
+                </button>
+              </div>
+
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={`${lesson.id}-${roundKey}`}
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -15 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  {lesson.type === "multiple" && (
+                    <MultipleChoice lesson={lesson} onCorrect={handleCorrect} onWrong={handleWrong} />
+                  )}
+                  {lesson.type === "fill" && (
+                    <FillBlank lesson={lesson} onCorrect={handleCorrect} onWrong={handleWrong} />
+                  )}
+                  {lesson.type === "match" && (
+                    <MatchExercise lesson={lesson} onCorrect={handleCorrect} onWrong={handleWrong} />
+                  )}
+                </motion.div>
+              </AnimatePresence>
+            </CardContent>
+          </Card>
+        ) : (
+          <Summary score={score} restart={restart} />
+        )}
+
+        <section className="grid md:grid-cols-3 gap-4 mt-8">
+          <Card className="rounded-3xl border-0 shadow-md">
+            <CardContent className="p-5">
+              <h3 className="font-bold text-lg mb-2">Qué practica el alumno</h3>
+              <p className="text-slate-600">Saludos, movilidad, medicamentos, dolor, hidratación y expresiones amables de cuidado.</p>
+            </CardContent>
+          </Card>
+          <Card className="rounded-3xl border-0 shadow-md">
+            <CardContent className="p-5">
+              <h3 className="font-bold text-lg mb-2">Interacción tipo app</h3>
+              <p className="text-slate-600">Selección múltiple, completar frase, emparejar conceptos y feedback visual inmediato.</p>
+            </CardContent>
+          </Card>
+          <Card className="rounded-3xl border-0 shadow-md">
+            <CardContent className="p-5">
+              <h3 className="font-bold text-lg mb-2">Siguiente mejora</h3>
+              <p className="text-slate-600">Audio real, pronunciación, guardado de progreso y niveles por dificultad.</p>
+            </CardContent>
+          </Card>
+        </section>
+
+        <div className="mt-8 flex justify-center">
+          <Button className="rounded-2xl px-6 gap-2">
+            Continue learning
+            <ArrowRight className="w-4 h-4" />
+          </Button>
+        </div>
+      </main>
+    </div>
+  );
+}
