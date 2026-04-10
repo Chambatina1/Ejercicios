@@ -6,13 +6,60 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle2, XCircle, Heart, Volume2, RefreshCw, ArrowRight, Star } from "lucide-react";
 
+const makeCareIllustration = (title, subtitle, accentA, accentB) => {
+  const svg = `
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800">
+    <defs>
+      <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="${accentA}" />
+        <stop offset="100%" stop-color="${accentB}" />
+      </linearGradient>
+      <linearGradient id="card" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#ffffff" stop-opacity="0.96" />
+        <stop offset="100%" stop-color="#f8fafc" stop-opacity="0.94" />
+      </linearGradient>
+    </defs>
+    <rect width="1200" height="800" fill="url(#bg)" />
+    <circle cx="1030" cy="120" r="110" fill="#ffffff" fill-opacity="0.15" />
+    <circle cx="150" cy="120" r="70" fill="#ffffff" fill-opacity="0.12" />
+    <circle cx="1080" cy="640" r="140" fill="#ffffff" fill-opacity="0.12" />
+    <rect x="110" y="110" width="980" height="580" rx="36" fill="url(#card)" />
+    <rect x="180" y="210" width="210" height="270" rx="28" fill="#dbeafe" />
+    <circle cx="285" cy="270" r="48" fill="#f59e0b" fill-opacity="0.35" />
+    <rect x="230" y="325" width="110" height="120" rx="26" fill="#60a5fa" fill-opacity="0.9" />
+    <rect x="210" y="350" width="30" height="110" rx="15" fill="#93c5fd" />
+    <rect x="330" y="350" width="30" height="110" rx="15" fill="#93c5fd" />
+    <rect x="235" y="445" width="34" height="88" rx="17" fill="#1d4ed8" fill-opacity="0.75" />
+    <rect x="301" y="445" width="34" height="88" rx="17" fill="#1d4ed8" fill-opacity="0.75" />
+    <rect x="430" y="180" width="500" height="340" rx="30" fill="#ffffff" />
+    <text x="470" y="265" font-size="58" font-family="Arial, sans-serif" font-weight="700" fill="#0f172a">${title}</text>
+    <text x="470" y="325" font-size="30" font-family="Arial, sans-serif" fill="#475569">${subtitle}</text>
+    <rect x="470" y="375" width="330" height="18" rx="9" fill="#e2e8f0" />
+    <rect x="470" y="375" width="210" height="18" rx="9" fill="#38bdf8" />
+    <rect x="470" y="430" width="180" height="54" rx="18" fill="#dcfce7" />
+    <text x="500" y="464" font-size="28" font-family="Arial, sans-serif" font-weight="700" fill="#166534">Care English</text>
+    <rect x="180" y="540" width="720" height="90" rx="28" fill="#ffffff" fill-opacity="0.95" />
+    <text x="220" y="596" font-size="34" font-family="Arial, sans-serif" fill="#334155">Warm phrases • Daily routines • Real caregiving language</text>
+    <circle cx="960" cy="578" r="56" fill="#fda4af" fill-opacity="0.95" />
+    <path d="M936 575c0-16 12-28 27-28 12 0 20 7 25 16 5-9 13-16 25-16 15 0 27 12 27 28 0 31-52 61-52 61s-52-30-52-61z" fill="#fff" />
+  </svg>`;
+  return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+};
+
+const heroImage = makeCareIllustration(
+  "English for Elderly Care",
+  "Interactive practice with warm visuals and useful daily phrases",
+  "#dbeafe",
+  "#dcfce7"
+);
+
 const lessons = [
   {
     id: 1,
     type: "multiple",
     title: "Greeting a resident",
     image:
-      "https://images.unsplash.com/photo-1516574187841-cb9cc2ca948b?auto=format&fit=crop&w=1200&q=80",
+      makeCareIllustration("Greeting a resident", "Polite and calm communication with older adults", "#fef3c7", "#dbeafe"),
     prompt: "Choose the best phrase to greet an elderly resident politely.",
     phrase: "Buenos días, ¿cómo se siente hoy?",
     options: [
@@ -29,7 +76,7 @@ const lessons = [
     type: "multiple",
     title: "Helping with mobility",
     image:
-      "https://images.unsplash.com/photo-1576765608535-5f04d1e3f289?auto=format&fit=crop&w=1200&q=80",
+      makeCareIllustration("Helping with mobility", "Support with walking and safe movement", "#e0f2fe", "#dcfce7"),
     prompt: "Choose the phrase a caregiver uses before helping someone walk.",
     phrase: "¿Necesita ayuda para caminar?",
     options: [
@@ -46,7 +93,7 @@ const lessons = [
     type: "fill",
     title: "Medication time",
     image:
-      "https://images.unsplash.com/photo-1584515933487-779824d29309?auto=format&fit=crop&w=1200&q=80",
+      makeCareIllustration("Medication time", "Useful phrases for medicine and routines", "#ede9fe", "#dbeafe"),
     prompt: "Complete the sentence.",
     phrase: "It is time to take your _______.",
     answer: "medicine",
@@ -58,7 +105,7 @@ const lessons = [
     type: "multiple",
     title: "Checking comfort",
     image:
-      "https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=1200&q=80",
+      makeCareIllustration("Checking comfort", "Ask gently if the resident feels comfortable", "#fce7f3", "#e0f2fe"),
     prompt: "Choose the best question.",
     phrase: "¿Está cómodo?",
     options: [
@@ -75,7 +122,7 @@ const lessons = [
     type: "match",
     title: "Useful care vocabulary",
     image:
-      "https://images.unsplash.com/photo-1519824145371-296894a0daa9?auto=format&fit=crop&w=1200&q=80",
+      makeCareIllustration("Care vocabulary", "Key words used every day in elderly care", "#dcfce7", "#fef3c7"),
     prompt: "Match each English word with its meaning.",
     pairs: [
       { left: "wheelchair", right: "silla de ruedas" },
@@ -90,7 +137,7 @@ const lessons = [
     type: "multiple",
     title: "Reassuring the resident",
     image:
-      "https://images.unsplash.com/photo-1526256262350-7da7584cf5eb?auto=format&fit=crop&w=1200&q=80",
+      makeCareIllustration("Reassuring words", "Language that gives safety and calm", "#fee2e2", "#dbeafe"),
     prompt: "Choose the most reassuring phrase.",
     phrase: "Todo está bien. Estoy aquí para ayudarle.",
     options: [
@@ -107,7 +154,7 @@ const lessons = [
     type: "fill",
     title: "Pain assessment",
     image:
-      "https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=1200&q=80",
+      makeCareIllustration("Pain assessment", "Simple questions to understand discomfort", "#e0f2fe", "#fde68a"),
     prompt: "Complete the question.",
     phrase: "Are you in _______?",
     answer: "pain",
@@ -119,7 +166,7 @@ const lessons = [
     type: "multiple",
     title: "Changing position",
     image:
-      "https://images.unsplash.com/photo-1551076805-e1869033e561?auto=format&fit=crop&w=1200&q=80",
+      makeCareIllustration("Changing position", "Comfort and support during repositioning", "#dbeafe", "#fecdd3"),
     prompt: "Choose the correct sentence.",
     phrase: "Voy a cambiar su posición para que esté más cómodo.",
     options: [
@@ -136,7 +183,7 @@ const lessons = [
     type: "multiple",
     title: "Food and hydration",
     image:
-      "https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=1200&q=80",
+      makeCareIllustration("Food and hydration", "Encourage water and healthy daily habits", "#fef9c3", "#dcfce7"),
     prompt: "Choose the phrase used to encourage hydration.",
     phrase: "Por favor, tome un poco de agua.",
     options: [
@@ -153,7 +200,7 @@ const lessons = [
     type: "multiple",
     title: "Short idiomatic care phrase",
     image:
-      "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=1200&q=80",
+      makeCareIllustration("Take it easy", "Short idiomatic phrases used with warmth", "#e9d5ff", "#dbeafe"),
     prompt: "Choose the expression closest to this caregiving phrase.",
     phrase: "Take it easy.",
     options: [
@@ -216,7 +263,7 @@ function Hero() {
           className="rounded-3xl overflow-hidden shadow-xl"
         >
           <img
-            src="https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&w=1400&q=80"
+            src={heroImage}
             alt="Caregiver helping an elderly person"
             className="w-full h-[320px] object-cover"
           />
