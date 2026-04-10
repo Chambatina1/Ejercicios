@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>ElderCare English | Inglés Americano Profesional</title>
+  <title>ElderCare English | American English for Caregivers</title>
   <!-- Tailwind CSS + Font Awesome -->
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -18,7 +18,7 @@
     .heart-pulse { animation: pulse 0.4s ease; }
     @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
     .audio-btn, .audio-dialog-btn { transition: all 0.15s; }
-    .audio-btn:hover, .audio-dialog-btn:hover { transform: scale(1.05); background-color: #fde68a; }
+    .audio-btn:hover:not(:disabled), .audio-dialog-btn:hover { transform: scale(1.05); background-color: #fde68a; }
     .playing { animation: pulse 0.6s ease; background-color: #fbbf24 !important; }
   </style>
 </head>
@@ -27,36 +27,40 @@
 
   <script>
     // --------------------------------------------------------------
-    // EJERCICIOS (Enfoque en diálogos y comprensión auditiva)
+    // EXERCISES - ALL IN ENGLISH (Reading & Listening Practice)
     // --------------------------------------------------------------
     const EXERCISES = [
-      { type: "multiple", question: "🧓🏽 Escucha la frase (usa el botón de audio). ¿Qué significa 'Let me help you sit up slowly'?", options: ["Déjame ayudarte a comer", "Déjame ayudarte a incorporarte lentamente", "Déjame traerte agua"], correct: 1, explanation: "✔️ 'Sit up slowly' = incorporarse lentamente. Movilidad segura." },
-      { type: "multiple", question: "Para preguntar si necesita ir al baño de forma respetuosa, la mejor frase es:", options: ["Do you need to go to the bathroom?", "Would you like me to assist you to the restroom?", "Let's go to the toilet"], correct: 1, explanation: "✅ 'Would you like me to assist you...' es la más educada y profesional." },
-      { type: "fill", question: "Completa la frase del cuidador: '______ I check your temperature?' (¿Puedo revisar tu temperatura?)", options: ["May", "Must", "Should"], correct: 0, explanation: "🔹 'May I...' es formal, cálido y respetuoso." },
-      { type: "multiple", question: "Escucha: 'I'll bring you a warm blanket and some tea.' ¿Qué está ofreciendo el cuidador?", options: ["Medicina y comida", "Manta caliente y té", "Ayuda para caminar"], correct: 1, explanation: "🧣 Manta caliente + té = confort y calidez." },
-      { type: "translate", question: "Traduce al inglés con tono suave: '¿Necesita algo para el dolor?'", options: ["Do you need pain?", "Do you need anything for the pain?", "Pain medicine?"], correct: 1, explanation: "💙 'Do you need anything for the pain?' es completo y empático." },
-      { type: "multiple", question: "Diálogo: Cuidador: 'It's time for your medication.' Paciente: 'I don't want to take it.' Mejor respuesta:", options: ["You have to take it now", "I understand you don't want to. Would you like me to stay with you while you take it?", "Fine, skip it then"], correct: 1, explanation: "🌟 Validar sentimientos y ofrecer compañía es la mejor práctica geriátrica." }
+      { type: "multiple", question: "What is the best way to ask if an elderly person needs help walking?", options: ["Let me carry you", "Would you like me to help you walk?", "You need to walk now"], correct: 1, explanation: "✔️ 'Would you like me to help you walk?' is polite and respectful." },
+      { type: "multiple", question: "Choose the most respectful phrase to ask about pain:", options: ["Does it hurt?", "Are you in any pain?", "Pain?"], correct: 1, explanation: "✅ 'Are you in any pain?' is gentle and professional." },
+      { type: "fill", question: "Complete the sentence: '______ I check your blood pressure?'", options: ["May", "Should", "Will"], correct: 0, explanation: "🔹 'May I...' is the most formal and respectful way to ask." },
+      { type: "multiple", question: "Listen to the phrase (click the audio icon). What does 'I'll bring you a warm blanket' mean?", options: ["I'll bring you medicine", "I'll bring you a warm blanket", "I'll help you walk"], correct: 1, explanation: "🧣 A warm blanket provides comfort and warmth." },
+      { type: "translate", question: "Translate to English with a gentle tone: 'Do you need anything for the pain?'", options: ["You need pain?", "Do you need anything for the pain?", "Pain medicine now?"], correct: 1, explanation: "💙 'Do you need anything for the pain?' is complete and empathetic." },
+      { type: "multiple", question: "Caregiver: 'It's time for your medication.' Patient: 'I don't want to take it.' Best response:", options: ["You have to take it now", "I understand. Would you like me to stay with you while you take it?", "Fine, skip it then"], correct: 1, explanation: "🌟 Validating feelings and offering companionship is best practice." },
+      { type: "multiple", question: "What is the most calming phrase for an anxious senior?", options: ["Calm down", "Everything is okay. I am here with you.", "Stop worrying"], correct: 1, explanation: "💙 'Everything is okay. I am here with you' provides security and presence." },
+      { type: "fill", question: "Complete: 'Let me ______ you to the dining room.'", options: ["escort", "accompany", "walk"], correct: 1, explanation: "🚶 'Accompany' is warmer and more professional than 'walk'." }
     ];
 
     // --------------------------------------------------------------
-    // DIÁLOGOS COMPLETOS (SOLO INGLÉS, con traducción para apoyo)
+    // REAL DIALOGUES - Caregiver & Elderly Patient (100% ENGLISH)
     // --------------------------------------------------------------
     const DIALOGUES = [
-      { role: "caregiver", text: "Good morning, Mrs. Johnson. How did you sleep last night?", translation: "Buenos días, Sra. Johnson. ¿Cómo durmió anoche?" },
-      { role: "patient", text: "Good morning, dear. I slept a little, but I had some beautiful dreams.", translation: "Buenos días, querido/a. Dormí un poco, pero tuve sueños hermosos." },
-      { role: "caregiver", text: "That's wonderful. Would you like some warm water before breakfast?", translation: "Eso es maravilloso. ¿Le gustaría un poco de agua tibia antes del desayuno?" },
-      { role: "patient", text: "Yes, please. You are always so thoughtful. Thank you.", translation: "Sí, por favor. Siempre eres tan atento/a. Gracias." },
-      { role: "caregiver", text: "Of course. I'm here to make sure you feel comfortable and safe.", translation: "Por supuesto. Estoy aquí para asegurarme de que se sienta cómodo/a y seguro/a." },
-      { role: "caregiver", text: "Let me help you sit up slowly. Take your time, there's no rush.", translation: "Déjeme ayudarle a incorporarse lentamente. Tómese su tiempo, no hay prisa." },
-      { role: "patient", text: "You are very patient with me. I really appreciate your kindness.", translation: "Usted es muy paciente conmigo. Realmente aprecio su amabilidad." },
-      { role: "caregiver", text: "It's my pleasure. Now, are you ready for your medication?", translation: "Es un placer. Ahora, ¿está listo/a para su medicamento?" },
-      { role: "patient", text: "Yes, I'll take it with your help. Thank you for being here.", translation: "Sí, lo tomaré con su ayuda. Gracias por estar aquí." }
+      { role: "caregiver", text: "Good morning, Mrs. Johnson. How did you sleep last night?" },
+      { role: "patient", text: "Good morning, dear. I slept a little, but I had some beautiful dreams." },
+      { role: "caregiver", text: "That's wonderful. Would you like some warm water before breakfast?" },
+      { role: "patient", text: "Yes, please. You are always so thoughtful. Thank you." },
+      { role: "caregiver", text: "Of course. I'm here to make sure you feel comfortable and safe." },
+      { role: "caregiver", text: "Let me help you sit up slowly. Take your time, there's no rush." },
+      { role: "patient", text: "You are very patient with me. I really appreciate your kindness." },
+      { role: "caregiver", text: "It's my pleasure. Now, are you ready for your medication?" },
+      { role: "patient", text: "Yes, I'll take it with your help. Thank you for being here." },
+      { role: "caregiver", text: "I'll be right outside if you need anything. Rest well, my friend." },
+      { role: "patient", text: "Thank you. You make me feel safe." }
     ];
 
     const TOTAL_EXERCISES = EXERCISES.length;
     const POINTS_PER_CORRECT = 10;
 
-    // Estado global
+    // Game state
     let currentIndex = 0;
     let totalScore = 0;
     let lives = 5;
@@ -65,11 +69,11 @@
     let feedbackMsg = null;
     let feedbackType = null;
 
-    // Elementos DOM
+    // DOM elements
     let scoreSpan, heartsContainer, progressFill, progressPercentSpan, questionEl, optionsContainer, nextBtn, feedbackEl;
 
     // --------------------------------------------------------------
-    // SISTEMA DE AUDIO - INGLÉS AMERICANO PURO
+    // AUDIO SYSTEM - PURE AMERICAN ENGLISH
     // --------------------------------------------------------------
     let selectedVoice = null;
     let voiceReady = false;
@@ -77,23 +81,23 @@
     async function loadAmericanVoice() {
       return new Promise((resolve) => {
         if (!window.speechSynthesis) {
-          console.warn("SpeechSynthesis no soportado");
+          console.warn("SpeechSynthesis not supported");
           resolve(false);
           return;
         }
 
         const checkVoices = () => {
           const voices = window.speechSynthesis.getVoices();
-          console.log("Voces disponibles:", voices.map(v => `${v.name} (${v.lang})`));
+          console.log("Available voices:", voices.map(v => `${v.name} (${v.lang})`));
           
-          // Prioridad: Google US English, luego voces nativas de Windows/Mac en inglés americano
+          // Priority: Google US English, then native Windows/Mac American voices
           let americanVoice = voices.find(voice => 
             voice.lang === 'en-US' && (voice.name.includes('Google') || voice.name.includes('Natural') || voice.name.includes('Premium'))
           );
           
           if (!americanVoice) {
             americanVoice = voices.find(voice => 
-              voice.lang === 'en-US' && (voice.name.includes('Samantha') || voice.name.includes('Alex') || voice.name.includes('Microsoft David') || voice.name.includes('Microsoft Zira'))
+              voice.lang === 'en-US' && (voice.name.includes('Samantha') || voice.name.includes('Alex') || voice.name.includes('Microsoft David') || voice.name.includes('Microsoft Zira') || voice.name.includes('Jenny'))
             );
           }
           
@@ -104,15 +108,14 @@
           if (americanVoice) {
             selectedVoice = americanVoice;
             voiceReady = true;
-            console.log(`✅ Voz seleccionada: ${selectedVoice.name} (${selectedVoice.lang}) - INGLÉS AMERICANO`);
-            // Mostrar mensaje en consola para debug
+            console.log(`✅ Voice selected: ${selectedVoice.name} (${selectedVoice.lang}) - AMERICAN ENGLISH`);
             const statusDiv = document.getElementById('audioStatus');
-            if (statusDiv) statusDiv.innerHTML = `<span class="text-green-700"><i class="fas fa-check-circle"></i> Audio listo: ${selectedVoice.name}</span>`;
+            if (statusDiv) statusDiv.innerHTML = `<span class="text-green-700"><i class="fas fa-check-circle"></i> Audio ready: ${selectedVoice.name}</span>`;
           } else {
-            console.warn("No se encontró voz en inglés americano. Revisa la configuración de tu navegador.");
+            console.warn("No American English voice found.");
             voiceReady = false;
             const statusDiv = document.getElementById('audioStatus');
-            if (statusDiv) statusDiv.innerHTML = `<span class="text-red-600"><i class="fas fa-exclamation-triangle"></i> No se detectó voz en inglés. Asegúrate de usar Chrome/Edge.</span>`;
+            if (statusDiv) statusDiv.innerHTML = `<span class="text-red-600"><i class="fas fa-exclamation-triangle"></i> No English voice detected. Use Chrome/Edge for best experience.</span>`;
           }
           resolve(voiceReady);
         };
@@ -128,31 +131,30 @@
 
     async function speakEnglish(text, element = null) {
       if (!window.speechSynthesis) {
-        alert("Tu navegador no soporta audio. Usa Chrome, Edge o Safari.");
+        alert("Your browser doesn't support audio. Use Chrome, Edge or Safari.");
         return;
       }
 
       if (!voiceReady || !selectedVoice) {
         await loadAmericanVoice();
         if (!voiceReady || !selectedVoice) {
-          alert("⚠️ No se pudo cargar la voz en inglés. Por favor, asegúrate de usar Chrome o Edge y recarga la página.");
+          alert("⚠️ Could not load English voice. Please use Chrome or Edge and reload the page.");
           return;
         }
       }
 
-      // Cancelar cualquier audio en reproducción
+      // Cancel any ongoing speech
       window.speechSynthesis.cancel();
 
-      // Pequeño delay para evitar conflictos
       setTimeout(() => {
         const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'en-US';      // Forzar idioma
-        utterance.voice = selectedVoice; // Usar la voz seleccionada
-        utterance.rate = 0.85;          // Velocidad clara y natural
+        utterance.lang = 'en-US';
+        utterance.voice = selectedVoice;
+        utterance.rate = 0.85;
         utterance.pitch = 1.0;
         utterance.volume = 1;
         
-        console.log(`🔊 Reproduciendo: "${text}" con voz: ${selectedVoice.name}`);
+        console.log(`🔊 Speaking: "${text}" with voice: ${selectedVoice.name}`);
 
         if (element) {
           element.classList.add('playing');
@@ -164,7 +166,7 @@
       }, 50);
     }
 
-    // Cargar voces al inicio
+    // Load voices on start
     loadAmericanVoice();
 
     function updateUIState() {
@@ -187,8 +189,8 @@
       if (!exercise) return;
       
       let audioHint = '';
-      if (exercise.question.includes("Escucha")) {
-        audioHint = `<div class="mb-4 flex items-center gap-3 bg-amber-50 p-3 rounded-xl border border-amber-200"><i class="fas fa-headphones text-amber-600 text-xl"></i> <span class="text-amber-800 font-medium">🎧 Haz clic en el ícono de audio junto a las opciones para escuchar la pronunciación en INGLÉS AMERICANO.</span></div>`;
+      if (exercise.question.includes("Listen")) {
+        audioHint = `<div class="mb-4 flex items-center gap-3 bg-amber-50 p-3 rounded-xl border border-amber-200"><i class="fas fa-headphones text-amber-600 text-xl"></i> <span class="text-amber-800 font-medium">🎧 Click the audio icon next to options to hear AMERICAN ENGLISH pronunciation.</span></div>`;
       }
       questionEl.innerHTML = `<div class="text-2xl md:text-3xl font-bold text-stone-800">${exercise.question}</div>${audioHint}`;
       
@@ -217,7 +219,7 @@
         btn.appendChild(prefix);
         btn.appendChild(textSpan);
         
-        // Botón de audio para escuchar la opción en INGLÉS AMERICANO
+        // Audio button for each option - AMERICAN ENGLISH
         const audioIcon = document.createElement('button');
         audioIcon.className = 'audio-btn ml-2 p-2 rounded-full bg-amber-100 text-amber-700 hover:bg-amber-200 transition flex-shrink-0';
         audioIcon.innerHTML = '<i class="fas fa-volume-up"></i>';
@@ -268,13 +270,13 @@
       if (isCorrect) {
         totalScore += POINTS_PER_CORRECT;
         feedbackType = 'correct';
-        feedbackMsg = `✅ ¡Excelente! +${POINTS_PER_CORRECT} puntos. ${exercise.explanation}`;
+        feedbackMsg = `✅ Excellent! +${POINTS_PER_CORRECT} points. ${exercise.explanation}`;
       } else {
         if (lives > 0) lives--;
         if (heartsContainer) heartsContainer.classList.add('heart-pulse');
         setTimeout(() => heartsContainer?.classList.remove('heart-pulse'), 400);
         feedbackType = 'wrong';
-        feedbackMsg = `❌ Incorrecto. ${exercise.explanation}`;
+        feedbackMsg = `❌ Incorrect. ${exercise.explanation}`;
       }
       updateUIState();
       renderCurrentExercise();
@@ -282,7 +284,7 @@
       
       if (lives === 0) {
         setTimeout(() => {
-          if (confirm("💔 Sin corazones. ¿Quieres reiniciar la práctica para seguir aprendiendo?")) resetGame();
+          if (confirm("💔 No hearts left. Would you like to restart the practice?")) resetGame();
         }, 150);
       }
     }
@@ -299,7 +301,7 @@
     function nextExercise() {
       if (!answered) return;
       if (lives === 0) {
-        if (confirm("❤️‍🩹 Sin vidas. Reiniciar para seguir practicando.")) resetGame();
+        if (confirm("❤️‍🩹 No lives left. Restart to continue learning?")) resetGame();
         return;
       }
       if (currentIndex + 1 < TOTAL_EXERCISES) {
@@ -313,11 +315,11 @@
         updateUIState();
       } else {
         answered = true;
-        feedbackMsg = `🎉 ¡FELICIDADES! Completaste todos los ejercicios. Puntaje final: ${totalScore} / ${TOTAL_EXERCISES * POINTS_PER_CORRECT}. ¡Eres un gran cuidador/a! 🌟 Sigue practicando los diálogos con audio.`;
+        feedbackMsg = `🎉 CONGRATULATIONS! You completed all exercises! Final score: ${totalScore} / ${TOTAL_EXERCISES * POINTS_PER_CORRECT}. You're becoming an excellent caregiver! 🌟`;
         feedbackType = 'complete';
         showFeedback();
         if (nextBtn) nextBtn.disabled = true;
-        optionsContainer.innerHTML = `<div class="text-center p-8 bg-amber-50 rounded-2xl"><i class="fas fa-trophy text-6xl text-amber-500 mb-3"></i><p class="text-xl font-bold">✨ ¡Módulo completado con éxito! ✨</p><p class="text-stone-600 mt-2">Has mejorado tu inglés para el cuidado geriátrico.</p><button id="resetFinalBtn" class="mt-6 bg-amber-700 text-white px-6 py-3 rounded-xl font-bold hover:bg-amber-800">🔄 Reiniciar práctica</button></div>`;
+        optionsContainer.innerHTML = `<div class="text-center p-8 bg-amber-50 rounded-2xl"><i class="fas fa-trophy text-6xl text-amber-500 mb-3"></i><p class="text-xl font-bold">✨ Module Completed! ✨</p><p class="text-stone-600 mt-2">Keep practicing the dialogues to improve your listening and speaking.</p><button id="resetFinalBtn" class="mt-6 bg-amber-700 text-white px-6 py-3 rounded-xl font-bold hover:bg-amber-800">🔄 Restart Practice</button></div>`;
         document.getElementById('resetFinalBtn')?.addEventListener('click', () => resetGame());
       }
     }
@@ -336,26 +338,25 @@
       document.getElementById('learning-app')?.scrollIntoView({ behavior: 'smooth' });
     }
     
-    // Construir página completa
+    // Build full page
     function buildFullUI() {
       const root = document.getElementById('app-root');
       if (!root) return;
       
-      // Generar HTML de diálogos
+      // Generate dialogues HTML (100% English)
       let dialoguesHtml = '';
       DIALOGUES.forEach((d, idx) => {
         const bgClass = d.role === 'caregiver' ? 'bg-amber-50 border-l-8 border-amber-400' : 'bg-white border-l-8 border-emerald-300';
         const icon = d.role === 'caregiver' ? '<i class="fas fa-user-nurse text-amber-600"></i>' : '<i class="fas fa-user-friends text-emerald-600"></i>';
-        const roleName = d.role === 'caregiver' ? '👩🏽‍⚕️ CUIDADOR/A' : '👵🏽 ADULTO MAYOR';
+        const roleName = d.role === 'caregiver' ? '👩🏽‍⚕️ CAREGIVER' : '👵🏽 SENIOR';
         dialoguesHtml += `
           <div class="${bgClass} p-5 rounded-2xl shadow-sm flex flex-col md:flex-row justify-between items-start gap-3 transition hover:shadow-md">
             <div class="flex-1">
               <div class="flex items-center gap-2 font-bold text-stone-700">${icon} <span>${roleName}</span></div>
               <p class="text-xl font-semibold text-stone-800 mt-2">${d.text}</p>
-              <p class="text-sm text-stone-500 italic mt-1">📖 ${d.translation}</p>
             </div>
             <button class="audio-dialog-btn bg-amber-200 hover:bg-amber-300 text-amber-900 px-5 py-3 rounded-xl flex items-center gap-2 transition font-medium" data-phrase="${d.text.replace(/['"]/g, '\\"')}">
-              <i class="fas fa-volume-up"></i> Escuchar (US 🇺🇸)
+              <i class="fas fa-volume-up"></i> Listen (US 🇺🇸)
             </button>
           </div>
         `;
@@ -366,10 +367,10 @@
           <div class="container mx-auto px-5 py-10 md:py-14">
             <div class="flex flex-col md:flex-row justify-between items-center gap-8">
               <div class="flex-1 text-center md:text-left">
-                <div class="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-white/60 backdrop-blur-sm text-amber-800 text-sm font-semibold mb-4"><i class="fas fa-microphone-alt"></i> Audio en Inglés Americano 🇺🇸</div>
-                <h1 class="text-4xl md:text-6xl font-extrabold text-stone-800 leading-tight">Habla, escucha y <br/>cuida en <span class="text-amber-700">Inglés</span></h1>
-                <p class="text-lg text-stone-600 mt-4 max-w-xl">Diálogos reales + pronunciación americana nativa + ejercicios interactivos. Entrena tu oído para un cuidado profesional y cálido.</p>
-                <button id="startHeroBtn" class="mt-8 bg-amber-700 hover:bg-amber-800 text-white font-semibold px-8 py-4 rounded-2xl shadow-xl transition"><i class="fas fa-play mr-2"></i> Comenzar práctica</button>
+                <div class="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-white/60 backdrop-blur-sm text-amber-800 text-sm font-semibold mb-4"><i class="fas fa-microphone-alt"></i> American English Audio 🇺🇸</div>
+                <h1 class="text-4xl md:text-6xl font-extrabold text-stone-800 leading-tight">Speak, Listen & <br/>Care in <span class="text-amber-700">English</span></h1>
+                <p class="text-lg text-stone-600 mt-4 max-w-xl">Real dialogues + native American pronunciation + interactive exercises. Train your ear for professional, compassionate caregiving.</p>
+                <button id="startHeroBtn" class="mt-8 bg-amber-700 hover:bg-amber-800 text-white font-semibold px-8 py-4 rounded-2xl shadow-xl transition"><i class="fas fa-play mr-2"></i> Start Learning</button>
               </div>
               <div class="flex-1 flex justify-center">
                 <div class="relative w-64 h-64 md:w-80 md:h-80 bg-gradient-to-tr from-[#e9cfb0] to-[#dbbd97] rounded-full flex items-center justify-center shadow-2xl">
@@ -386,11 +387,11 @@
             <div class="bg-white/70 backdrop-blur-sm rounded-3xl shadow-2xl p-5 md:p-8">
               <div class="flex flex-wrap justify-between items-center gap-4 mb-6 border-b border-amber-200 pb-3">
                 <div class="flex items-center gap-4">
-                  <div class="bg-amber-100 rounded-2xl px-4 py-2 shadow-inner"><i class="fas fa-trophy text-amber-600"></i> <span class="font-bold ml-1">Puntaje</span> <span id="scoreValue" class="text-2xl font-black ml-2">0</span></div>
+                  <div class="bg-amber-100 rounded-2xl px-4 py-2 shadow-inner"><i class="fas fa-trophy text-amber-600"></i> <span class="font-bold ml-1">Score</span> <span id="scoreValue" class="text-2xl font-black ml-2">0</span></div>
                   <div id="heartsContainer" class="flex gap-1 bg-rose-50 px-4 py-2 rounded-2xl"></div>
                 </div>
                 <div class="flex-1 max-w-xs">
-                  <div class="flex justify-between text-sm font-medium text-stone-600 mb-1"><span>Progreso</span><span id="progressPercent">0</span>%</div>
+                  <div class="flex justify-between text-sm font-medium text-stone-600 mb-1"><span>Progress</span><span id="progressPercent">0</span>%</div>
                   <div class="h-2.5 bg-amber-100 rounded-full overflow-hidden"><div id="progressFill" class="h-full bg-amber-600 rounded-full transition-all duration-300" style="width:0%"></div></div>
                 </div>
               </div>
@@ -399,40 +400,40 @@
                 <div id="optionsContainer" class="space-y-3"></div>
                 <div id="feedbackMessage" class="hidden"></div>
                 <div class="mt-8 flex justify-end">
-                  <button id="nextButton" class="px-8 py-3 rounded-xl font-bold text-white text-lg transition-all bg-gray-300 cursor-not-allowed" disabled>Siguiente ejercicio →</button>
+                  <button id="nextButton" class="px-8 py-3 rounded-xl font-bold text-white text-lg transition-all bg-gray-300 cursor-not-allowed" disabled>Next Exercise →</button>
                 </div>
               </div>
             </div>
           </div>
         </section>
         
-        <!-- Sección de Diálogos con Audio Americano -->
+        <!-- Dialogues Section with American Audio -->
         <section class="container mx-auto px-4 py-12">
           <div class="max-w-5xl mx-auto">
             <div class="text-center mb-10">
-              <h2 class="text-3xl md:text-4xl font-bold text-stone-800">🗣️ Diálogos Esenciales: Cuidador + Adulto Mayor</h2>
-              <p class="text-stone-600 mt-2 text-lg">🇺🇸 <strong>Cada frase se lee en INGLÉS AMERICANO NATIVO</strong> — haz clic en "Escuchar" para oír la pronunciación real.</p>
+              <h2 class="text-3xl md:text-4xl font-bold text-stone-800">🗣️ Real Dialogues: Caregiver + Senior</h2>
+              <p class="text-stone-600 mt-2 text-lg">🇺🇸 <strong>Every phrase is read in NATIVE AMERICAN ENGLISH</strong> — click "Listen" to hear real pronunciation.</p>
               <div id="audioStatus" class="mt-3 inline-flex items-center gap-2 bg-amber-100 px-4 py-2 rounded-full text-sm font-medium">
-                <i class="fas fa-spinner fa-pulse"></i> Cargando voces...
+                <i class="fas fa-spinner fa-pulse"></i> Loading voices...
               </div>
             </div>
             <div class="space-y-5" id="dialoguesList">${dialoguesHtml}</div>
             <div class="mt-8 bg-gradient-to-r from-amber-100 to-amber-50 p-5 rounded-2xl text-center border border-amber-200">
               <i class="fas fa-lightbulb text-amber-600 text-xl mr-2"></i>
-              <span class="font-medium">Consejo profesional:</span> Repite cada frase en voz alta después de escucharla. La pronunciación clara genera confianza en el adulto mayor.
+              <span class="font-medium">Pro Tip:</span> Repeat each phrase out loud after listening. Clear pronunciation builds trust with elderly adults.
             </div>
           </div>
         </section>
         
         <footer class="bg-stone-800 text-amber-100 py-8 mt-8 rounded-t-3xl">
           <div class="container mx-auto text-center">
-            <p>✨ ElderCare English — Inglés Americano para Cuidadores Profesionales ✨</p>
-            <p class="text-sm opacity-70 mt-1">Mejora tu comunicación y brinda un cuidado excepcional con empatía.</p>
+            <p>✨ ElderCare English — American English for Professional Caregivers ✨</p>
+            <p class="text-sm opacity-70 mt-1">Improve your communication and provide exceptional care with empathy.</p>
           </div>
         </footer>
       `;
       
-      // Asignar referencias
+      // Assign references
       scoreSpan = document.getElementById('scoreValue');
       heartsContainer = document.getElementById('heartsContainer');
       progressFill = document.getElementById('progressFill');
@@ -445,7 +446,7 @@
       if (nextBtn) nextBtn.addEventListener('click', nextExercise);
       document.getElementById('startHeroBtn')?.addEventListener('click', () => document.getElementById('learning-app')?.scrollIntoView({ behavior: 'smooth' }));
       
-      // Asignar eventos de audio a los botones de diálogo
+      // Assign audio events to dialogue buttons
       document.querySelectorAll('.audio-dialog-btn').forEach(btn => {
         btn.addEventListener('click', async (e) => {
           const phrase = btn.getAttribute('data-phrase');
@@ -455,12 +456,12 @@
         });
       });
       
-      // Inicializar estado
+      // Initialize state
       currentIndex = 0; totalScore = 0; lives = 5; answered = false; selectedOptionIdx = null;
       updateUIState();
       renderCurrentExercise();
       
-      // Recargar voces después de un momento para asegurar
+      // Reload voices after a moment
       setTimeout(() => loadAmericanVoice(), 500);
     }
     
