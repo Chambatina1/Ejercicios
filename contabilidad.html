@@ -93,11 +93,11 @@
     const DIALOGUES = [
       { role: "accountant", text: "Good morning. I've reviewed your financial statements for last quarter." },
       { role: "client", text: "Good morning. How do they look? Is everything in order?" },
-      { role: "accountant", text: "Overall, your accounts are in good standing. Your accounts receivable have increased by 15%." },
+      { role: "accountant", text: "Overall, your accounts are in good standing. Your accounts receivable have increased by 15 percent." },
       { role: "client", text: "That's good news. What about our outstanding debts?" },
       { role: "accountant", text: "Your liabilities are under control. I recommend paying off the short-term credit line first." },
       { role: "client", text: "I understand. What is the interest rate on that credit line?" },
-      { role: "accountant", text: "The APR is 8.5%. Paying it early would save you approximately $5,000 in interest." },
+      { role: "accountant", text: "The APR is 8.5 percent. Paying it early would save you approximately 5,000 dollars in interest." },
       { role: "client", text: "That makes sense. I'll authorize the payment this week." },
       { role: "accountant", text: "Excellent. I'll prepare the necessary journal entries and update the ledger." },
       { role: "client", text: "Thank you. Also, could you explain the depreciation schedule for our equipment?" },
@@ -110,9 +110,9 @@
       { icon: "fa-chart-line", title: "Financial Health", phrase: "Your profit margin has improved significantly this quarter." },
       { icon: "fa-file-invoice-dollar", title: "Invoicing", phrase: "The invoice was sent on the 15th. Payment is due within 30 days." },
       { icon: "fa-credit-card", title: "Credit Terms", phrase: "We offer net-30 payment terms to all qualified business clients." },
-      { icon: "fa-calculator", title: "Calculations", phrase: "After deducting expenses, your net income is $45,000." },
-      { icon: "fa-balance-scale", title: "Balance Sheet", phrase: "Your assets total $250,000 against liabilities of $95,000." },
-      { icon: "fa-chart-pie", title: "Budgeting", phrase: "We need to reduce operating costs by 10% next fiscal year." }
+      { icon: "fa-calculator", title: "Calculations", phrase: "After deducting expenses, your net income is 45,000 dollars." },
+      { icon: "fa-balance-scale", title: "Balance Sheet", phrase: "Your assets total 250,000 dollars against liabilities of 95,000 dollars." },
+      { icon: "fa-chart-pie", title: "Budgeting", phrase: "We need to reduce operating costs by 10 percent next fiscal year." }
     ];
 
     const TOTAL_EXERCISES = EXERCISES.length;
@@ -131,10 +131,28 @@
     let scoreSpan, heartsContainer, progressFill, progressPercentSpan, questionEl, optionsContainer, nextBtn, feedbackEl;
 
     // ==============================================================
-    // AUDIO SYSTEM - PURE AMERICAN ENGLISH (ONLY SPEAKS THE PHRASE)
+    // AUDIO SYSTEM - PURE AMERICAN ENGLISH (CLEAN TEXT, NO PUNCTUATION READ)
     // ==============================================================
     let selectedVoice = null;
     let voiceReady = false;
+
+    // Function to clean text - removes punctuation that causes weird reading
+    function cleanTextForSpeech(text) {
+      // Remove quotation marks, parentheses, brackets
+      let cleaned = text.replace(/["'“”‘’]/g, '');
+      cleaned = cleaned.replace(/[()\[\]{}]/g, '');
+      // Replace periods with spaces to avoid "dot" being read
+      cleaned = cleaned.replace(/\./g, ' ');
+      // Remove question marks and exclamation marks (they cause pauses)
+      cleaned = cleaned.replace(/[?!]/g, '');
+      // Remove commas but keep natural pause by replacing with space
+      cleaned = cleaned.replace(/,/g, ' ');
+      // Remove semicolons and colons
+      cleaned = cleaned.replace(/[;:]/g, ' ');
+      // Remove extra spaces
+      cleaned = cleaned.replace(/\s+/g, ' ').trim();
+      return cleaned;
+    }
 
     async function loadAmericanVoice() {
       return new Promise((resolve) => {
@@ -148,13 +166,14 @@
           const voices = window.speechSynthesis.getVoices();
           console.log("Available voices:", voices.map(v => `${v.name} (${v.lang})`));
           
+          // Priority order for most natural American English voices
           let americanVoice = voices.find(voice => 
-            voice.lang === 'en-US' && (voice.name.includes('Google') || voice.name.includes('Natural') || voice.name.includes('Premium'))
+            voice.lang === 'en-US' && (voice.name.includes('Google') || voice.name.includes('Natural') || voice.name.includes('Premium') || voice.name.includes('Studio'))
           );
           
           if (!americanVoice) {
             americanVoice = voices.find(voice => 
-              voice.lang === 'en-US' && (voice.name.includes('Samantha') || voice.name.includes('Alex') || voice.name.includes('Microsoft David') || voice.name.includes('Microsoft Zira') || voice.name.includes('Jenny'))
+              voice.lang === 'en-US' && (voice.name.includes('Jenny') || voice.name.includes('Samantha') || voice.name.includes('Alex') || voice.name.includes('Microsoft David') || voice.name.includes('Microsoft Zira') || voice.name.includes('Eric'))
             );
           }
           
@@ -185,7 +204,7 @@
       });
     }
 
-    // This function ONLY speaks the text passed to it - no extra words
+    // This function ONLY speaks the cleaned text - no punctuation, no extra words
     async function speakEnglish(text, element = null) {
       if (!window.speechSynthesis) {
         alert("Your browser doesn't support audio. Use Chrome, Edge or Safari.");
@@ -200,18 +219,23 @@
         }
       }
 
+      // Clean the text - remove punctuation that causes weird reading
+      const cleanText = cleanTextForSpeech(text);
+      console.log(`🔊 Original: "${text}"`);
+      console.log(`🔊 Cleaned for speech: "${cleanText}"`);
+
       // Cancel any ongoing speech
       window.speechSynthesis.cancel();
 
       setTimeout(() => {
-        const utterance = new SpeechSynthesisUtterance(text);
+        const utterance = new SpeechSynthesisUtterance(cleanText);
         utterance.lang = 'en-US';
         utterance.voice = selectedVoice;
-        utterance.rate = 0.85;
+        utterance.rate = 0.85;      // Natural pace for learning
         utterance.pitch = 1.0;
         utterance.volume = 1;
         
-        console.log(`🔊 Speaking phrase: "${text}"`);
+        console.log(`🔊 Speaking cleaned phrase: "${cleanText}"`);
 
         if (element) {
           element.classList.add('playing');
@@ -271,7 +295,7 @@
         btn.appendChild(prefix);
         btn.appendChild(textSpan);
         
-        // Audio button - ONLY speaks the option text, nothing else
+        // Audio button - ONLY speaks the option text, cleaned of punctuation
         const audioIcon = document.createElement('button');
         audioIcon.className = 'audio-btn ml-2 p-2 rounded-full bg-blue-100 text-blue-700 hover:bg-blue-200 transition flex-shrink-0';
         audioIcon.innerHTML = '<i class="fas fa-volume-up"></i>';
@@ -475,7 +499,7 @@
           <div class="max-w-5xl mx-auto">
             <div class="text-center mb-10">
               <h2 class="text-3xl md:text-4xl font-bold text-stone-800">Real Dialogues: Accountant + Client</h2>
-              <p class="text-stone-600 mt-2 text-lg">Click "Listen (US)" to hear ONLY the dialogue phrase in native American English.</p>
+              <p class="text-stone-600 mt-2 text-lg">Click "Listen (US)" to hear ONLY the dialogue phrase in native American English. Punctuation is removed for natural speech.</p>
               <div id="audioStatus" class="mt-3 inline-flex items-center gap-2 bg-blue-100 px-4 py-2 rounded-full text-sm font-medium">
                 <i class="fas fa-spinner fa-pulse"></i> Loading voices...
               </div>
@@ -488,7 +512,7 @@
           <div class="max-w-6xl mx-auto">
             <div class="text-center mb-10">
               <h2 class="text-3xl md:text-4xl font-bold text-stone-800">Essential Financial & Accounting Phrases</h2>
-              <p class="text-stone-600 mt-2">Click "Hear it" to listen to ONLY the phrase in American English.</p>
+              <p class="text-stone-600 mt-2">Click "Hear it" to listen to ONLY the phrase in American English with natural flow.</p>
             </div>
             <div class="grid md:grid-cols-3 gap-6">
               ${phrasesHtml}
@@ -516,7 +540,7 @@
       if (nextBtn) nextBtn.addEventListener('click', nextExercise);
       document.getElementById('startHeroBtn')?.addEventListener('click', () => document.getElementById('learning-app')?.scrollIntoView({ behavior: 'smooth' }));
       
-      // Dialogue audio buttons - ONLY speak the dialogue text
+      // Dialogue audio buttons - ONLY speak the dialogue text, cleaned of punctuation
       document.querySelectorAll('.audio-dialog-btn').forEach(btn => {
         btn.addEventListener('click', async (e) => {
           const phrase = btn.getAttribute('data-phrase');
@@ -524,7 +548,7 @@
         });
       });
       
-      // Phrase audio buttons - ONLY speak the phrase text
+      // Phrase audio buttons - ONLY speak the phrase text, cleaned of punctuation
       document.querySelectorAll('.phrase-audio-btn').forEach(btn => {
         btn.addEventListener('click', async (e) => {
           const phrase = btn.getAttribute('data-phrase');
