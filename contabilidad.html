@@ -1,1 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>FinanceEnglish | Credit & Accounting American English</title>
+  <!-- Tailwind CSS + Font Awesome -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700&display=swap');
+    * { font-family: 'Inter', sans-serif; }
+    body { background: linear-gradient(135deg, #f0f4f8 0%, #e8eef5 100%); }
+    .option-btn { transition: all 0.2s; }
+    .option-btn:hover:not(:disabled) { transform: translateY(-3px); box-shadow: 0 10px 20px -5px rgba(0,0,0,0.1); }
+    @keyframes fadeSlide { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    .feedback-animation { animation: fadeSlide 0.3s ease forwards; }
+    .heart-pulse { animation: pulse 0.4s ease; }
+    @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
+    .audio-btn, .audio-dialog-btn { transition: all 0.15s; }
+    .audio-btn:hover:not(:disabled), .audio-dialog-btn:hover { transform: scale(1.05); background-color: #bfdbfe; }
+    .playing { animation: pulse 0.6s ease; background-color: #60a5fa !important; }
+  </style>
+</head>
+<body>
+  <div id="app-root" class="min-h-screen flex flex-col"></div>
 
+  <script>
+    // ==============================================================
+    // CREDIT & ACCOUNTING CONTENT - ALL IN ENGLISH
+    // ==============================================================
+    
+    const EXERCISES = [
+      { 
+        type: "multiple", 
+        question: "What does 'credit' mean in accounting?", 
+        options: ["Money going out of an account", "Money coming into an account", "A type of loan"], 
+        correct: 0, 
+        explanation: "Excellent! In accounting, a credit increases liability or equity accounts and decreases asset accounts." 
+      },
+      { 
+        type: "multiple", 
+        question: "What is a 'ledger'?", 
+        options: ["A type of calculator", "A book or file where financial transactions are recorded", "A bank statement"], 
+        correct: 1, 
+        explanation: "Great! A ledger is the principal book where accounting transactions are recorded." 
+      },
+      { 
+        type: "fill", 
+        question: "Complete the sentence: 'The company's ______ sheet shows assets, liabilities, and equity.'", 
+        options: ["balance", "income", "cash"], 
+        correct: 0, 
+        explanation: "Correct! The balance sheet provides a snapshot of a company's financial position." 
+      },
+      { 
+        type: "multiple", 
+        question: "What are 'accounts receivable'?", 
+        options: ["Money the company owes to suppliers", "Money owed to the company by customers", "Cash in the bank"], 
+        correct: 1, 
+        explanation: "Perfect! Accounts receivable represents money customers owe to the business." 
+      },
+      { 
+        type: "multiple", 
+        question: "What does 'net profit' mean?", 
+        options: ["Total revenue before expenses", "Revenue minus all expenses", "Gross sales"], 
+        correct: 1, 
+        explanation: "Excellent! Net profit is the actual profit after deducting all operating expenses, taxes, and costs." 
+      },
+      { 
+        type: "fill", 
+        question: "Complete: 'A ______ is a formal written promise to pay a specified amount of money.'", 
+        options: ["receipt", "promissory note", "invoice"], 
+        correct: 1, 
+        explanation: "Correct! A promissory note is a financial instrument containing a written promise to pay." 
+      },
+      { 
+        type: "multiple", 
+        question: "What is 'depreciation'?", 
+        options: ["Increase in asset value", "Decrease in asset value over time", "Money in the bank"], 
+        correct: 1, 
+        explanation: "Great! Depreciation allocates the cost of a tangible asset over its useful life." 
+      },
+      { 
+        type: "multiple", 
+        question: "What does 'APR' stand for?", 
+        options: ["Annual Payment Rate", "Annual Percentage Rate", "Account Payment Ratio"], 
+        correct: 1, 
+        explanation: "Perfect! APR is the annual interest rate charged for borrowing or earned through investment." 
+      }
+    ];
+
+    // REAL ACCOUNTANT-CLIENT DIALOGUES - 100% ENGLISH
+    const DIALOGUES = [
+      { role: "accountant", text: "Good morning. I've reviewed your financial statements for last quarter." },
+      { role: "client", text: "Good morning. How do they look? Is everything in order?" },
+      { role: "accountant", text: "Overall, your accounts are in good standing. Your accounts receivable have increased by 15%." },
+      { role: "client", text: "That's good news. What about our outstanding debts?" },
+      { role: "accountant", text: "Your liabilities are under control. I recommend paying off the short-term credit line first." },
+      { role: "client", text: "I understand. What is the interest rate on that credit line?" },
+      { role: "accountant", text: "The APR is 8.5%. Paying it early would save you approximately $5,000 in interest." },
+      { role: "client", text: "That makes sense. I'll authorize the payment this week." },
+      { role: "accountant", text: "Excellent. I'll prepare the necessary journal entries and update the ledger." },
+      { role: "client", text: "Thank you. Also, could you explain the depreciation schedule for our equipment?" },
+      { role: "accountant", text: "Of course. We're using straight-line depreciation over 7 years for all major equipment." },
+      { role: "client", text: "That's very helpful. I appreciate your detailed explanation." }
+    ];
+
+    // USEFUL FINANCIAL & ACCOUNTING PHRASES - ALL IN ENGLISH
+    const USEFUL_PHRASES = [
+      { icon: "fa-chart-line", title: "Financial Health", phrase: "Your profit margin has improved significantly this quarter." },
+      { icon: "fa-file-invoice-dollar", title: "Invoicing", phrase: "The invoice was sent on the 15th. Payment is due within 30 days." },
+      { icon: "fa-credit-card", title: "Credit Terms", phrase: "We offer net-30 payment terms to all qualified business clients." },
+      { icon: "fa-calculator", title: "Calculations", phrase: "After deducting expenses, your net income is $45,000." },
+      { icon: "fa-balance-scale", title: "Balance Sheet", phrase: "Your assets total $250,000 against liabilities of $95,000." },
+      { icon: "fa-chart-pie", title: "Budgeting", phrase: "We need to reduce operating costs by 10% next fiscal year." }
+    ];
+
+    const TOTAL_EXERCISES = EXERCISES.length;
+    const POINTS_PER_CORRECT = 10;
+
+    // Game state
+    let currentIndex = 0;
+    let totalScore = 0;
+    let lives = 5;
+    let answered = false;
+    let selectedOptionIdx = null;
+    let feedbackMsg = null;
+    let feedbackType = null;
+
+    // DOM elements
+    let scoreSpan, heartsContainer, progressFill, progressPercentSpan, questionEl, optionsContainer, nextBtn, feedbackEl;
+
+    // ==============================================================
+    // AUDIO SYSTEM - PURE AMERICAN ENGLISH
+    // ==============================================================
+    let selectedVoice = null;
+    let voiceReady = false;
+
+    async function loadAmericanVoice() {
+      return new Promise((resolve) => {
+        if (!window.speechSynthesis) {
+          console.warn("SpeechSynthesis not supported");
+          resolve(false);
+          return;
+        }
+
+        const checkVoices = () => {
+          const voices = window.speechSynthesis.getVoices();
+          console.log("Available voices:", voices.map(v => `${v.name} (${v.lang})`));
+          
+          let americanVoice = voices.find(voice => 
+            voice.lang === 'en-US' && (voice.name.includes('Google') || voice.name.includes('Natural') || voice.name.includes('Premium'))
+          );
+          
+          if (!americanVoice) {
+            americanVoice = voices.find(voice => 
+              voice.lang === 'en-US' && (voice.name.includes('Samantha') || voice.name.includes('Alex') || voice.name.includes('Microsoft David') || voice.name.includes('Microsoft Zira') || voice.name.includes('Jenny'))
+            );
+          }
+          
+          if (!americanVoice) {
+            americanVoice = voices.find(voice => voice.lang === 'en-US');
+          }
+          
+          if (americanVoice) {
+            selectedVoice = americanVoice;
+            voiceReady = true;
+            console.log(`✅ Voice selected: ${selectedVoice.name} (${selectedVoice.lang}) - AMERICAN ENGLISH`);
+            const statusDiv = document.getElementById('audioStatus');
+            if (statusDiv) statusDiv.innerHTML = `<span class="text-green-700"><i class="fas fa-check-circle"></i> Audio ready: ${selectedVoice.name}</span>`;
+          } else {
+            voiceReady = false;
+            const statusDiv = document.getElementById('audioStatus');
+            if (statusDiv) statusDiv.innerHTML = `<span class="text-red-600"><i class="fas fa-exclamation-triangle"></i> No English voice detected. Use Chrome/Edge.</span>`;
+          }
+          resolve(voiceReady);
+        };
+
+        if (window.speechSynthesis.getVoices().length > 0) {
+          checkVoices();
+        } else {
+          window.speechSynthesis.onvoiceschanged = checkVoices;
+          setTimeout(checkVoices, 1000);
+        }
+      });
+    }
+
+    async function speakEnglish(text, element = null) {
+      if (!window.speechSynthesis) {
+        alert("Your browser doesn't support audio. Use Chrome, Edge or Safari.");
+        return;
+      }
+
+      if (!voiceReady || !selectedVoice) {
+        await loadAmericanVoice();
+        if (!voiceReady || !selectedVoice) {
+          alert("Could not load English voice. Please use Chrome or Edge.");
+          return;
+        }
+      }
+
+      window.speechSynthesis.cancel();
+
+      setTimeout(() => {
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'en-US';
+        utterance.voice = selectedVoice;
+        utterance.rate = 0.85;
+        utterance.pitch = 1.0;
+        utterance.volume = 1;
+        
+        console.log(`🔊 Speaking: "${text}"`);
+
+        if (element) {
+          element.classList.add('playing');
+          utterance.onend = () => element.classList.remove('playing');
+          utterance.onerror = () => element.classList.remove('playing');
+        }
+        
+        window.speechSynthesis.speak(utterance);
+      }, 50);
+    }
+
+    loadAmericanVoice();
+
+    function updateUIState() {
+      if (scoreSpan) scoreSpan.innerText = totalScore;
+      if (progressPercentSpan) progressPercentSpan.innerText = Math.round((currentIndex / TOTAL_EXERCISES) * 100);
+      if (progressFill) progressFill.style.width = `${(currentIndex / TOTAL_EXERCISES) * 100}%`;
+      if (heartsContainer) {
+        heartsContainer.innerHTML = '';
+        for (let i = 0; i < 5; i++) {
+          const heart = document.createElement('i');
+          heart.className = i < lives ? 'fas fa-heart text-red-500 text-2xl mx-0.5' : 'far fa-heart text-gray-400 text-2xl mx-0.5';
+          heartsContainer.appendChild(heart);
+        }
+      }
+    }
+
+    function renderCurrentExercise() {
+      if (!questionEl || !optionsContainer) return;
+      const exercise = EXERCISES[currentIndex];
+      if (!exercise) return;
+      
+      questionEl.innerHTML = `<div class="text-2xl md:text-3xl font-bold text-stone-800">${exercise.question}</div>`;
+      
+      optionsContainer.innerHTML = '';
+      exercise.options.forEach((opt, idx) => {
+        const btn = document.createElement('button');
+        btn.className = `option-btn w-full text-left p-5 rounded-2xl border-2 transition-all duration-150 flex items-center gap-3 ${!answered ? 'hover:shadow-md cursor-pointer' : 'cursor-default'}`;
+        
+        if (answered) {
+          if (idx === exercise.correct) btn.className += ' bg-emerald-50 border-emerald-400 ring-1 ring-emerald-200';
+          else if (idx === selectedOptionIdx && idx !== exercise.correct) btn.className += ' bg-rose-50 border-rose-300';
+          else btn.className += ' bg-white/70 border-blue-200';
+        } else {
+          btn.className += ' bg-white border-blue-200';
+          if (selectedOptionIdx === idx) btn.className += ' bg-blue-50 border-blue-400';
+        }
+        
+        const prefix = document.createElement('span');
+        prefix.className = 'w-7 h-7 rounded-full bg-blue-100 text-blue-800 flex items-center justify-center font-medium text-sm';
+        prefix.innerText = String.fromCharCode(65+idx);
+        
+        const textSpan = document.createElement('span');
+        textSpan.className = 'text-stone-700 text-lg font-medium flex-1';
+        textSpan.innerText = opt;
+        
+        btn.appendChild(prefix);
+        btn.appendChild(textSpan);
+        
+        const audioIcon = document.createElement('button');
+        audioIcon.className = 'audio-btn ml-2 p-2 rounded-full bg-blue-100 text-blue-700 hover:bg-blue-200 transition flex-shrink-0';
+        audioIcon.innerHTML = '<i class="fas fa-volume-up"></i>';
+        audioIcon.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          await speakEnglish(opt, audioIcon);
+        });
+        btn.appendChild(audioIcon);
+        
+        if (answered && idx === exercise.correct) {
+          const check = document.createElement('span');
+          check.className = 'text-emerald-600 text-xl ml-1';
+          check.innerHTML = '✓';
+          btn.appendChild(check);
+        } else if (answered && idx === selectedOptionIdx && idx !== exercise.correct) {
+          const cross = document.createElement('span');
+          cross.className = 'text-rose-500 text-xl ml-1';
+          cross.innerHTML = '✗';
+          btn.appendChild(cross);
+        }
+        
+        if (!answered) {
+          btn.addEventListener('click', () => handleAnswer(idx));
+        }
+        optionsContainer.appendChild(btn);
+      });
+      
+      if (nextBtn) {
+        if (answered) {
+          nextBtn.disabled = false;
+          nextBtn.classList.remove('bg-gray-300', 'cursor-not-allowed');
+          nextBtn.classList.add('bg-blue-700', 'hover:bg-blue-800', 'cursor-pointer');
+        } else {
+          nextBtn.disabled = true;
+          nextBtn.classList.add('bg-gray-300', 'cursor-not-allowed');
+          nextBtn.classList.remove('bg-blue-700', 'hover:bg-blue-800');
+        }
+      }
+    }
+
+    function handleAnswer(selectedIdx) {
+      if (answered) return;
+      const exercise = EXERCISES[currentIndex];
+      const isCorrect = (selectedIdx === exercise.correct);
+      selectedOptionIdx = selectedIdx;
+      answered = true;
+      
+      if (isCorrect) {
+        totalScore += POINTS_PER_CORRECT;
+        feedbackType = 'correct';
+        feedbackMsg = `✅ Excellent! +${POINTS_PER_CORRECT} points. ${exercise.explanation}`;
+      } else {
+        if (lives > 0) lives--;
+        if (heartsContainer) heartsContainer.classList.add('heart-pulse');
+        setTimeout(() => heartsContainer?.classList.remove('heart-pulse'), 400);
+        feedbackType = 'wrong';
+        feedbackMsg = `❌ Incorrect. ${exercise.explanation}`;
+      }
+      updateUIState();
+      renderCurrentExercise();
+      showFeedback();
+      
+      if (lives === 0) {
+        setTimeout(() => {
+          if (confirm("No hearts left. Would you like to restart?")) resetGame();
+        }, 150);
+      }
+    }
+    
+    function showFeedback() {
+      if (!feedbackEl) return;
+      if (!feedbackMsg) { feedbackEl.classList.add('hidden'); return; }
+      feedbackEl.classList.remove('hidden');
+      const bgClass = feedbackType === 'correct' ? 'bg-emerald-100 border-l-8 border-emerald-500 text-emerald-800' : 'bg-rose-100 border-l-8 border-rose-400 text-rose-800';
+      feedbackEl.className = `feedback-animation p-4 rounded-xl ${bgClass} mt-6`;
+      feedbackEl.innerHTML = `<p class="font-medium">${feedbackMsg}</p>`;
+    }
+    
+    function nextExercise() {
+      if (!answered) return;
+      if (lives === 0) {
+        if (confirm("No lives left. Restart to continue?")) resetGame();
+        return;
+      }
+      if (currentIndex + 1 < TOTAL_EXERCISES) {
+        currentIndex++;
+        answered = false;
+        selectedOptionIdx = null;
+        feedbackMsg = null;
+        feedbackType = null;
+        if (feedbackEl) feedbackEl.classList.add('hidden');
+        renderCurrentExercise();
+        updateUIState();
+      } else {
+        answered = true;
+        feedbackMsg = `🎉 CONGRATULATIONS! You completed all exercises! Final score: ${totalScore} / ${TOTAL_EXERCISES * POINTS_PER_CORRECT}. You're mastering financial English! 🌟`;
+        feedbackType = 'complete';
+        showFeedback();
+        if (nextBtn) nextBtn.disabled = true;
+        optionsContainer.innerHTML = `<div class="text-center p-8 bg-blue-50 rounded-2xl"><i class="fas fa-trophy text-6xl text-blue-500 mb-3"></i><p class="text-xl font-bold">✨ Module Complete! ✨</p><p class="text-stone-600 mt-2">Keep practicing the dialogues to improve your financial English.</p><button id="resetFinalBtn" class="mt-6 bg-blue-700 text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-800">Restart Practice</button></div>`;
+        document.getElementById('resetFinalBtn')?.addEventListener('click', () => resetGame());
+      }
+    }
+    
+    function resetGame() {
+      currentIndex = 0;
+      totalScore = 0;
+      lives = 5;
+      answered = false;
+      selectedOptionIdx = null;
+      feedbackMsg = null;
+      feedbackType = null;
+      if (feedbackEl) feedbackEl.classList.add('hidden');
+      updateUIState();
+      renderCurrentExercise();
+      document.getElementById('learning-app')?.scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    function buildFullUI() {
+      const root = document.getElementById('app-root');
+      if (!root) return;
+      
+      let dialoguesHtml = '';
+      DIALOGUES.forEach((d) => {
+        const bgClass = d.role === 'accountant' ? 'bg-blue-50 border-l-8 border-blue-400' : 'bg-white border-l-8 border-emerald-300';
+        const icon = d.role === 'accountant' ? '<i class="fas fa-user-graduate text-blue-600"></i>' : '<i class="fas fa-building text-emerald-600"></i>';
+        const roleName = d.role === 'accountant' ? 'ACCOUNTANT' : 'CLIENT';
+        dialoguesHtml += `
+          <div class="${bgClass} p-5 rounded-2xl shadow-sm flex flex-col md:flex-row justify-between items-start gap-3 transition hover:shadow-md">
+            <div class="flex-1">
+              <div class="flex items-center gap-2 font-bold text-stone-700">${icon} <span>${roleName}</span></div>
+              <p class="text-xl font-semibold text-stone-800 mt-2">${d.text}</p>
+            </div>
+            <button class="audio-dialog-btn bg-blue-200 hover:bg-blue-300 text-blue-900 px-5 py-3 rounded-xl flex items-center gap-2 transition font-medium" data-phrase="${d.text.replace(/['"]/g, '\\"')}">
+              <i class="fas fa-volume-up"></i> Listen (US)
+            </button>
+          </div>
+        `;
+      });
+      
+      let phrasesHtml = '';
+      USEFUL_PHRASES.forEach((p) => {
+        phrasesHtml += `
+          <div class="bg-white rounded-2xl p-6 shadow-md border border-blue-100 hover:shadow-xl transition text-center">
+            <i class="fas ${p.icon} text-4xl text-blue-600 mb-3"></i>
+            <h3 class="font-bold text-xl text-stone-700">${p.title}</h3>
+            <p class="text-stone-600 mt-2 font-medium">"${p.phrase}"</p>
+            <button class="phrase-audio-btn mt-3 bg-blue-100 hover:bg-blue-200 text-blue-700 px-4 py-2 rounded-xl text-sm transition" data-phrase="${p.phrase.replace(/['"]/g, '\\"')}">
+              <i class="fas fa-volume-up mr-1"></i> Hear it
+            </button>
+          </div>
+        `;
+      });
+      
+      root.innerHTML = `
+        <header class="relative bg-gradient-to-br from-[#e0e7ff] to-[#c7d2fe] overflow-hidden shadow-md">
+          <div class="container mx-auto px-5 py-10 md:py-14">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-8">
+              <div class="flex-1 text-center md:text-left">
+                <div class="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-white/60 backdrop-blur-sm text-blue-800 text-sm font-semibold mb-4"><i class="fas fa-microphone-alt"></i> American English Immersion</div>
+                <h1 class="text-4xl md:text-6xl font-extrabold text-stone-800 leading-tight">Master <span class="text-blue-700">Financial</span><br/>English for Credit & Accounting</h1>
+                <p class="text-lg text-stone-600 mt-4 max-w-xl">Real accounting dialogues + native American pronunciation + interactive exercises. Train your financial vocabulary and listening skills.</p>
+                <button id="startHeroBtn" class="mt-8 bg-blue-700 hover:bg-blue-800 text-white font-semibold px-8 py-4 rounded-2xl shadow-xl transition"><i class="fas fa-play mr-2"></i> Start Learning</button>
+              </div>
+              <div class="flex-1 flex justify-center">
+                <div class="relative w-64 h-64 md:w-80 md:h-80 bg-gradient-to-tr from-[#c7d2fe] to-[#a5b4fc] rounded-full flex items-center justify-center shadow-2xl">
+                  <span class="text-8xl">💼📊</span>
+                  <div class="absolute -bottom-4 -right-4 bg-white rounded-full p-3 shadow-lg"><i class="fas fa-headphones text-3xl text-blue-600"></i></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </header>
+        
+        <section id="learning-app" class="container mx-auto px-4 py-12">
+          <div class="max-w-4xl mx-auto">
+            <div class="bg-white/70 backdrop-blur-sm rounded-3xl shadow-2xl p-5 md:p-8">
+              <div class="flex flex-wrap justify-between items-center gap-4 mb-6 border-b border-blue-200 pb-3">
+                <div class="flex items-center gap-4">
+                  <div class="bg-blue-100 rounded-2xl px-4 py-2 shadow-inner"><i class="fas fa-trophy text-blue-600"></i> <span class="font-bold ml-1">Score</span> <span id="scoreValue" class="text-2xl font-black ml-2">0</span></div>
+                  <div id="heartsContainer" class="flex gap-1 bg-rose-50 px-4 py-2 rounded-2xl"></div>
+                </div>
+                <div class="flex-1 max-w-xs">
+                  <div class="flex justify-between text-sm font-medium text-stone-600 mb-1"><span>Progress</span><span id="progressPercent">0</span>%</div>
+                  <div class="h-2.5 bg-blue-100 rounded-full overflow-hidden"><div id="progressFill" class="h-full bg-blue-600 rounded-full transition-all duration-300" style="width:0%"></div></div>
+                </div>
+              </div>
+              <div class="bg-white rounded-3xl shadow-xl p-6 md:p-10">
+                <div id="questionDisplay" class="mb-6"></div>
+                <div id="optionsContainer" class="space-y-3"></div>
+                <div id="feedbackMessage" class="hidden"></div>
+                <div class="mt-8 flex justify-end">
+                  <button id="nextButton" class="px-8 py-3 rounded-xl font-bold text-white text-lg transition-all bg-gray-300 cursor-not-allowed" disabled>Next Exercise →</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        
+        <section class="container mx-auto px-4 py-12">
+          <div class="max-w-5xl mx-auto">
+            <div class="text-center mb-10">
+              <h2 class="text-3xl md:text-4xl font-bold text-stone-800">Real Dialogues: Accountant + Client</h2>
+              <p class="text-stone-600 mt-2 text-lg">Every phrase is read in NATIVE AMERICAN ENGLISH — click "Listen" to hear real pronunciation.</p>
+              <div id="audioStatus" class="mt-3 inline-flex items-center gap-2 bg-blue-100 px-4 py-2 rounded-full text-sm font-medium">
+                <i class="fas fa-spinner fa-pulse"></i> Loading voices...
+              </div>
+            </div>
+            <div class="space-y-5" id="dialoguesList">${dialoguesHtml}</div>
+          </div>
+        </section>
+        
+        <section class="container mx-auto px-4 py-12 bg-white/40 rounded-3xl my-6">
+          <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-10">
+              <h2 class="text-3xl md:text-4xl font-bold text-stone-800">Essential Financial & Accounting Phrases</h2>
+              <p class="text-stone-600 mt-2">Click any "Hear it" button to listen to the American English pronunciation</p>
+            </div>
+            <div class="grid md:grid-cols-3 gap-6">
+              ${phrasesHtml}
+            </div>
+          </div>
+        </section>
+        
+        <footer class="bg-stone-800 text-blue-100 py-8 mt-8 rounded-t-3xl">
+          <div class="container mx-auto text-center">
+            <p>✨ FinanceEnglish — American English for Accounting & Credit Professionals ✨</p>
+            <p class="text-sm opacity-70 mt-1">Master financial vocabulary and communicate with confidence in business settings.</p>
+          </div>
+        </footer>
+      `;
+      
+      scoreSpan = document.getElementById('scoreValue');
+      heartsContainer = document.getElementById('heartsContainer');
+      progressFill = document.getElementById('progressFill');
+      progressPercentSpan = document.getElementById('progressPercent');
+      questionEl = document.getElementById('questionDisplay');
+      optionsContainer = document.getElementById('optionsContainer');
+      nextBtn = document.getElementById('nextButton');
+      feedbackEl = document.getElementById('feedbackMessage');
+      
+      if (nextBtn) nextBtn.addEventListener('click', nextExercise);
+      document.getElementById('startHeroBtn')?.addEventListener('click', () => document.getElementById('learning-app')?.scrollIntoView({ behavior: 'smooth' }));
+      
+      document.querySelectorAll('.audio-dialog-btn').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          const phrase = btn.getAttribute('data-phrase');
+          if (phrase) await speakEnglish(phrase, btn);
+        });
+      });
+      
+      document.querySelectorAll('.phrase-audio-btn').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          const phrase = btn.getAttribute('data-phrase');
+          if (phrase) await speakEnglish(phrase, btn);
+        });
+      });
+      
+      currentIndex = 0; totalScore = 0; lives = 5; answered = false; selectedOptionIdx = null;
+      updateUIState();
+      renderCurrentExercise();
+      
+      setTimeout(() => loadAmericanVoice(), 500);
+    }
+    
+    buildFullUI();
+  </script>
+</body>
+</html>
