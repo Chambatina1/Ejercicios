@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>ElderCare English | Caregiver Training - American English</title>
+  <title>ElderCare English | 35 Caregiving Exercises - American English</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
@@ -27,30 +27,50 @@
 
   <script>
     // ==============================================================
-    // ELDERLY CARE EXERCISES - THREE TYPES (Multiple Choice, True/False, Short Answer)
+    // 35 ELDERLY CARE EXERCISES - Multiple Choice, True/False, Short Answer
     // ==============================================================
     
     const EXERCISES = [
-      // MULTIPLE CHOICE - Caregiving situations
+      // MULTIPLE CHOICE (16 exercises)
       { type: "multiple", question: "How do you politely ask if an elderly person needs help walking?", options: ["Let me carry you", "Would you like me to help you walk?", "You need to walk now"], correct: 1, explanation: "Would you like me to help you walk? is respectful and kind." },
       { type: "multiple", question: "What is the most calming phrase for an anxious senior?", options: ["Calm down", "Everything is okay. I am here with you.", "Stop worrying"], correct: 1, explanation: "Everything is okay. I am here with you provides security and comfort." },
       { type: "multiple", question: "Best response when a senior refuses medication:", options: ["You have to take it now", "I understand. Would you like me to stay with you while you take it?", "Fine, skip it then"], correct: 1, explanation: "Validating feelings and offering companionship is best practice." },
       { type: "multiple", question: "What does 'I will bring you a warm blanket' mean?", options: ["I will bring you medicine", "I will bring you a warm blanket", "I will help you walk"], correct: 1, explanation: "A warm blanket provides comfort and warmth to the senior." },
       { type: "multiple", question: "How do you ask about pain in a gentle way?", options: ["Does it hurt?", "Are you in any pain?", "Pain?"], correct: 1, explanation: "Are you in any pain? is gentle and professional." },
       { type: "multiple", question: "Complete the sentence: '______ I check your blood pressure?'", options: ["May", "Should", "Will"], correct: 0, explanation: "May I... is the most formal and respectful way to ask." },
+      { type: "multiple", question: "What is the best way to offer hydration to a senior?", options: ["Drink this now", "Would you like some water or juice?", "You need to drink more"], correct: 1, explanation: "Offering choices respects their autonomy and preferences." },
+      { type: "multiple", question: "How to ask if someone needs to use the restroom respectfully?", options: ["Do you need to go?", "Would you like me to assist you to the restroom?", "Let's go to the bathroom"], correct: 1, explanation: "Would you like me to assist you... is the most polite option." },
+      { type: "multiple", question: "What does 'Let me accompany you' mean?", options: ["Let me carry you", "Let me walk with you", "Let me feed you"], correct: 1, explanation: "Accompany means to go somewhere with someone as a companion." },
+      { type: "multiple", question: "Best phrase to encourage a senior to eat:", options: ["Eat faster", "Would you like a few more bites?", "You need to finish everything"], correct: 1, explanation: "Would you like a few more bites? is gentle and encouraging." },
+      { type: "multiple", question: "How to offer emotional support to a sad senior?", options: ["Cheer up", "I am here for you. Would you like to talk?", "Stop being sad"], correct: 1, explanation: "I am here for you shows genuine care and support." },
+      { type: "multiple", question: "What does 'I will adjust your pillow' mean?", options: ["I will bring you food", "I will make your pillow more comfortable", "I will help you walk"], correct: 1, explanation: "Adjusting a pillow helps the senior feel more comfortable." },
+      { type: "multiple", question: "How to ask if a senior wants company?", options: ["Do you want company?", "Would you like me to stay with you for a while?", "You need company"], correct: 1, explanation: "Would you like me to stay... is respectful and offers choice." },
+      { type: "multiple", question: "What is a kind way to say goodnight?", options: ["Go to sleep now", "Rest well. I will check on you later.", "Sleep early"], correct: 1, explanation: "Rest well shows care and lets them know you will return." },
+      { type: "multiple", question: "How to ask about mobility needs?", options: ["Can you walk?", "Would you like me to help you move around?", "You need to exercise"], correct: 1, explanation: "Would you like me to help you move around? is polite and supportive." },
+      { type: "multiple", question: "Best way to ask about medication side effects:", options: ["Are you feeling okay after your medicine?", "Did the medicine hurt you?", "Tell me if you feel bad"], correct: 0, explanation: "Are you feeling okay after your medicine? is caring and specific." },
       
-      // TRUE/FALSE - Caregiving knowledge
+      // TRUE/FALSE (9 exercises)
       { type: "truefalse", question: "You should always speak loudly to elderly people so they can hear you better.", correct: "false", explanation: "False! Speak clearly and at a normal volume. Shouting can be perceived as aggressive." },
       { type: "truefalse", question: "Asking 'How are you feeling today?' shows empathy and concern.", correct: "true", explanation: "Correct! Asking about feelings shows you care about their emotional state." },
       { type: "truefalse", question: "You should rush elderly people when they are eating or walking.", correct: "false", explanation: "False! Always allow them to move at their own pace. Rushing can cause falls and anxiety." },
       { type: "truefalse", question: "Offering choices like 'Would you like water or juice?' respects their autonomy.", correct: "true", explanation: "Correct! Offering choices empowers seniors and respects their preferences." },
       { type: "truefalse", question: "It is important to maintain eye contact when speaking with elderly adults.", correct: "true", explanation: "Correct! Eye contact shows respect and helps with communication." },
+      { type: "truefalse", question: "You should ignore a senior who seems sad or withdrawn.", correct: "false", explanation: "False! Always acknowledge their feelings and offer support." },
+      { type: "truefalse", question: "Using a gentle touch on the shoulder can be reassuring.", correct: "true", explanation: "Correct! Gentle touch, when appropriate, can provide comfort and connection." },
+      { type: "truefalse", question: "It is okay to talk about a senior as if they are not in the room.", correct: "false", explanation: "False! Always speak directly to the senior, not about them to others." },
+      { type: "truefalse", question: "Asking permission before providing care shows respect.", correct: "true", explanation: "Correct! Asking 'May I help you?' respects their dignity and autonomy." },
       
-      // SHORT ANSWER - Key caregiving phrases
+      // SHORT ANSWER (10 exercises)
       { type: "short", question: "What phrase would you use to ask if someone needs to use the restroom politely?", correctKeywords: ["would you like me to assist you to the restroom", "can I help you to the bathroom", "do you need help with the bathroom", "assist you to the restroom"], explanation: "Always ask politely and respectfully: 'Would you like me to assist you to the restroom?'" },
-      { type: "short", question: "How do you ask if someone is in pain in a gentle way?", correctKeywords: ["are you in any pain", "do you have pain", "does it hurt"], explanation: "Are you in any pain? is a gentle and caring way to ask about discomfort." },
+      { type: "short", question: "How do you ask if someone is in pain in a gentle way?", correctKeywords: ["are you in any pain", "do you have pain", "does it hurt", "any pain"], explanation: "Are you in any pain? is a gentle and caring way to ask about discomfort." },
       { type: "short", question: "What is a kind way to say 'It is time to take your medicine'?", correctKeywords: ["it is time for your medication", "time for your medication", "may i bring your medication", "time for your medicine"], explanation: "It's time for your medication, may I bring it to you? is polite and respectful." },
-      { type: "short", question: "How would you reassure someone who feels anxious?", correctKeywords: ["i am here with you", "you are safe", "everything is okay", "i am here"], explanation: "I am here with you. You are safe. provides comfort and security." }
+      { type: "short", question: "How would you reassure someone who feels anxious?", correctKeywords: ["i am here with you", "you are safe", "everything is okay", "i am here"], explanation: "I am here with you. You are safe. provides comfort and security." },
+      { type: "short", question: "What phrase offers help with walking?", correctKeywords: ["would you like me to help you walk", "let me help you walk", "take my arm", "help you walk"], explanation: "Would you like me to help you walk? is polite and offers assistance." },
+      { type: "short", question: "How to ask if a senior wants something to drink?", correctKeywords: ["would you like some water", "would you like something to drink", "can i get you some water", "some juice"], explanation: "Would you like some water or juice? offers hydration with respect." },
+      { type: "short", question: "What phrase shows you are listening to their concerns?", correctKeywords: ["i understand", "tell me more", "i hear you", "i understand how you feel"], explanation: "I understand. Tell me more. shows empathy and active listening." },
+      { type: "short", question: "How to ask about their comfort level?", correctKeywords: ["are you comfortable", "would you like me to adjust", "is there anything you need", "how can I make you more comfortable"], explanation: "Are you comfortable? Would you like me to adjust anything?" },
+      { type: "short", question: "What phrase to use when helping with meals?", correctKeywords: ["would you like some help with your meal", "can i help you eat", "let me help you with your food", "help with your meal"], explanation: "Would you like some help with your meal? respects their independence." },
+      { type: "short", question: "How to say goodnight in a caring way?", correctKeywords: ["rest well", "sleep well", "good night", "i will check on you later"], explanation: "Rest well. I will check on you later. provides comfort and security." }
     ];
 
     // REAL CAREGIVER-SENIOR DIALOGUES
@@ -64,8 +84,7 @@
       { role: "senior", text: "You are very patient with me. I really appreciate your kindness." },
       { role: "caregiver", text: "It is my pleasure. Now, are you ready for your medication?" },
       { role: "senior", text: "Yes, I will take it with your help. Thank you for being here." },
-      { role: "caregiver", text: "I will be right outside if you need anything. Rest well, my friend." },
-      { role: "senior", text: "Thank you. You make me feel safe and cared for." }
+      { role: "caregiver", text: "I will be right outside if you need anything. Rest well, my friend." }
     ];
 
     // USEFUL CAREGIVING PHRASES
@@ -116,7 +135,7 @@
             selectedVoice = americanVoice;
             voiceReady = true;
             const statusDiv = document.getElementById('audioStatus');
-            if (statusDiv) statusDiv.innerHTML = `<span class="text-green-700"><i class="fas fa-check-circle"></i> Audio ready: ${americanVoice.name}</span>`;
+            if (statusDiv) statusDiv.innerHTML = `<span class="text-green-700"><i class="fas fa-check-circle"></i> Audio ready: ${americanVoice.name} | 35 Exercises</span>`;
           }
           resolve(voiceReady);
         };
@@ -378,13 +397,14 @@
         if (feedbackEl) feedbackEl.classList.add('hidden');
         renderCurrentExercise();
         updateUIState();
+        updateTypeBadge();
       } else {
         answered = true;
-        feedbackMsg = `🎉 CONGRATULATIONS! You completed all exercises! Final score: ${totalScore} / ${TOTAL_EXERCISES * POINTS_PER_CORRECT}. You are becoming an excellent caregiver! 🌟`;
+        feedbackMsg = `🎉 CONGRATULATIONS! You completed all 35 exercises! Final score: ${totalScore} / ${TOTAL_EXERCISES * POINTS_PER_CORRECT}. You are becoming an excellent caregiver! 🌟`;
         feedbackType = 'complete';
         showFeedback();
         if (nextBtn) nextBtn.disabled = true;
-        optionsContainer.innerHTML = `<div class="text-center p-8 bg-amber-50 rounded-2xl"><i class="fas fa-trophy text-6xl text-amber-500 mb-3"></i><p class="text-xl font-bold">✨ Training Complete! ✨</p><p class="text-stone-600 mt-2">You have practiced Multiple Choice, True/False, and Short Answer questions.</p><button id="resetFinalBtn" class="mt-6 bg-amber-700 text-white px-6 py-3 rounded-xl font-bold hover:bg-amber-800">Restart Practice</button></div>`;
+        optionsContainer.innerHTML = `<div class="text-center p-8 bg-amber-50 rounded-2xl"><i class="fas fa-trophy text-6xl text-amber-500 mb-3"></i><p class="text-xl font-bold">✨ All 35 Exercises Complete! ✨</p><p class="text-stone-600 mt-2">You have practiced Multiple Choice, True/False, and Short Answer questions.</p><button id="resetFinalBtn" class="mt-6 bg-amber-700 text-white px-6 py-3 rounded-xl font-bold hover:bg-amber-800">Restart Practice</button></div>`;
         document.getElementById('resetFinalBtn')?.addEventListener('click', () => resetGame());
       }
     }
@@ -400,7 +420,21 @@
       if (feedbackEl) feedbackEl.classList.add('hidden');
       updateUIState();
       renderCurrentExercise();
+      updateTypeBadge();
       document.getElementById('learning-app')?.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function updateTypeBadge() {
+      const typeBadge = document.getElementById('exerciseTypeBadge');
+      if (typeBadge && EXERCISES[currentIndex]) {
+        const type = EXERCISES[currentIndex].type;
+        let badgeText = '', badgeColor = '';
+        if (type === 'multiple') { badgeText = 'MULTIPLE CHOICE'; badgeColor = 'bg-purple-100 text-purple-700'; }
+        else if (type === 'truefalse') { badgeText = 'TRUE / FALSE'; badgeColor = 'bg-green-100 text-green-700'; }
+        else { badgeText = 'SHORT ANSWER'; badgeColor = 'bg-orange-100 text-orange-700'; }
+        typeBadge.textContent = badgeText;
+        typeBadge.className = `inline-block px-3 py-1 rounded-full text-xs font-semibold ${badgeColor}`;
+      }
     }
 
     function buildFullUI() {
@@ -444,111 +478,10 @@
           <div class="container mx-auto px-5 py-10 md:py-14">
             <div class="flex flex-col md:flex-row justify-between items-center gap-8">
               <div class="flex-1 text-center md:text-left">
-                <div class="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-white/60 backdrop-blur-sm text-amber-800 text-sm font-semibold mb-4"><i class="fas fa-heart"></i> Compassionate Care Training</div>
+                <div class="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-white/60 backdrop-blur-sm text-amber-800 text-sm font-semibold mb-4"><i class="fas fa-heart"></i> 35 Exercises - Complete Training</div>
                 <h1 class="text-4xl md:text-6xl font-extrabold text-stone-800 leading-tight">Speak, Listen &<br/>Care in <span class="text-amber-700">English</span></h1>
-                <p class="text-lg text-stone-600 mt-4 max-w-xl">Real caregiving dialogues + natural American pronunciation + interactive exercises with Multiple Choice, True/False, and Short Answer questions.</p>
-                <button id="startHeroBtn" class="mt-8 bg-amber-700 hover:bg-amber-800 text-white font-semibold px-8 py-4 rounded-2xl shadow-xl transition"><i class="fas fa-play mr-2"></i> Start Training</button>
+                <p class="text-lg text-stone-600 mt-4 max-w-xl">35 interactive exercises: Multiple Choice, True/False, and Short Answer. Real caregiving dialogues + natural American pronunciation.</p>
+                <button id="startHeroBtn" class="mt-8 bg-amber-700 hover:bg-amber-800 text-white font-semibold px-8 py-4 rounded-2xl shadow-xl transition"><i class="fas fa-play mr-2"></i> Start 35 Exercises</button>
               </div>
               <div class="flex-1 flex justify-center">
-                <div class="relative w-64 h-64 md:w-80 md:h-80 bg-gradient-to-tr from-[#e9cfb0] to-[#dbbd97] rounded-full flex items-center justify-center shadow-2xl">
-                  <span class="text-8xl">👵🏽🤝👩🏽‍⚕️</span>
-                  <div class="absolute -bottom-4 -right-4 bg-white rounded-full p-3 shadow-lg"><i class="fas fa-headphones text-3xl text-amber-600"></i></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </header>
-        
-        <section id="learning-app" class="container mx-auto px-4 py-12">
-          <div class="max-w-4xl mx-auto">
-            <div class="bg-white/70 backdrop-blur-sm rounded-3xl shadow-2xl p-5 md:p-8">
-              <div class="flex flex-wrap justify-between items-center gap-4 mb-6 border-b border-amber-200 pb-3">
-                <div class="flex items-center gap-4">
-                  <div class="bg-amber-100 rounded-2xl px-4 py-2 shadow-inner"><i class="fas fa-trophy text-amber-600"></i> <span class="font-bold ml-1">Score</span> <span id="scoreValue" class="text-2xl font-black ml-2">0</span></div>
-                  <div id="heartsContainer" class="flex gap-1 bg-rose-50 px-4 py-2 rounded-2xl"></div>
-                </div>
-                <div class="flex-1 max-w-xs">
-                  <div class="flex justify-between text-sm font-medium text-stone-600 mb-1"><span>Progress</span><span id="progressPercent">0</span>%</div>
-                  <div class="h-2.5 bg-amber-100 rounded-full overflow-hidden"><div id="progressFill" class="h-full bg-amber-600 rounded-full transition-all duration-300" style="width:0%"></div></div>
-                </div>
-              </div>
-              <div class="bg-white rounded-3xl shadow-xl p-6 md:p-10">
-                <div class="mb-4 inline-block px-3 py-1 rounded-full text-xs font-semibold" id="exerciseTypeBadge"></div>
-                <div id="questionDisplay" class="mb-6"></div>
-                <div id="optionsContainer" class="space-y-3"></div>
-                <div id="feedbackMessage" class="hidden"></div>
-                <div class="mt-8 flex justify-end">
-                  <button id="nextButton" class="px-8 py-3 rounded-xl font-bold text-white text-lg transition-all bg-gray-300 cursor-not-allowed" disabled>Next Exercise →</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-        
-        <section class="container mx-auto px-4 py-12">
-          <div class="max-w-5xl mx-auto">
-            <div class="text-center mb-10">
-              <h2 class="text-3xl md:text-4xl font-bold text-stone-800">Real Dialogues: Caregiver + Senior</h2>
-              <p class="text-stone-600 mt-2 text-lg">Click "Listen (US)" to hear natural American English pronunciation.</p>
-              <div id="audioStatus" class="mt-3 inline-flex items-center gap-2 bg-amber-100 px-4 py-2 rounded-full text-sm font-medium">
-                <i class="fas fa-spinner fa-pulse"></i> Loading voices...
-              </div>
-            </div>
-            <div class="space-y-5" id="dialoguesList">${dialoguesHtml}</div>
-          </div>
-        </section>
-        
-        <section class="container mx-auto px-4 py-12 bg-white/40 rounded-3xl my-6">
-          <div class="max-w-6xl mx-auto">
-            <div class="text-center mb-10">
-              <h2 class="text-3xl md:text-4xl font-bold text-stone-800">Essential Caregiving Phrases</h2>
-              <p class="text-stone-600 mt-2">Click "Hear it" to listen to natural American English.</p>
-            </div>
-            <div class="grid md:grid-cols-3 gap-6">
-              ${phrasesHtml}
-            </div>
-          </div>
-        </section>
-        
-        <footer class="bg-stone-800 text-amber-100 py-8 mt-8 rounded-t-3xl">
-          <div class="container mx-auto text-center">
-            <p>✨ ElderCare English — Compassionate Communication for Caregivers ✨</p>
-            <p class="text-sm opacity-70 mt-1">Master caregiving vocabulary with Multiple Choice, True/False, and Short Answer exercises.</p>
-          </div>
-        </footer>
-      `;
-      
-      scoreSpan = document.getElementById('scoreValue');
-      heartsContainer = document.getElementById('heartsContainer');
-      progressFill = document.getElementById('progressFill');
-      progressPercentSpan = document.getElementById('progressPercent');
-      questionEl = document.getElementById('questionDisplay');
-      optionsContainer = document.getElementById('optionsContainer');
-      nextBtn = document.getElementById('nextButton');
-      feedbackEl = document.getElementById('feedbackMessage');
-      const typeBadge = document.getElementById('exerciseTypeBadge');
-      
-      if (nextBtn) nextBtn.addEventListener('click', nextExercise);
-      document.getElementById('startHeroBtn')?.addEventListener('click', () => document.getElementById('learning-app')?.scrollIntoView({ behavior: 'smooth' }));
-      
-      document.querySelectorAll('.audio-dialog-btn').forEach(btn => {
-        btn.addEventListener('click', async (e) => {
-          const phrase = btn.getAttribute('data-phrase');
-          if (phrase) await speakEnglish(phrase, btn);
-        });
-      });
-      
-      document.querySelectorAll('.phrase-audio-btn').forEach(btn => {
-        btn.addEventListener('click', async (e) => {
-          const phrase = btn.getAttribute('data-phrase');
-          if (phrase) await speakEnglish(phrase, btn);
-        });
-      });
-      
-      function updateTypeBadge() {
-        if (typeBadge && EXERCISES[currentIndex]) {
-          const type = EXERCISES[currentIndex].type;
-          let badgeText = '', badgeColor = '';
-          if (type === 'multiple') { badgeText = 'MULTIPLE CHOICE'; badgeColor = 'bg-purple-100 text-purple-700'; }
-          else if (type === 'truefalse') { badgeText = 'TRUE / FALSE'; badgeColor = 'bg-green-100 text-green-700'; }
-          else { badgeText = 'SH
+                <div class="relative w-64 h-64 md:w-80 md:h-80 bg-gradient
