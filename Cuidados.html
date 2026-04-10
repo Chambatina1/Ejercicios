@@ -1,707 +1,244 @@
-import React, { useMemo, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
-import {
-  ArrowRight,
-  CheckCircle2,
-  Heart,
-  Sparkles,
-  Star,
-  Volume2,
-  XCircle,
-  Stethoscope,
-  GlassWater,
-  Pill,
-  Bed,
-  HandHeart,
-  Languages,
-  RefreshCw
-} from "lucide-react";
+import { useState } from 'react';
 
-const lessons = [
-  {
-    id: 1,
-    type: "choice3",
-    category: "Greeting",
-    icon: HandHeart,
-    scene: "Warm welcome",
-    sceneEmoji: "👩‍⚕️💬👵",
-    title: "Start with kindness",
-    prompt: "Choose the best phrase to greet an older adult politely.",
-    phrase: "Buenos días, ¿cómo se siente hoy?",
-    options: [
-      "Good morning, how are you feeling today?",
-      "Wake up now.",
-      "Move faster, please."
-    ],
-    answer: "Good morning, how are you feeling today?",
-    tip: "Las primeras frases deben sonar calmadas, respetuosas y cercanas."
-  },
-  {
-    id: 2,
-    type: "choice3",
-    category: "Mobility",
-    icon: Stethoscope,
-    scene: "Walking support",
-    sceneEmoji: "🧑‍🦯🤝🚶",
-    title: "Helping with mobility",
-    prompt: "Choose the phrase used before helping a resident walk.",
-    phrase: "¿Necesita ayuda para caminar?",
-    options: [
-      "Do you need help walking?",
-      "Can you cook alone?",
-      "Please clean the table."
-    ],
-    answer: "Do you need help walking?",
-    tip: "En cuidado diario, primero se pregunta y luego se asiste."
-  },
-  {
-    id: 3,
-    type: "fill3",
-    category: "Medication",
-    icon: Pill,
-    scene: "Medicine routine",
-    sceneEmoji: "💊🕒🙂",
-    title: "Medicine time",
-    prompt: "Complete the sentence with the correct word.",
-    phrase: "It is time to take your _______.",
-    choices: ["window", "medicine", "blanket"],
-    answer: "medicine",
-    tip: "Take your medicine es una frase esencial en el trabajo diario."
-  },
-  {
-    id: 4,
-    type: "bestPhrase",
-    category: "Comfort",
-    icon: Bed,
-    scene: "Rest and comfort",
-    sceneEmoji: "🛏️🌿💤",
-    title: "Checking comfort",
-    prompt: "Choose the most caring question.",
-    phrase: "¿Está cómodo?",
-    options: [
-      "Are you comfortable?",
-      "Why are you still here?",
-      "Can you run?"
-    ],
-    answer: "Are you comfortable?",
-    tip: "Comfortable se usa mucho al acomodar a una persona en cama o silla."
-  },
-  {
-    id: 5,
-    type: "match",
-    category: "Vocabulary",
-    icon: Languages,
-    scene: "Useful words",
-    sceneEmoji: "🩺📚✨",
-    title: "Core elderly care vocabulary",
-    prompt: "Match each word with its meaning.",
-    pairs: [
-      { left: "wheelchair", right: "silla de ruedas" },
-      { left: "caregiver", right: "cuidador" },
-      { left: "dizzy", right: "mareado" }
-    ],
-    tip: "Estas palabras aparecen en conversaciones reales de asistencia."
-  },
-  {
-    id: 6,
-    type: "translateMini",
-    category: "Reassurance",
-    icon: HandHeart,
-    scene: "Emotional support",
-    sceneEmoji: "💗🫶🙂",
-    title: "Words that calm",
-    prompt: "Choose the best English translation.",
-    phrase: "Todo está bien. Estoy aquí para ayudarle.",
-    options: [
-      "Everything is okay. I am here to help you.",
-      "You are alone now.",
-      "Do not talk to me."
-    ],
-    answer: "Everything is okay. I am here to help you.",
-    tip: "Las frases tranquilizadoras ayudan a crear confianza y seguridad."
-  },
-  {
-    id: 7,
-    type: "fill3",
-    category: "Pain",
-    icon: Stethoscope,
-    scene: "Pain check",
-    sceneEmoji: "🤕❓🩹",
-    title: "Ask about pain",
-    prompt: "Complete the question.",
-    phrase: "Are you in _______?",
-    choices: ["music", "pain", "paper"],
-    answer: "pain",
-    tip: "Are you in pain es una pregunta básica y frecuente."
-  },
-  {
-    id: 8,
-    type: "choice3",
-    category: "Positioning",
-    icon: Bed,
-    scene: "Bed support",
-    sceneEmoji: "🛏️↔️😊",
-    title: "Changing position",
-    prompt: "Choose the correct caregiving sentence.",
-    phrase: "Voy a cambiar su posición para que esté más cómodo.",
-    options: [
-      "I am going to change your position so you can be more comfortable.",
-      "I am going to wash the car.",
-      "You need to leave now."
-    ],
-    answer: "I am going to change your position so you can be more comfortable.",
-    tip: "Muy útil cuando hay apoyo físico o prevención de molestias."
-  },
-  {
-    id: 9,
-    type: "choice3",
-    category: "Hydration",
-    icon: GlassWater,
-    scene: "Healthy routine",
-    sceneEmoji: "🥛💧🍎",
-    title: "Food and hydration",
-    prompt: "Choose the phrase used to encourage hydration.",
-    phrase: "Por favor, tome un poco de agua.",
-    options: [
-      "Please drink some water.",
-      "Please answer the phone.",
-      "Please wear your shoes."
-    ],
-    answer: "Please drink some water.",
-    tip: "La hidratación es una parte central del cuidado diario."
-  },
-  {
-    id: 10,
-    type: "bestPhrase",
-    category: "Idiomatic phrase",
-    icon: Sparkles,
-    scene: "Gentle language",
-    sceneEmoji: "🌼🧘💬",
-    title: "Soft and natural English",
-    prompt: "Choose the closest meaning of this phrase.",
-    phrase: "Take it easy.",
-    options: [
-      "Tómelo con calma.",
-      "Levántese rápido.",
-      "Ignore el dolor."
-    ],
-    answer: "Tómelo con calma.",
-    tip: "Take it easy transmite calma, suavidad y acompañamiento."
-  }
-];
-
-const highlights = [
-  {
-    title: "Real phrases",
-    description: "Vocabulario y expresiones que sí sirven en atención diaria a adultos mayores.",
-    icon: Languages
-  },
-  {
-    title: "Caring communication",
-    description: "Frases cálidas para dolor, medicina, movilidad, hidratación y apoyo emocional.",
-    icon: HandHeart
-  },
-  {
-    title: "Interactive practice",
-    description: "Retos cortos, feedback inmediato y una experiencia visual motivadora.",
-    icon: Sparkles
-  }
-];
-
-function shuffleArray(array) {
-  return [...array].sort(() => Math.random() - 0.5);
-}
-
-function Header({ progress, hearts, score }) {
-  return (
-    <div className="sticky top-0 z-30 border-b border-white/60 bg-white/75 backdrop-blur-xl">
-      <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-4">
-        <div className="hidden min-w-[120px] items-center gap-2 md:flex">
-          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-700 shadow-sm">
-            <HandHeart className="h-5 w-5" />
-          </div>
-          <div>
-            <p className="text-sm font-semibold text-slate-900">Chambari Care English</p>
-            <p className="text-xs text-slate-500">Practice mode</p>
-          </div>
-        </div>
-        <div className="flex-1">
-          <Progress value={progress} className="h-3 rounded-full" />
-        </div>
-        <div className="flex items-center gap-2 rounded-full bg-rose-50 px-3 py-2 font-semibold text-rose-500">
-          <Heart className="h-4 w-4 fill-current" />
-          <span>{hearts}</span>
-        </div>
-        <div className="flex items-center gap-2 rounded-full bg-amber-50 px-3 py-2 font-semibold text-amber-500">
-          <Star className="h-4 w-4 fill-current" />
-          <span>{score}</span>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function Hero({ onStart }) {
-  return (
-    <section className="relative overflow-hidden">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(56,189,248,0.18),_transparent_30%),radial-gradient(circle_at_bottom_right,_rgba(16,185,129,0.18),_transparent_32%)]" />
-      <div className="relative mx-auto grid max-w-6xl gap-8 px-4 pb-10 pt-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
-        <div>
-          <Badge className="mb-4 rounded-full border-0 bg-white px-4 py-2 text-slate-700 shadow-sm">
-            English for Elderly Care
-          </Badge>
-          <h1 className="max-w-3xl text-4xl font-bold leading-tight tracking-tight text-slate-950 md:text-6xl">
-            Practica inglés con una experiencia cálida, visual y profesional para el cuidado del adulto mayor.
-          </h1>
-          <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-600 md:text-xl">
-            Aprende frases reales para acompañar, tranquilizar, preguntar por dolor, medicina, agua, comodidad y movilidad con ejercicios dinámicos y elegantes.
-          </p>
-
-          <div className="mt-6 flex flex-wrap gap-3">
-            <Button onClick={onStart} className="rounded-2xl bg-slate-900 px-6 py-6 text-base shadow-lg shadow-slate-900/15 hover:bg-slate-800">
-              Start practice
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
-            <div className="flex items-center gap-2 rounded-2xl bg-white px-4 py-3 text-sm text-slate-600 shadow-sm">
-              <Sparkles className="h-4 w-4 text-emerald-500" />
-              10 lessons · visual exercises · caring language
-            </div>
-          </div>
-
-          <div className="mt-8 grid gap-3 sm:grid-cols-3">
-            {highlights.map((item) => {
-              const Icon = item.icon;
-              return (
-                <div key={item.title} className="rounded-3xl border border-white/80 bg-white/80 p-4 shadow-sm backdrop-blur">
-                  <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-100 text-slate-700">
-                    <Icon className="h-5 w-5" />
-                  </div>
-                  <h3 className="font-semibold text-slate-900">{item.title}</h3>
-                  <p className="mt-1 text-sm leading-6 text-slate-600">{item.description}</p>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 18 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.45 }}
-          className="relative"
-        >
-          <div className="absolute -left-6 top-10 h-28 w-28 rounded-full bg-sky-200/60 blur-3xl" />
-          <div className="absolute -right-4 bottom-10 h-28 w-28 rounded-full bg-emerald-200/70 blur-3xl" />
-          <div className="relative overflow-hidden rounded-[34px] border border-white/70 bg-white/70 p-5 shadow-[0_30px_80px_-24px_rgba(15,23,42,0.25)] backdrop-blur-xl">
-            <div className="rounded-[28px] bg-gradient-to-br from-sky-100 via-white to-emerald-100 p-6">
-              <div className="grid gap-4 md:grid-cols-[1fr_0.9fr]">
-                <div className="rounded-[24px] bg-white/80 p-5 shadow-sm">
-                  <p className="text-sm font-medium text-sky-700">Care situation</p>
-                  <div className="mt-4 text-7xl">👩‍⚕️🤝👵</div>
-                  <h3 className="mt-5 text-2xl font-bold text-slate-900">Warm and respectful communication</h3>
-                  <p className="mt-2 text-slate-600">Practice the most useful English phrases for real elderly care moments.</p>
-                </div>
-                <div className="flex flex-col justify-between rounded-[24px] bg-slate-900 p-5 text-white shadow-lg">
-                  <div>
-                    <p className="text-sm text-slate-300">Today’s focus</p>
-                    <h4 className="mt-2 text-2xl font-semibold">Comfort, support and clarity</h4>
-                  </div>
-                  <div className="space-y-3">
-                    <div className="rounded-2xl bg-white/10 p-3">
-                      <p className="text-xs uppercase tracking-wide text-slate-300">Phrase</p>
-                      <p className="mt-1 font-medium">Are you comfortable?</p>
-                    </div>
-                    <div className="rounded-2xl bg-white/10 p-3">
-                      <p className="text-xs uppercase tracking-wide text-slate-300">Phrase</p>
-                      <p className="mt-1 font-medium">Please drink some water.</p>
-                    </div>
-                    <div className="rounded-2xl bg-white/10 p-3">
-                      <p className="text-xs uppercase tracking-wide text-slate-300">Phrase</p>
-                      <p className="mt-1 font-medium">I am here to help you.</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </motion.div>
-      </div>
-    </section>
-  );
-}
-
-function LessonVisual({ lesson }) {
-  const Icon = lesson.icon;
-  return (
-    <div className="space-y-4">
-      <div className="relative overflow-hidden rounded-[28px] border border-white/70 bg-gradient-to-br from-sky-100 via-white to-emerald-100 p-6 shadow-xl">
-        <div className="absolute right-4 top-4 rounded-full bg-white/80 px-3 py-1 text-xs font-medium text-slate-600 shadow-sm">
-          {lesson.category}
-        </div>
-        <div className="flex h-[310px] flex-col justify-between">
-          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-slate-700 shadow-sm">
-            <Icon className="h-6 w-6" />
-          </div>
-          <div>
-            <p className="text-sm font-medium text-slate-500">{lesson.scene}</p>
-            <div className="mt-4 text-8xl leading-none">{lesson.sceneEmoji}</div>
-          </div>
-        </div>
-      </div>
-      <div className="rounded-[28px] border border-sky-100 bg-white p-5 shadow-sm">
-        <div className="mb-2 flex items-center gap-2 text-sm font-medium text-slate-500">
-          <Volume2 className="h-4 w-4" />
-          Frase guía
-        </div>
-        <p className="text-xl font-semibold leading-8 text-slate-900">{lesson.phrase}</p>
-      </div>
-    </div>
-  );
-}
-
-function ExerciseShell({ lesson, children }) {
-  return (
-    <div className="grid items-start gap-6 lg:grid-cols-[0.95fr_1.05fr]">
-      <LessonVisual lesson={lesson} />
-      <div className="space-y-5">
-        <div>
-          <Badge className="mb-3 rounded-full border-0 bg-slate-100 px-3 py-1 text-slate-700">{lesson.category}</Badge>
-          <h2 className="text-3xl font-bold tracking-tight text-slate-950">{lesson.title}</h2>
-          <p className="mt-2 text-base leading-7 text-slate-600">{lesson.prompt}</p>
-        </div>
-        {children}
-      </div>
-    </div>
-  );
-}
-
-function OptionButton({ label, selected, correct, wrong, disabled, onClick }) {
-  return (
-    <button
-      onClick={onClick}
-      disabled={disabled}
-      className={`w-full rounded-[24px] border-2 px-5 py-5 text-left transition-all ${
-        selected
-          ? correct
-            ? "border-emerald-500 bg-emerald-50 shadow-sm"
-            : wrong
-            ? "border-rose-500 bg-rose-50 shadow-sm"
-            : "border-slate-200 bg-white opacity-60"
-          : "border-slate-200 bg-white shadow-sm hover:-translate-y-0.5 hover:border-sky-300 hover:shadow-md"
-      }`}
-    >
-      <div className="flex items-center justify-between gap-3">
-        <span className="font-medium text-slate-900">{label}</span>
-        {selected && correct && <CheckCircle2 className="h-5 w-5 text-emerald-600" />}
-        {selected && wrong && <XCircle className="h-5 w-5 text-rose-600" />}
-      </div>
-    </button>
-  );
-}
-
-function FeedbackCard({ correct, tip }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      className={`rounded-[24px] border p-4 ${correct ? "border-emerald-200 bg-emerald-50" : "border-rose-200 bg-rose-50"}`}
-    >
-      <p className="font-semibold text-slate-900">{correct ? "Muy bien" : "Sigue practicando"}</p>
-      <p className="mt-1 leading-7 text-slate-700">{tip}</p>
-    </motion.div>
-  );
-}
-
-function ChoiceExercise({ lesson, onAnswer }) {
-  const [selected, setSelected] = useState(null);
-  const [options] = useState(() => shuffleArray(lesson.options));
-  const correct = selected === lesson.answer;
-
-  return (
-    <ExerciseShell lesson={lesson}>
-      <div className="grid gap-3">
-        {options.map((option) => {
-          const isSelected = selected === option;
-          const isCorrect = option === lesson.answer;
-          return (
-            <OptionButton
-              key={option}
-              label={option}
-              selected={!!selected}
-              correct={!!selected && isCorrect}
-              wrong={!!selected && isSelected && !isCorrect}
-              disabled={!!selected}
-              onClick={() => setSelected(option)}
-            />
-          );
-        })}
-      </div>
-
-      {selected && <FeedbackCard correct={correct} tip={lesson.tip} />}
-
-      <Button onClick={() => onAnswer(correct)} disabled={!selected} className="w-full rounded-2xl py-6 text-base">
-        Continue
-      </Button>
-    </ExerciseShell>
-  );
-}
-
-function FillExercise({ lesson, onAnswer }) {
-  const [selected, setSelected] = useState(null);
-  const [choices] = useState(() => shuffleArray(lesson.choices));
-  const correct = selected === lesson.answer;
-  const renderedPhrase = lesson.phrase.replace("_______", selected || "_______");
-
-  return (
-    <ExerciseShell lesson={lesson}>
-      <Card className="rounded-[28px] border-0 bg-slate-900 text-white shadow-lg">
-        <CardContent className="p-6">
-          <p className="text-sm text-slate-300">Complete the phrase</p>
-          <p className="mt-3 text-3xl font-bold leading-relaxed">{renderedPhrase}</p>
-        </CardContent>
-      </Card>
-
-      <div className="grid gap-3 md:grid-cols-3">
-        {choices.map((choice) => {
-          const isSelected = selected === choice;
-          const isCorrect = choice === lesson.answer;
-          return (
-            <OptionButton
-              key={choice}
-              label={choice}
-              selected={!!selected}
-              correct={!!selected && isCorrect}
-              wrong={!!selected && isSelected && !isCorrect}
-              disabled={!!selected}
-              onClick={() => setSelected(choice)}
-            />
-          );
-        })}
-      </div>
-
-      {selected && <FeedbackCard correct={correct} tip={lesson.tip} />}
-
-      <Button onClick={() => onAnswer(correct)} disabled={!selected} className="w-full rounded-2xl py-6 text-base">
-        Continue
-      </Button>
-    </ExerciseShell>
-  );
-}
-
-function MatchExercise({ lesson, onAnswer }) {
-  const [selectedLeft, setSelectedLeft] = useState(null);
-  const [matches, setMatches] = useState({});
-  const rights = useMemo(() => shuffleArray(lesson.pairs.map((pair) => pair.right)), [lesson.pairs]);
-  const completed = Object.keys(matches).length === lesson.pairs.length;
-  const correct = lesson.pairs.every((pair) => matches[pair.left] === pair.right);
-
-  const handleRightSelect = (right) => {
-    if (!selectedLeft || Object.values(matches).includes(right)) return;
-    setMatches((prev) => ({ ...prev, [selectedLeft]: right }));
-    setSelectedLeft(null);
-  };
-
-  return (
-    <ExerciseShell lesson={lesson}>
-      <div className="grid gap-4 md:grid-cols-2">
-        <div className="space-y-3">
-          {lesson.pairs.map((pair) => {
-            const matched = matches[pair.left];
-            const chosen = selectedLeft === pair.left;
-            return (
-              <button
-                key={pair.left}
-                onClick={() => !matched && setSelectedLeft(pair.left)}
-                className={`w-full rounded-[22px] border-2 px-4 py-4 text-left transition-all ${
-                  matched
-                    ? "border-emerald-400 bg-emerald-50"
-                    : chosen
-                    ? "border-sky-400 bg-sky-50"
-                    : "border-slate-200 bg-white hover:border-sky-300"
-                }`}
-              >
-                <div className="font-semibold text-slate-900">{pair.left}</div>
-                {matched && <div className="mt-1 text-sm text-slate-500">Matched with: {matched}</div>}
-              </button>
-            );
-          })}
-        </div>
-
-        <div className="space-y-3">
-          {rights.map((right) => {
-            const used = Object.values(matches).includes(right);
-            return (
-              <button
-                key={right}
-                disabled={used}
-                onClick={() => handleRightSelect(right)}
-                className={`w-full rounded-[22px] border-2 px-4 py-4 text-left transition-all ${
-                  used ? "border-slate-200 bg-slate-100 text-slate-400" : "border-slate-200 bg-white hover:border-sky-300"
-                }`}
-              >
-                <div className="font-semibold">{right}</div>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {completed && <FeedbackCard correct={correct} tip={lesson.tip} />}
-
-      <Button onClick={() => onAnswer(correct)} disabled={!completed} className="w-full rounded-2xl py-6 text-base">
-        Continue
-      </Button>
-    </ExerciseShell>
-  );
-}
-
-function Summary({ score, restart }) {
-  const message = score >= 90 ? "Excellent work" : score >= 70 ? "Very good progress" : score >= 50 ? "Good start" : "Keep practicing";
-
-  return (
-    <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
-      <Card className="mx-auto max-w-4xl rounded-[34px] border-0 bg-white/90 shadow-[0_30px_80px_-24px_rgba(15,23,42,0.24)]">
-        <CardContent className="p-8 md:p-10">
-          <div className="grid gap-8 md:grid-cols-[0.9fr_1.1fr] md:items-center">
-            <div className="rounded-[30px] bg-gradient-to-br from-emerald-100 via-white to-sky-100 p-8 text-center">
-              <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-white text-emerald-600 shadow-sm">
-                <CheckCircle2 className="h-10 w-10" />
-              </div>
-              <div className="text-7xl">🎉</div>
-              <h2 className="mt-4 text-3xl font-bold text-slate-950">Session complete</h2>
-              <p className="mt-2 text-slate-600">You finished your elderly care English practice.</p>
-            </div>
-
-            <div>
-              <p className="text-sm font-medium uppercase tracking-[0.18em] text-slate-500">Result</p>
-              <h3 className="mt-2 text-4xl font-bold tracking-tight text-slate-950">{message}</h3>
-              <p className="mt-4 text-lg leading-8 text-slate-600">
-                Sigue mejorando tu comunicación con frases útiles para medicina, comodidad, movilidad, hidratación y apoyo emocional.
-              </p>
-
-              <div className="mt-6 grid gap-4 sm:grid-cols-3">
-                <div className="rounded-3xl bg-slate-50 p-4">
-                  <p className="text-sm text-slate-500">Score</p>
-                  <p className="mt-1 text-3xl font-bold text-slate-950">{score}</p>
-                </div>
-                <div className="rounded-3xl bg-slate-50 p-4">
-                  <p className="text-sm text-slate-500">Focus</p>
-                  <p className="mt-1 text-lg font-semibold text-slate-950">Care phrases</p>
-                </div>
-                <div className="rounded-3xl bg-slate-50 p-4">
-                  <p className="text-sm text-slate-500">Next step</p>
-                  <p className="mt-1 text-lg font-semibold text-slate-950">Listening + speaking</p>
-                </div>
-              </div>
-
-              <Button onClick={restart} className="mt-6 rounded-2xl px-6 py-6 text-base">
-                <RefreshCw className="mr-2 h-4 w-4" />
-                Practice again
-              </Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    </motion.div>
-  );
-}
-
-export default function ElderlyCareEnglishPracticeApp() {
-  const [started, setStarted] = useState(false);
-  const [current, setCurrent] = useState(0);
-  const [hearts, setHearts] = useState(5);
+function App() {
+  // Estado para los ejercicios
+  const [currentExercise, setCurrentExercise] = useState(0);
   const [score, setScore] = useState(0);
+  const [lives, setLives] = useState(3);
+  const [progress, setProgress] = useState(0);
+  const [showFeedback, setShowFeedback] = useState(null); // 'correct' | 'incorrect'
+  const [userAnswer, setUserAnswer] = useState('');
+  
+  // Datos de ejercicios
+  const exercises = [
+    {
+      type: 'multipleChoice',
+      question: '¿Cuál de las siguientes frases es más adecuada para saludar a un adulto mayor por la mañana?',
+      options: [
+        'Hey, what\'s up?',
+        'Good morning! How are you today?',
+        'Yo, how you feeling?',
+      ],
+      answer: 1,
+    },
+    {
+      type: 'fillInTheBlank',
+      question: 'Complete la frase: "¿Necesita algo de ____ o agua?"',
+      sentence: 'Do you need some ____ or water?',
+      options: ['medicine', 'food', 'rest'],
+      answer: 0,
+    },
+    {
+      type: 'match',
+      phrase: 'I am here to help you.',
+      options: [
+        { word: 'Estoy aquí para ayudarte.', meaning: 'I am here to help you.' },
+        { word: '¿Cómo estás?', meaning: 'How are you?' },
+        { word: '¿Quieres descansar?', meaning: 'Do you want to rest?' },
+      ],
+      answerIndex: 0,
+    },
+    {
+      type: 'translate',
+      phrase: '¿Te sientes cómodo?',
+      answer: 'Do you feel comfortable?',
+    },
+  ];
 
-  const lesson = lessons[current];
-  const progress = started ? (current / lessons.length) * 100 : 0;
+  const totalExercises = exercises.length;
 
-  const next = (isCorrect) => {
-    if (isCorrect) setScore((s) => Math.min(100, s + 10));
-    else setHearts((h) => Math.max(0, h - 1));
-    setCurrent((c) => c + 1);
+  const handleAnswer = (answerIndex) => {
+    const current = exercises[currentExercise];
+    let isCorrect = false;
+
+    if (current.type === 'multipleChoice' || current.type === 'fillInTheBlank') {
+      isCorrect = answerIndex === current.answer;
+    } else if (current.type === 'match') {
+      isCorrect = answerIndex === current.answerIndex;
+    } else if (current.type === 'translate') {
+      // Para traducción, compararemos en inglés
+      isCorrect = userAnswer.trim().toLowerCase() === current.answer.toLowerCase();
+    }
+
+    if (isCorrect) {
+      setScore(score + 10);
+      setShowFeedback('correct');
+    } else {
+      setLives(lives - 1);
+      setShowFeedback('incorrect');
+    }
+
+    // Actualizar progreso
+    const newProgress = ((currentExercise + 1) / totalExercises) * 100;
+    setProgress(newProgress);
+
+    // Pasar al siguiente ejercicio después de un breve retraso
+    setTimeout(() => {
+      setShowFeedback(null);
+      setUserAnswer('');
+      if (currentExercise + 1 < totalExercises && lives > 0) {
+        setCurrentExercise(currentExercise + 1);
+      }
+    }, 1000);
   };
 
-  const restart = () => {
-    setStarted(true);
-    setCurrent(0);
-    setHearts(5);
-    setScore(0);
+  const renderExercise = () => {
+    const current = exercises[currentExercise];
+
+    if (current.type === 'multipleChoice') {
+      return (
+        <div className="mt-4 space-y-4">
+          {current.options.map((opt, index) => (
+            <button
+              key={index}
+              className="w-full bg-white rounded-lg shadow-md p-4 text-left hover:bg-gray-100 transition"
+              onClick={() => handleAnswer(index)}
+            >
+              {opt}
+            </button>
+          ))}
+        </div>
+      );
+    }
+
+    if (current.type === 'fillInTheBlank') {
+      return (
+        <div className="mt-4 space-y-4">
+          <p className="text-xl font-semibold">{current.sentence.replace('____', '______')}</p>
+          <div className="flex">
+            {current.options.map((opt, index) => (
+              <button
+                key={index}
+                className="mx-2 bg-white rounded-lg shadow-md p-2 px-4 hover:bg-gray-100 transition"
+                onClick={() => setUserAnswer(opt)}
+              >
+                {opt}
+              </button>
+            ))}
+          </div>
+          {userAnswer && (
+            <button
+              className="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-700 transition"
+              onClick={() => handleAnswer(current.options.indexOf(userAnswer))}
+            >
+              Confirmar
+            </button>
+          )}
+        </div>
+      );
+    }
+
+    if (current.type === 'match') {
+      return (
+        <div className="mt-4 space-y-4">
+          {current.options.map((option, index) => (
+            <button
+              key={index}
+              className="w-full bg-white rounded-lg shadow-md p-4 text-left hover:bg-gray-100 transition"
+              onClick={() => handleAnswer(index)}
+            >
+              {option.word}
+            </button>
+          ))}
+        </div>
+      );
+    }
+
+    if (current.type === 'translate') {
+      return (
+        <div className="mt-4 space-y-4">
+          <input
+            type="text"
+            placeholder="Escribe la frase en inglés"
+            className="w-full p-3 rounded-lg shadow-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            value={userAnswer}
+            onChange={(e) => setUserAnswer(e.target.value)}
+          />
+          <button
+            className="mt-4 bg-green-600 text-white px-4 py-2 rounded-lg shadow hover:bg-green-700 transition"
+            onClick={() => handleAnswer(0)}
+          >
+            Verificar
+          </button>
+        </div>
+      );
+    }
   };
 
   return (
-    <div className="min-h-screen bg-[linear-gradient(180deg,#f8fcff_0%,#ffffff_35%,#f5fbf8_100%)] text-slate-900">
-      <Header progress={progress} hearts={hearts} score={score} />
-      <Hero onStart={() => setStarted(true)} />
+    <div className="min-h-screen bg-gray-50 font-sans flex flex-col">
+      {/* Hero */}
+      <header className="bg-amber-100 p-8 text-center flex flex-col items-center">
+        <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
+          Practica Inglés para Cuidado de Adultos Mayores
+        </h1>
+        <p className="text-lg md:text-xl text-gray-700 mb-6 max-w-2xl">
+          Mejora tus habilidades con ejercicios interactivos, frases útiles y vocabulario esencial para brindar una atención cálida, respetuosa y profesional.
+        </p>
+        <button className="bg-amber-400 hover:bg-amber-500 text-white font-semibold py-3 px-6 rounded-lg shadow-lg transition">
+          Comenzar
+        </button>
+      </header>
 
-      <main className="mx-auto max-w-6xl px-4 pb-16">
-        {!started ? (
-          <section className="grid gap-4 md:grid-cols-3">
-            <Card className="rounded-[28px] border-0 bg-white shadow-md">
-              <CardContent className="p-6">
-                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-sky-100 text-sky-700">
-                  <Languages className="h-5 w-5" />
-                </div>
-                <h3 className="text-xl font-bold">Useful vocabulary</h3>
-                <p className="mt-2 leading-7 text-slate-600">Frases reales para saludar, acompañar, ayudar, preguntar por dolor y hablar con respeto.</p>
-              </CardContent>
-            </Card>
-            <Card className="rounded-[28px] border-0 bg-white shadow-md">
-              <CardContent className="p-6">
-                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-700">
-                  <Sparkles className="h-5 w-5" />
-                </div>
-                <h3 className="text-xl font-bold">Fun exercises</h3>
-                <p className="mt-2 leading-7 text-slate-600">Retos de tres opciones, completar frases, mini traducciones y vocabulario visual.</p>
-              </CardContent>
-            </Card>
-            <Card className="rounded-[28px] border-0 bg-white shadow-md">
-              <CardContent className="p-6">
-                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-100 text-amber-700">
-                  <Heart className="h-5 w-5" />
-                </div>
-                <h3 className="text-xl font-bold">Human tone</h3>
-                <p className="mt-2 leading-7 text-slate-600">Lenguaje cálido y útil para dar calma, seguridad y acompañamiento al adulto mayor.</p>
-              </CardContent>
-            </Card>
-          </section>
-        ) : current < lessons.length ? (
-          <Card className="overflow-hidden rounded-[34px] border-0 bg-white/90 shadow-[0_30px_80px_-24px_rgba(15,23,42,0.24)] backdrop-blur">
-            <CardContent className="p-5 md:p-8">
-              <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-                <Badge className="rounded-full border-0 bg-slate-100 px-4 py-2 text-slate-700">
-                  Exercise {current + 1} / {lessons.length}
-                </Badge>
-                <div className="flex items-center gap-2 rounded-full bg-slate-50 px-3 py-2 text-sm text-slate-500">
-                  <Volume2 className="h-4 w-4" />
-                  Audio ready state
-                </div>
-              </div>
+      {/* Contenido de aprendizaje y ejercicios */}
+      <main className="flex-1 p-6 max-w-4xl mx-auto">
+        {/* Barra de progreso y estado */}
+        <div className="flex items-center justify-between mb-4">
+          <div className="w-full h-3 bg-gray-300 rounded-full overflow-hidden">
+            <div
+              className="h-3 bg-amber-400 transition-all duration-300"
+              style={{ width: `${progress}%` }}
+            ></div>
+          </div>
+          <div className="ml-4 text-sm font-semibold text-gray-700">
+            {Math.round(score)} pts | {lives} ❤️
+          </div>
+        </div>
 
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={lesson.id}
-                  initial={{ opacity: 0, y: 14 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -14 }}
-                  transition={{ duration: 0.28 }}
-                >
-                  {(lesson.type === "choice3" || lesson.type === "bestPhrase" || lesson.type === "translateMini") && (
-                    <ChoiceExercise lesson={lesson} onAnswer={next} />
-                  )}
-                  {lesson.type === "fill3" && <FillExercise lesson={lesson} onAnswer={next} />}
-                  {lesson.type === "match" && <MatchExercise lesson={lesson} onAnswer={next} />}
-                </motion.div>
-              </AnimatePresence>
-            </CardContent>
-          </Card>
+        {/* Feedback */}
+        {showFeedback && (
+          <div
+            className={`mb-4 p-4 rounded-lg shadow-md text-center ${
+              showFeedback === 'correct' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+            }`}
+          >
+            {showFeedback === 'correct' ? '¡Correcto! Bien hecho.' : 'Respuesta incorrecta. Intenta de nuevo.'}
+          </div>
+        )}
+
+        {/* Ejercicio */}
+        {lives > 0 ? (
+          <>
+            <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-200">
+              <h2 className="text-xl font-semibold mb-4 text-gray-800">{exercises[currentExercise].question}</h2>
+              {renderExercise()}
+            </div>
+          </>
         ) : (
-          <Summary score={score} restart={restart} />
+          <div className="text-center mt-12">
+            <h2 className="text-3xl font-bold text-red-600 mb-4">¡Juego terminado!</h2>
+            <p className="text-lg mb-4">Tu puntaje final: {score} puntos</p>
+            <button
+              className="bg-amber-400 hover:bg-amber-500 text-white px-6 py-3 rounded-lg shadow-lg transition"
+              onClick={() => {
+                setCurrentExercise(0);
+                setScore(0);
+                setLives(3);
+                setProgress(0);
+              }}
+            >
+              Reiniciar
+            </button>
+          </div>
         )}
       </main>
+
+      {/* Pie de página con ilustraciones o información adicional */}
+      <footer className="bg-amber-50 p-6 text-center text-gray-600 text-sm mt-8">
+        <p>Creado con cariño para profesionales del cuidado y aprendices de inglés.</p>
+      </footer>
     </div>
   );
 }
+
+export default App;
