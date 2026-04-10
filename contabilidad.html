@@ -33,14 +33,14 @@
     const EXERCISES = [
       { 
         type: "multiple", 
-        question: "What does 'credit' mean in accounting?", 
+        question: "What does credit mean in accounting?", 
         options: ["Money going out of an account", "Money coming into an account", "A type of loan"], 
         correct: 0, 
         explanation: "Excellent! In accounting, a credit increases liability or equity accounts and decreases asset accounts." 
       },
       { 
         type: "multiple", 
-        question: "What is a 'ledger'?", 
+        question: "What is a ledger?", 
         options: ["A type of calculator", "A book or file where financial transactions are recorded", "A bank statement"], 
         correct: 1, 
         explanation: "Great! A ledger is the principal book where accounting transactions are recorded." 
@@ -54,14 +54,14 @@
       },
       { 
         type: "multiple", 
-        question: "What are 'accounts receivable'?", 
+        question: "What are accounts receivable?", 
         options: ["Money the company owes to suppliers", "Money owed to the company by customers", "Cash in the bank"], 
         correct: 1, 
         explanation: "Perfect! Accounts receivable represents money customers owe to the business." 
       },
       { 
         type: "multiple", 
-        question: "What does 'net profit' mean?", 
+        question: "What does net profit mean?", 
         options: ["Total revenue before expenses", "Revenue minus all expenses", "Gross sales"], 
         correct: 1, 
         explanation: "Excellent! Net profit is the actual profit after deducting all operating expenses, taxes, and costs." 
@@ -75,21 +75,21 @@
       },
       { 
         type: "multiple", 
-        question: "What is 'depreciation'?", 
+        question: "What is depreciation?", 
         options: ["Increase in asset value", "Decrease in asset value over time", "Money in the bank"], 
         correct: 1, 
         explanation: "Great! Depreciation allocates the cost of a tangible asset over its useful life." 
       },
       { 
         type: "multiple", 
-        question: "What does 'APR' stand for?", 
+        question: "What does APR stand for?", 
         options: ["Annual Payment Rate", "Annual Percentage Rate", "Account Payment Ratio"], 
         correct: 1, 
         explanation: "Perfect! APR is the annual interest rate charged for borrowing or earned through investment." 
       }
     ];
 
-    // REAL ACCOUNTANT-CLIENT DIALOGUES - 100% ENGLISH (normalized text for better speech)
+    // REAL ACCOUNTANT-CLIENT DIALOGUES - TEXT WITHOUT APOSTROPHES FOR CLEAN SPEECH
     const DIALOGUES = [
       { role: "accountant", text: "Good morning. I have reviewed your financial statements for last quarter." },
       { role: "client", text: "Good morning. How do they look? Is everything in order?" },
@@ -105,7 +105,7 @@
       { role: "client", text: "That is very helpful. I appreciate your detailed explanation." }
     ];
 
-    // USEFUL FINANCIAL & ACCOUNTING PHRASES - ALL IN ENGLISH
+    // USEFUL FINANCIAL & ACCOUNTING PHRASES
     const USEFUL_PHRASES = [
       { icon: "fa-chart-line", title: "Financial Health", phrase: "Your profit margin has improved significantly this quarter." },
       { icon: "fa-file-invoice-dollar", title: "Invoicing", phrase: "The invoice was sent on the 15th. Payment is due within 30 days." },
@@ -131,29 +131,51 @@
     let scoreSpan, heartsContainer, progressFill, progressPercentSpan, questionEl, optionsContainer, nextBtn, feedbackEl;
 
     // ==============================================================
-    // AUDIO SYSTEM - PURE AMERICAN ENGLISH (CLEAN TEXT, NATURAL FLOW)
+    // AUDIO SYSTEM - PURE AMERICAN ENGLISH
     // ==============================================================
     let selectedVoice = null;
     let voiceReady = false;
 
-    // Clean text for natural speech - removes punctuation and normalizes case
+    // Clean text completely - removes all punctuation, apostrophes, and normalizes
     function cleanTextForSpeech(text) {
       let cleaned = text;
       
-      // Remove all punctuation that causes weird reading
+      // Replace apostrophes and contractions with full words
+      cleaned = cleaned.replace(/I've/g, 'I have');
+      cleaned = cleaned.replace(/You've/g, 'You have');
+      cleaned = cleaned.replace(/We've/g, 'We have');
+      cleaned = cleaned.replace(/They've/g, 'They have');
+      cleaned = cleaned.replace(/It's/g, 'It is');
+      cleaned = cleaned.replace(/That's/g, 'That is');
+      cleaned = cleaned.replace(/What's/g, 'What is');
+      cleaned = cleaned.replace(/There's/g, 'There is');
+      cleaned = cleaned.replace(/Here's/g, 'Here is');
+      cleaned = cleaned.replace(/don't/g, 'do not');
+      cleaned = cleaned.replace(/doesn't/g, 'does not');
+      cleaned = cleaned.replace(/didn't/g, 'did not');
+      cleaned = cleaned.replace(/won't/g, 'will not');
+      cleaned = cleaned.replace(/can't/g, 'cannot');
+      cleaned = cleaned.replace(/couldn't/g, 'could not');
+      cleaned = cleaned.replace(/wouldn't/g, 'would not');
+      cleaned = cleaned.replace(/shouldn't/g, 'should not');
+      cleaned = cleaned.replace(/I'm/g, 'I am');
+      cleaned = cleaned.replace(/You're/g, 'You are');
+      cleaned = cleaned.replace(/We're/g, 'We are');
+      cleaned = cleaned.replace(/They're/g, 'They are');
+      cleaned = cleaned.replace(/He's/g, 'He is');
+      cleaned = cleaned.replace(/She's/g, 'She is');
+      cleaned = cleaned.replace(/ain't/g, 'is not');
+      
+      // Remove all punctuation marks
       cleaned = cleaned.replace(/[.,!?;:'"“”‘’()\[\]{}]/g, ' ');
       
-      // Replace apostrophes with space for better flow
-      cleaned = cleaned.replace(/[']/g, ' ');
-      
-      // Normalize multiple spaces to single space
+      // Remove extra spaces
       cleaned = cleaned.replace(/\s+/g, ' ').trim();
       
-      // Convert to lowercase for more natural speech (optional, helps with some voices)
-      // But keep first letter of sentences? Actually lowercase works better for TTS
+      // Convert to lowercase for more natural speech
       cleaned = cleaned.toLowerCase();
       
-      console.log(`🧹 Cleaned text: "${cleaned}"`);
+      console.log(`Cleaned text: "${cleaned}"`);
       return cleaned;
     }
 
@@ -169,14 +191,14 @@
           const voices = window.speechSynthesis.getVoices();
           console.log("Available voices:", voices.map(v => `${v.name} (${v.lang})`));
           
-          // Priority order for most natural American English voices
+          // Priority for natural American English voices
           let americanVoice = voices.find(voice => 
-            voice.lang === 'en-US' && (voice.name.includes('Google') || voice.name.includes('Natural') || voice.name.includes('Premium') || voice.name.includes('Studio'))
+            voice.lang === 'en-US' && (voice.name.includes('Google') || voice.name.includes('Natural') || voice.name.includes('Premium'))
           );
           
           if (!americanVoice) {
             americanVoice = voices.find(voice => 
-              voice.lang === 'en-US' && (voice.name.includes('Jenny') || voice.name.includes('Samantha') || voice.name.includes('Alex') || voice.name.includes('Microsoft David') || voice.name.includes('Microsoft Zira') || voice.name.includes('Eric'))
+              voice.lang === 'en-US' && (voice.name.includes('Jenny') || voice.name.includes('Samantha') || voice.name.includes('Alex') || voice.name.includes('Microsoft David') || voice.name.includes('Microsoft Zira'))
             );
           }
           
@@ -187,7 +209,7 @@
           if (americanVoice) {
             selectedVoice = americanVoice;
             voiceReady = true;
-            console.log(`✅ Voice selected: ${selectedVoice.name} (${selectedVoice.lang})`);
+            console.log(`Voice selected: ${selectedVoice.name} (${selectedVoice.lang})`);
             const statusDiv = document.getElementById('audioStatus');
             if (statusDiv) statusDiv.innerHTML = `<span class="text-green-700"><i class="fas fa-check-circle"></i> Audio ready: ${selectedVoice.name}</span>`;
           } else {
@@ -207,7 +229,7 @@
       });
     }
 
-    // Speak ONLY the cleaned text - no punctuation, no extra words, natural flow
+    // Speak ONLY the cleaned text - no punctuation, no extra words
     async function speakEnglish(text, element = null) {
       if (!window.speechSynthesis) {
         alert("Your browser doesn't support audio. Use Chrome, Edge or Safari.");
@@ -222,7 +244,7 @@
         }
       }
 
-      // Clean the text - remove all punctuation, normalize case for natural speech
+      // Clean the text thoroughly
       const cleanText = cleanTextForSpeech(text);
       
       if (!cleanText || cleanText.length === 0) {
@@ -230,7 +252,7 @@
         return;
       }
       
-      console.log(`🔊 Speaking: "${cleanText}"`);
+      console.log(`Speaking: "${cleanText}"`);
 
       // Cancel any ongoing speech
       window.speechSynthesis.cancel();
@@ -239,7 +261,7 @@
         const utterance = new SpeechSynthesisUtterance(cleanText);
         utterance.lang = 'en-US';
         utterance.voice = selectedVoice;
-        utterance.rate = 0.88;      // Natural pace
+        utterance.rate = 0.85;
         utterance.pitch = 1.0;
         utterance.volume = 1;
         
@@ -302,7 +324,6 @@
         btn.appendChild(prefix);
         btn.appendChild(textSpan);
         
-        // Audio button - speaks only the option text
         const audioIcon = document.createElement('button');
         audioIcon.className = 'audio-btn ml-2 p-2 rounded-full bg-blue-100 text-blue-700 hover:bg-blue-200 transition flex-shrink-0';
         audioIcon.innerHTML = '<i class="fas fa-volume-up"></i>';
@@ -353,13 +374,13 @@
       if (isCorrect) {
         totalScore += POINTS_PER_CORRECT;
         feedbackType = 'correct';
-        feedbackMsg = `✅ Excellent! +${POINTS_PER_CORRECT} points. ${exercise.explanation}`;
+        feedbackMsg = `Excellent! +${POINTS_PER_CORRECT} points. ${exercise.explanation}`;
       } else {
         if (lives > 0) lives--;
         if (heartsContainer) heartsContainer.classList.add('heart-pulse');
         setTimeout(() => heartsContainer?.classList.remove('heart-pulse'), 400);
         feedbackType = 'wrong';
-        feedbackMsg = `❌ Incorrect. ${exercise.explanation}`;
+        feedbackMsg = `Incorrect. ${exercise.explanation}`;
       }
       updateUIState();
       renderCurrentExercise();
@@ -398,11 +419,11 @@
         updateUIState();
       } else {
         answered = true;
-        feedbackMsg = `🎉 CONGRATULATIONS! You completed all exercises! Final score: ${totalScore} / ${TOTAL_EXERCISES * POINTS_PER_CORRECT}. You're mastering financial English! 🌟`;
+        feedbackMsg = `Congratulations! You completed all exercises! Final score: ${totalScore} out of ${TOTAL_EXERCISES * POINTS_PER_CORRECT}. You are mastering financial English!`;
         feedbackType = 'complete';
         showFeedback();
         if (nextBtn) nextBtn.disabled = true;
-        optionsContainer.innerHTML = `<div class="text-center p-8 bg-blue-50 rounded-2xl"><i class="fas fa-trophy text-6xl text-blue-500 mb-3"></i><p class="text-xl font-bold">✨ Module Complete! ✨</p><p class="text-stone-600 mt-2">Keep practicing the dialogues to improve your financial English.</p><button id="resetFinalBtn" class="mt-6 bg-blue-700 text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-800">Restart Practice</button></div>`;
+        optionsContainer.innerHTML = `<div class="text-center p-8 bg-blue-50 rounded-2xl"><i class="fas fa-trophy text-6xl text-blue-500 mb-3"></i><p class="text-xl font-bold">Module Complete!</p><p class="text-stone-600 mt-2">Keep practicing the dialogues to improve your financial English.</p><button id="resetFinalBtn" class="mt-6 bg-blue-700 text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-800">Restart Practice</button></div>`;
         document.getElementById('resetFinalBtn')?.addEventListener('click', () => resetGame());
       }
     }
@@ -506,7 +527,7 @@
           <div class="max-w-5xl mx-auto">
             <div class="text-center mb-10">
               <h2 class="text-3xl md:text-4xl font-bold text-stone-800">Real Dialogues: Accountant + Client</h2>
-              <p class="text-stone-600 mt-2 text-lg">Click "Listen (US)" to hear the dialogue phrase in natural American English. Punctuation is removed for smooth speech.</p>
+              <p class="text-stone-600 mt-2 text-lg">Click "Listen (US)" to hear the dialogue phrase in natural American English.</p>
               <div id="audioStatus" class="mt-3 inline-flex items-center gap-2 bg-blue-100 px-4 py-2 rounded-full text-sm font-medium">
                 <i class="fas fa-spinner fa-pulse"></i> Loading voices...
               </div>
@@ -529,7 +550,7 @@
         
         <footer class="bg-stone-800 text-blue-100 py-8 mt-8 rounded-t-3xl">
           <div class="container mx-auto text-center">
-            <p>✨ FinanceEnglish — American English for Accounting & Credit Professionals ✨</p>
+            <p>FinanceEnglish — American English for Accounting & Credit Professionals</p>
             <p class="text-sm opacity-70 mt-1">Master financial vocabulary and communicate with confidence in business settings.</p>
           </div>
         </footer>
